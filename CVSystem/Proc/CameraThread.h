@@ -73,9 +73,9 @@ namespace dxlib {
     class CameraThread
     {
     public:
-        CameraThread(pCamera cp);
-        CameraThread(std::vector<pCamera> cps);
-        CameraThread(std::map<int, pCamera> cps);
+        CameraThread(const pCamera& cp);
+        CameraThread(const std::vector<pCamera>& cps);
+        CameraThread(const std::map<int, pCamera>& cps);
 
         ~CameraThread();
 

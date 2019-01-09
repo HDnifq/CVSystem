@@ -103,14 +103,14 @@ namespace dxlib {
     void MultiCamera::openCamera(uint activeIndex, bool isStartThread)
     {
         //根据当前录入的相机的东西里的设置来打开相机
-        auto camMap = CameraManger::GetInst()->camMap;
+        std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
 
         cameraThread = new CameraThread(camMap);//这里重新new
         cameraThread->cv_mt = &cv_mt;
         cameraThread->mtx_ct = &mtx_ct;
         cameraThread->cv_ct = &cv_ct;
 
-        if (cameraThread->open()) { //如果成功打开了所有相机，启动相机
+        if (cameraThread->open()) { //如果成功打开了所有相机，启动计算
             isStop.exchange(false);
 
             //设置当前的帧处理

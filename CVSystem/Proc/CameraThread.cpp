@@ -24,17 +24,17 @@ namespace dxlib {
         return nullptr;
     }
 
-    CameraThread::CameraThread(pCamera cp)
+    CameraThread::CameraThread(const pCamera& cp)
     {
         vCameras.push_back(cp);
     }
 
-    CameraThread::CameraThread(std::vector<pCamera> cps)
+    CameraThread::CameraThread(const std::vector<pCamera>& cps)
     {
         vCameras = cps;
     }
 
-    CameraThread::CameraThread(std::map<int, pCamera> cps)
+    CameraThread::CameraThread(const std::map<int, pCamera>& cps)
     {
         //使用这个那么没有办法保证一个vCameras的顺序等于index
         for (auto& kvp : cps) {

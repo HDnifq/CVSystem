@@ -84,10 +84,10 @@ namespace dxlib {
         /// <summary> 多个相机处理器的处理对象,每一个相机开一个VideoProcessor. </summary>
         CameraThread* cameraThread = nullptr;
 
-        /// <summary> 一次只使能一个处理. </summary>
+        /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
         std::vector<pFrameProc> vProc;
 
-        /// <summary> 当前激活的处理Index. </summary>
+        /// <summary> (直接暴露出来使用)当前激活的处理Index. </summary>
         uint activeProcIndex = 0;
 
         /// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
@@ -117,16 +117,16 @@ namespace dxlib {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         /// 打开相机会启动线程函数,目前一般尝试创建一个线程来计算,
-        /// 这里需要做一个预先的激活proc的设置，以便第一帧运行就能正确的执行到想要的proc.
+        /// 这里需要做一个预先的激活proc的设置（activeIndex赋值）,以便第一帧运行就能正确的执行到想要的proc.
         /// 如果相机打开失败的话那么就不会创建分析线程。采图线程也不会创建了。
         /// </summary>
         ///
         /// <remarks> Dx, 2018/2/1. </remarks>
         ///
-        /// <param name="activeIndex">   设置当前激活的Proc. </param>
-        /// <param name="isStartThread"> (Optional)为true则创建线程，为false则需要手动的运行run函数. </param>
+        /// <param name="activeIndex">   (Optional)设置当前激活的Proc. </param>
+        /// <param name="isStartThread"> (Optional)为true则创建计算线程，为false则需要手动的运行run函数. </param>
         ///-------------------------------------------------------------------------------------------------
-        void openCamera(uint activeIndex, bool isStartThread = true);
+        void openCamera(uint activeIndex = 0, bool isStartThread = true);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 关闭所有相机. </summary>

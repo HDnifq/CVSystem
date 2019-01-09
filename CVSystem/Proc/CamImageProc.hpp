@@ -3,6 +3,7 @@
 #include "../Proc/MultiCamera.h"
 #include "../Common/Common.h"
 #include "../Common/FileHelper.h"
+#include "CameraManger.h"
 
 namespace dxlib {
 
@@ -23,7 +24,7 @@ namespace dxlib {
 
         }
 
-        bool isRemap = true;
+        bool isRemap = false;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 处理函数接口. </summary>
