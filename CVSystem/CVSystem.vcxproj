@@ -166,6 +166,7 @@
     <ClInclude Include="Data\Scene.hpp" />
     <ClInclude Include="dlog\dlog.h" />
     <ClInclude Include="Proc\Camera.h" />
+    <ClInclude Include="Proc\CameraManger.h" />
     <ClInclude Include="Proc\CameraThread.h" />
     <ClInclude Include="Proc\CamImageProc.hpp" />
     <ClInclude Include="Proc\DevicesHelper.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Data\Debug.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Proc\Camera.cpp" />
+    <ClCompile Include="Proc\CameraManger.cpp" />
     <ClCompile Include="Proc\CameraThread.cpp" />
     <ClCompile Include="Proc\DevicesHelper.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />

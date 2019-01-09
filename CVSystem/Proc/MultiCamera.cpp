@@ -7,7 +7,7 @@
 #include "../Common/Common.h"
 #include "../Common/CoolTime.hpp"
 #include "../dlog/dlog.h"
-#include "Camera.h"
+#include "CameraManger.h"
 
 //都是c11的
 #include <Chrono>

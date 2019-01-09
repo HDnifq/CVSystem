@@ -53,8 +53,6 @@ namespace dxlib {
         //构造成员
         _m = new Fields();
 
-
-
         _m->diagram = cv::Mat(height, width, CV_8UC3, cv::Scalar(0, 0, 0));//黑色背景
         this->k = k;
         this->width = width;
@@ -71,6 +69,11 @@ namespace dxlib {
 
         setImageROI(cv::Size(640, 360));
         clear();
+    }
+
+    Draw::~Draw()
+    {
+        delete _m;
     }
 
     Draw* Draw::GetInst()

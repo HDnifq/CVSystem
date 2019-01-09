@@ -6,6 +6,8 @@
 #include <Eigen/Geometry>
 #include <unsupported/Eigen/EulerAngles>
 #include <opencv2/core/eigen.hpp>
+#include <codecvt>
+#include <locale>
 
 namespace dxlib {
 
@@ -171,6 +173,9 @@ namespace dxlib {
                 web::json::value jv;
                 toJson(jv);
                 utility::ofstream_t out(filePath, std::ios::out | std::ios::binary);
+                //这里只能new一个，不能完美释放（官方用法就是这样 http://www.cplusplus.com/reference/codecvt/codecvt_utf8/ ）
+                const std::locale utf8_locale = std::locale(std::locale(), new std::codecvt_utf8<wchar_t>());
+                out.imbue(utf8_locale);
                 jv.serialize(out);
                 out.flush();
                 out.close();
