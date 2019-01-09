@@ -37,6 +37,12 @@ namespace dxlib {
     void MultiCamera::run()
     {
         std::unique_lock<std::mutex> lck(mtx_mt);
+        while (true) {
+            if (cameraThread->isThreadWaitingStart.load() == true) {
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));//等待相机线程进入了线程函数并且在等待了
+        }
         cv_ct.notify_all();//一声令下小线程们同时开始工作
 
         while (!isStop.load()) {

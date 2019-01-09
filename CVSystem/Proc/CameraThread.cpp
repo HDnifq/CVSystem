@@ -50,11 +50,15 @@ namespace dxlib {
     void CameraThread::dowork()
     {
         //等待外面主线程一声令下大家一起开始采
-        if(mtx_ct != nullptr) {         //如果有设置过才等
-            LogI("CameraThread.dowork():线程id= %d 在等待一声令下开始", std::this_thread::get_id());
+        if(mtx_ct != nullptr) { //如果有设置过锁才等
+            LogI("CameraThread.dowork():Camera线程id= %d 在等待外面启动通知...", std::this_thread::get_id());
             std::unique_lock<std::mutex> lck(*mtx_ct);
+
+            isThreadWaitingStart = true;//标记线程是否在工作（放在这里防止外面过早通知里面解锁）
             cv_ct->wait(lck);
         }
+        isThreadWaitingStart = false;//已经开始工作了
+        LogI("CameraThread.dowork():收到通知,线程启动啦,开始采图!");
 
         //重置然后开始
         reset();
@@ -136,6 +140,7 @@ namespace dxlib {
                 isSuccess = false;
             }
         }
+        //如果相机都打开了，才会去启动线程
         if(isSuccess || isRunInError) {//通常来说不在打不开相机的情况下工作
             if (!isSuccess) {
                 LogW("CameraThread.open():有相机打开失败，但是设置了仍然启动采图线程！");
@@ -145,6 +150,8 @@ namespace dxlib {
             this->isStop.exchange(false);//标记启动
             this->isGrab.exchange(true);//标记采图
             this->_thread = new std::thread(&CameraThread::dowork, this);
+
+
         } else {
             LogW("CameraThread.open():相机打开失败，isRunInError定义为false，所以未启动采图线程！");
         }

@@ -88,6 +88,9 @@ namespace dxlib {
         /// <summary> 是否进行采图,如果为false则只占用相机不进行采图（由外部操作）. </summary>
         std::atomic_bool isGrab = true;
 
+        /// <summary> 是否线程正在等待开始工作（由内部标记）. </summary>
+        std::atomic_bool isThreadWaitingStart = false;
+
         /// <summary> 已采集的帧数. </summary>
         long fnumber = 0;
 
