@@ -1,0 +1,117 @@
+﻿#include "Camera.h"
+#include "../dlog/dlog.h"
+#include "../Common/Common.h"
+
+
+namespace dxlib {
+
+    Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBrightness)
+        : camIndex(aCamIndex), devName(aDevName), size(aSize), brightness(aBrightness)
+    {
+        devNameA = ws2s(aDevName);
+    }
+
+    void Camera::setBrightness(int aBrightness, bool isForce )
+    {
+        if (aBrightness != this->brightness || isForce) {
+            if (!capture->isOpened()) {
+                LogW("Camera.setBrightness():设置相机%d亮度失败,相机未打开!", camIndex);
+                return;
+            }
+            LogI("Camera.setBrightness():设置相机%d亮度为%d", camIndex, aBrightness);
+            if (! capture->set(CV_CAP_PROP_BRIGHTNESS, aBrightness)) {
+                LogW("Camera.setBrightness():设置亮度BRIGHTNESS失败.");
+            }
+            this->brightness = aBrightness;
+        }
+    }
+
+    void Camera::initUndistortRectifyMap()
+    {
+        cv::initUndistortRectifyMap(this->camMatrix, this->distCoeffs, this->R, this->P, this->size, CV_16SC2, this->rmap1, this->rmap2);
+    }
+
+    CameraManger::CameraManger()
+    {
+    }
+
+    CameraManger::~CameraManger()
+    {
+    }
+
+    CameraManger* CameraManger::m_pInstance = NULL;
+
+    CameraManger* CameraManger::GetInst()
+    {
+        if (m_pInstance == NULL)
+            m_pInstance = new CameraManger();
+        return m_pInstance;
+    }
+
+    void CameraManger::add(pCamera cp)
+    {
+        camMap[cp->camIndex] = pCamera(cp);//在这里生成智能指针
+    }
+
+    void CameraManger::clear()
+    {
+        this->camMap.clear();
+        this->vStereo.clear();
+    }
+
+    ////目前未使用
+    //void CameraManger::load(std::string filePath)
+    //{
+    //    cv::FileStorage fsr(filePath, cv::FileStorage::READ);
+    //    if (camMap.find(0) != camMap.end()) {//因为目前倒过来了
+    //        fsr["M2"] >> camMap[0]->camMatrix;
+    //        fsr["D2"] >> camMap[0]->distCoeffs;
+    //        fsr["R2"] >> camMap[0]->R;
+    //        fsr["P2"] >> camMap[0]->P;
+    //        initUndistortRectifyMap(camMap[0]);
+    //    }
+    //    if (camMap.find(1) != camMap.end()) {
+    //        fsr["M1"] >> camMap[1]->camMatrix;
+    //        fsr["D1"] >> camMap[1]->distCoeffs;
+    //        fsr["R1"] >> camMap[1]->R;
+    //        fsr["P1"] >> camMap[1]->P;
+    //        initUndistortRectifyMap(camMap[1]);
+    //    }
+    //    if (camMap.find(2) != camMap.end()) {
+    //        //复制一份参数
+    //        fsr["M2"] >> camMap[2]->camMatrix;
+    //        fsr["D2"] >> camMap[2]->distCoeffs;
+    //        fsr["R2"] >> camMap[2]->R;
+    //        fsr["P2"] >> camMap[2]->P;
+    //        initUndistortRectifyMap(camMap[2]);
+    //    }
+    //    if (camMap.find(3) != camMap.end()) {
+    //        //复制一份参数
+    //        fsr["M1"] >> camMap[3]->camMatrix;
+    //        fsr["D1"] >> camMap[3]->distCoeffs;
+    //        fsr["R1"] >> camMap[3]->R;
+    //        fsr["P1"] >> camMap[3]->P;
+    //        initUndistortRectifyMap(camMap[3]);
+    //    }
+    //    fsr.release();
+
+    //}
+
+    pStereoCamera CameraManger::getStereo(pCamera camera)
+    {
+        for (size_t i = 0; i < vStereo.size(); i++) {
+            if (vStereo[i]->camL == camera) {
+                return vStereo[i];
+            }
+            if (vStereo[i]->camR == camera) {
+                return vStereo[i];
+            }
+        }
+        return nullptr;
+    }
+
+    void CameraManger::initUndistortRectifyMap(pCamera& camera)
+    {
+        cv::initUndistortRectifyMap(camera->camMatrix, camera->distCoeffs, camera->R, camera->P, camera->size, CV_16SC2, camera->rmap1, camera->rmap2);
+    }
+}
