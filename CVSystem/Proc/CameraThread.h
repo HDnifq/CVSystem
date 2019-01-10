@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <opencv2/opencv.hpp>
-#include <memory>
+
 #include "Camera.h"
 #include "time.h"
 

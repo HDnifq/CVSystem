@@ -1,6 +1,7 @@
 ﻿#include "CameraThread.h"
 #include <Chrono>
 #include <boost/timer.hpp>
+#include <memory>
 #include "../Common/Common.h"
 #include "DevicesHelper.h"
 #include "../Common/concurrentqueue.h"

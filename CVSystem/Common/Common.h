@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <string>
-#include <locale.h>
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary> wstring2string. </summary>
