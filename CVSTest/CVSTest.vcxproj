@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraThreadTest.cpp" />
+    <ClCompile Include="CommonTest.cpp" />
     <ClCompile Include="DevicesHelperTest.cpp" />
     <ClCompile Include="DrawTest.cpp" />
     <ClCompile Include="FileHelperTest.cpp" />

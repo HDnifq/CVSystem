@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/Proc/CameraThread.h"
 #include "../CVSystem/CVSystem.h"
 
 using namespace dxlib;

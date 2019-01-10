@@ -1,10 +1,8 @@
 ﻿#include <string>
 #include <locale.h>
 #include "Common.h"
-#include <windows.h>
-#include <ShlObj.h> //SHGetSpecialFolderPath
 
-#include <boost/date_time/posix_time/posix_time.hpp>  
+#include <boost/date_time/posix_time/posix_time.hpp>
 //#define BOOST_DATE_TIME_SOURCE  //这个定义不知道有什么用
 
 ////这个脚本可能会报错 语言->符合模式 "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
@@ -18,9 +16,7 @@
 
 std::string ws2s(const std::wstring& ws)
 {
-    std::string curLocale = setlocale(LC_ALL, NULL); // curLocale = "C";
-
-    setlocale(LC_ALL, "chs");
+    std::string curLocale = setlocale(LC_ALL, "chs");
 
     const wchar_t* _Source = ws.c_str();
     size_t _Dsize = 2 * ws.size() + 1;
@@ -48,7 +44,7 @@ std::string ws2s(const std::wstring& ws)
 ///-------------------------------------------------------------------------------------------------
 std::wstring s2ws(const std::string& s)
 {
-    setlocale(LC_ALL, "chs");
+    std::string curLocale = setlocale(LC_ALL, "chs");
 
     const char* _Source = s.c_str();
     size_t _Dsize = s.size() + 1;
@@ -60,7 +56,7 @@ std::wstring s2ws(const std::string& s)
     std::wstring result = _Dest;
     delete[]_Dest;
 
-    setlocale(LC_ALL, "C");
+    setlocale(LC_ALL, curLocale.c_str());
     return result;
 }
 
@@ -87,28 +83,6 @@ std::string byte2str(const void* data, int length)
 }
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary>
-/// path = L"D:\\Work\\F3DSys\\F3DSystem",
-/// 它可以变成system32,所以一般应该使用下面的getModuleDir().
-/// </summary>
-///
-/// <remarks> Dx, 2018/1/11. </remarks>
-///
-/// <returns> The application directory. </returns>
-///-------------------------------------------------------------------------------------------------
-std::wstring getAppDirectory()
-{
-    std::wstring wstr;
-    unsigned long size = GetCurrentDirectory(0, NULL);
-    wchar_t* path = new wchar_t[size];
-    if (GetCurrentDirectory(size, path) != 0) {
-        wstr = path;
-    }
-    delete[] path;
-    return wstr;
-}
-
-///-------------------------------------------------------------------------------------------------
 /// <summary> 得到当前时间戳. </summary>
 ///
 /// <remarks> Dx, 2018/12/14. </remarks>
@@ -118,9 +92,9 @@ std::wstring getAppDirectory()
 std::string secTimeStr()
 {
     std::string strTime = boost::posix_time::to_iso_string(\
-        boost::posix_time::second_clock::local_time());
+                          boost::posix_time::second_clock::local_time());
 
-    // 这时候strTime里存放时间的格式是YYYYMMDDTHHMMSS，日期和时间用大写字母T隔开了  
+    // 这时候strTime里存放时间的格式是YYYYMMDDTHHMMSS，日期和时间用大写字母T隔开了
 
     size_t pos = strTime.find('T');
     strTime.replace(pos, 1, std::string("-"));

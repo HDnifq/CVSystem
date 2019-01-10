@@ -1,4 +1,7 @@
 ﻿#pragma once
+#ifndef _DXLIB_COMMON_H_
+#define _DXLIB_COMMON_H_
+
 #include <string>
 
 ///-------------------------------------------------------------------------------------------------
@@ -33,19 +36,7 @@ std::wstring s2ws(const std::string& s);
 ///
 /// <returns> 十六进制字符串. </returns>
 ///-------------------------------------------------------------------------------------------------
-std::string byte2str(const void*  data, int length);
-
-///-------------------------------------------------------------------------------------------------
-/// <summary>
-/// path = L"D:\\Work\\F3DSys\\F3DSystem",
-/// 它可以变成system32,所以一般应该使用下面的getModuleDir().
-/// </summary>
-///
-/// <remarks> Dx, 2018/1/11. </remarks>
-///
-/// <returns> The application directory. </returns>
-///-------------------------------------------------------------------------------------------------
-std::wstring getAppDirectory();
+std::string byte2str(const void* data, int length);
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary> 得到当前时间戳. </summary>
@@ -55,3 +46,5 @@ std::wstring getAppDirectory();
 /// <returns> The time. </returns>
 ///-------------------------------------------------------------------------------------------------
 std::string secTimeStr();
+
+#endif // !_DXLIB_COMMON_H_

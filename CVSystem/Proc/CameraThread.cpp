@@ -56,6 +56,7 @@ namespace dxlib {
     CameraThread::~CameraThread()
     {
         close();
+        delete this->queueData;
     }
 
     void CameraThread::dowork()
@@ -74,7 +75,6 @@ namespace dxlib {
             LogI("CameraThread.dowork():没有设置等待直接启动啦,开始采图!");
         }
         isThreadWaitingStart = false;//已经开始工作了
-
 
         //重置然后开始
         reset();
@@ -149,7 +149,7 @@ namespace dxlib {
 
         bool isSuccess = true;
         for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
-            LogI("CameraThread.open():尝试打开相机%s...", ws2s(vCameras[camIndex]->devName));
+            LogI("CameraThread.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
             boost::timer t;
             if (openCamera(vCameras[camIndex])) {
                 double costTime = t.elapsed();
@@ -158,7 +158,7 @@ namespace dxlib {
                 cv::Mat img;
                 vCameras[camIndex]->capture->read(img);
                 //this->_thread->detach();
-                LogI("CameraThread.open():成功打开一个相机%s，耗时%.3f秒", ws2s(vCameras[camIndex]->devName), costTime);//打开相机大致耗时0.2s
+                LogI("CameraThread.open():成功打开一个相机%s，耗时%.2f秒", vCameras[camIndex]->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
             } else {
                 isSuccess = false;
             }
@@ -193,7 +193,7 @@ namespace dxlib {
             delete this->_thread;
             this->_thread = nullptr;
 
-            LogI("CameraThread.close():采图线程已经停止%s！");
+            LogI("CameraThread.close():采图线程已经停止！");
         }
 
         for (size_t i = 0; i < vCameras.size(); i++) {

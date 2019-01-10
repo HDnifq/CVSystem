@@ -182,7 +182,6 @@
     <ClCompile Include="CVSystem.cpp" />
     <ClCompile Include="Data\Debug.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Proc\Camera.cpp" />
     <ClCompile Include="Proc\CameraManger.cpp" />
     <ClCompile Include="Proc\CameraThread.cpp" />

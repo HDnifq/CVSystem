@@ -38,7 +38,7 @@ namespace dxlib {
 
             ~GameObj() {}
 
-            /// <summary> 物体名字(不能使用汉字会引起json失败). </summary>
+            /// <summary> 物体名字. </summary>
             std::wstring name;
 
             /// <summary> 物体类型. </summary>
@@ -69,11 +69,11 @@ namespace dxlib {
 
             Line() {}
 
-            Line(std::wstring name, int type = 0) :
+            Line(std::wstring name, int type = 0):
                 name(name),
                 type(type) {}
 
-            Line(std::wstring name, int type, cv::Vec3d position0, cv::Vec3d position1) :
+            Line(std::wstring name, int type, cv::Vec3d position0, cv::Vec3d position1):
                 name(name),
                 type(type),
                 pos0(position0),
@@ -81,7 +81,7 @@ namespace dxlib {
 
             ~Line() { }
 
-            /// <summary> 物体名字(不能使用汉字会引起json失败). </summary>
+            /// <summary> 物体名字. </summary>
             std::wstring name;
 
             /// <summary> 物体类型. </summary>
@@ -119,7 +119,6 @@ namespace dxlib {
 
             /// <summary> 所有物体的列表. </summary>
             std::vector<GameObj> vGameObj;
-
 
             /// <summary> 所有绘制线的列表. </summary>
             std::vector<Line> vLine;

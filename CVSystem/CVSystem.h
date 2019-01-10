@@ -1,4 +1,6 @@
 ﻿#pragma once
+#ifndef _CVSYSTEM_H_
+#define _CVSYSTEM_H_
 
 #include "./dlog/dlog.h"
 
@@ -15,3 +17,5 @@
 #include "./Proc/CameraThread.h"
 #include "./Proc/DevicesHelper.h"
 #include "./Proc/MultiCamera.h"
+
+#endif // !_CVSYSTEM_H_

@@ -33,8 +33,9 @@ namespace dxlib {
     ///
     /// <remarks> Dx, 2018/11/14. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    struct CameraImage
+    class CameraImage
     {
+    public:
         /// <summary> 相机帧序号. </summary>
         int fnum = 0;
 
@@ -58,7 +59,7 @@ namespace dxlib {
         ///
         /// <returns> 如果没有找到那么就返回null. </returns>
         ///-------------------------------------------------------------------------------------------------
-        ImageItem* getItem(int camIndex)
+        const ImageItem* getItem(int camIndex) const
         {
             //如果vector的index是能够对应上的，那么就直接返回这一项
             if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
@@ -136,7 +137,7 @@ namespace dxlib {
         struct QueueData;
 
         /// <summary> 队列数据. </summary>
-        QueueData* queueData;
+        QueueData* queueData = nullptr;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 尝试从队列中取数据. </summary>
