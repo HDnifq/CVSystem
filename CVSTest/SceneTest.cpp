@@ -1,6 +1,10 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/Data/Scene.hpp"
+#include "../CVSystem/Data/Scene.h"
+#ifndef _NO_ASYNCRTIMP
+#define _NO_ASYNCRTIMP
+#endif // !_NO_ASYNCRTIMP
+#include "cpprest/json.h"
 #include <codecvt>
 #include <locale>
 
@@ -46,10 +50,10 @@ TEST(Scene, GameObj)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(U("a"), 1, Eigen::Vector3d(1, 2, 3), Eigen::Quaterniond(0, 0, 0, 1)));
-    scene.vGameObj.push_back(GameObj(U("b"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Quaterniond(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("a"), 1, cv::Vec3d(1, 2, 3), cv::Vec4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("b"), 2, cv::Vec3d(2, 2, 3), cv::Vec4d(0, 0, 0, 1)));
 
-    scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Quaterniond(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("中文1"), 2, cv::Vec3d(2, 2, 3), cv::Vec4d(0, 0, 0, 1)));
 
     scene.save("test1.json");
 

@@ -3,17 +3,38 @@
 #include <boost/timer.hpp>
 #include "../Common/Common.h"
 #include "DevicesHelper.h"
+#include "../Common/concurrentqueue.h"
+#include "../Common/blockingconcurrentqueue.h"
 
 namespace dxlib {
 
+    #pragma region 队列实现
+
+    struct CameraThread::QueueData
+    {
+        /// <summary> 采集的帧队列. </summary>
+        moodycamel::ConcurrentQueue<pCameraImage> frameQueue;
+    };
+
+    bool CameraThread::try_dequeue(pCameraImage& cimg)
+    {
+        return this->queueData->frameQueue.try_dequeue(cimg);
+    }
+
+    #pragma endregion
+
     CameraThread::CameraThread(const pCamera& cp)
     {
+        this->queueData = new QueueData();
+
         if (!cp->isVirtualCamera)
             vCameras.push_back(cp);
     }
 
     CameraThread::CameraThread(const std::vector<pCamera>& cps)
     {
+        this->queueData = new QueueData();
+
         for (auto& item : cps) {
             if (!item->isVirtualCamera)
                 vCameras.push_back(item);
@@ -22,6 +43,8 @@ namespace dxlib {
 
     CameraThread::CameraThread(const std::map<int, pCamera>& cps)
     {
+        this->queueData = new QueueData();
+
         //使用这个那么没有办法保证一个vCameras的顺序等于index
         for (auto& kvp : cps) {
             if (!kvp.second->isVirtualCamera)
@@ -86,7 +109,7 @@ namespace dxlib {
                 }
 
                 cimg->costTime = (float)(clock() - cimg->startTime) / CLOCKS_PER_SEC;//计算一个采图消耗时间
-                frameQueue.enqueue(cimg);
+                queueData->frameQueue.enqueue(cimg);
 
                 limitQueue(this->queueMaxLen);
                 updateFPS();
@@ -292,18 +315,18 @@ namespace dxlib {
         _lastfnumber = 0;//记录现在最近的帧数
 
         pCameraImage head;
-        while (frameQueue.try_dequeue(head)) {
+        while (queueData->frameQueue.try_dequeue(head)) {
         }
     }
 
     void CameraThread::limitQueue(uint maxlen)
     {
-        if (frameQueue.size_approx() > 2) {
+        if (queueData->frameQueue.size_approx() > 2) {
             //LogI("CameraThread.limitQueue():处理速度有点没跟上... QueueLen=%d", frameQueue.size_approx());
         }
-        while (frameQueue.size_approx() > maxlen) {
+        while (queueData->frameQueue.size_approx() > maxlen) {
             pCameraImage head;
-            frameQueue.try_dequeue(head);
+            queueData->frameQueue.try_dequeue(head);
             LogD("CameraThread.limitQueue():进行了一帧的丢弃！");
         }
     }

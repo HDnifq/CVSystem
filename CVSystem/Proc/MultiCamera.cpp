@@ -76,7 +76,7 @@ namespace dxlib {
                 LogD("MultiCamera.run():在队列里提取图片！");
                 //提取图片组帧
                 pCameraImage cimg;
-                if (cameraThread->frameQueue.try_dequeue(cimg)) {
+                if (cameraThread->try_dequeue(cimg)) {
                     //如果能提取出图片来
                     LogD("MultiCamera.run():提取%d个相机图像 fnum = %d , costTime=%2f", cimg->vImage.size(), cimg->fnum, cimg->costTime);
                     fps = fpsCalc.update(++frameCount);

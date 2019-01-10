@@ -8,7 +8,7 @@
 #include "./Common/FileHelper.h"
 #include "./Common/FPSCalc.hpp"
 
-#include "./Data/Scene.hpp"
+#include "./Data/Scene.h"
 
 #include "./Proc/Event.h"
 #include "./Proc/CameraManger.h"

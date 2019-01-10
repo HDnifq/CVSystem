@@ -75,7 +75,7 @@
     <ClInclude Include="Proc\Event.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Data\Scene.hpp">
+    <ClInclude Include="Data\Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -117,6 +117,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\Event.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

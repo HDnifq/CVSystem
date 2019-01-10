@@ -10,8 +10,6 @@
 #include <atomic>
 #include <condition_variable>
 
-#include "../Common/concurrentqueue.h"
-#include "../Common/blockingconcurrentqueue.h"
 #include "../dlog/dlog.h"
 
 namespace dxlib {
@@ -132,8 +130,28 @@ namespace dxlib {
         /// <summary> 小线程们通知外面的mt里的综合分析线程的. </summary>
         std::condition_variable* cv_mt = nullptr;
 
-        /// <summary> 采集的帧队列. </summary>
-        moodycamel::ConcurrentQueue<pCameraImage> frameQueue;
+        #pragma region 队列
+
+        /// <summary> 队列类型. </summary>
+        struct QueueData;
+
+        /// <summary> 队列数据. </summary>
+        QueueData* queueData;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 尝试从队列中取数据. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/11. </remarks>
+        ///
+        /// <param name="cimg"> [in,out] The cimg. </param>
+        ///
+        /// <returns>
+        /// True if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool try_dequeue(pCameraImage& cimg);
+
+        #pragma endregion
 
         /// <summary> 帧队列最大缓存帧数. </summary>
         uint queueMaxLen = 8;
