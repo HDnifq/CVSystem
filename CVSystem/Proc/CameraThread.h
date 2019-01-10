@@ -12,6 +12,7 @@
 
 #include "../Common/concurrentqueue.h"
 #include "../Common/blockingconcurrentqueue.h"
+#include "../dlog/dlog.h"
 
 namespace dxlib {
 
@@ -59,7 +60,22 @@ namespace dxlib {
         ///
         /// <returns> 如果没有找到那么就返回null. </returns>
         ///-------------------------------------------------------------------------------------------------
-        ImageItem* getItem(int camIndex);
+        ImageItem* getItem(int camIndex)
+        {
+            //如果vector的index是能够对应上的，那么就直接返回这一项
+            if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
+                return &vImage[camIndex];
+            }
+
+            //如果对应不上那么只能遍历搜索
+            for (size_t i = 0; i < vImage.size(); i++) {
+                if (vImage[i].camera->camIndex == camIndex) {
+                    return &vImage[i];
+                }
+            }
+            LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
+            return nullptr;
+        }
 
     };
     /// <summary>定义这个智能指针类型. </summary>
@@ -89,7 +105,14 @@ namespace dxlib {
         std::atomic_bool isGrab = true;
 
         /// <summary> 是否存在采图线程. </summary>
-        bool isHasThread();
+        bool isHasThread()
+        {
+            if (_thread != nullptr) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         /// <summary> 采图线程是否正在工作（由内部标记）. </summary>
         std::atomic_bool isThreadRunning = false;

@@ -1,28 +1,10 @@
 ﻿#include "CameraThread.h"
 #include <Chrono>
 #include <boost/timer.hpp>
-#include "../dlog/dlog.h"
 #include "../Common/Common.h"
 #include "DevicesHelper.h"
 
 namespace dxlib {
-
-    ImageItem* CameraImage::getItem(int camIndex)
-    {
-        //如果vector的index是能够对应上的，那么就直接返回这一项
-        if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
-            return &vImage[camIndex];
-        }
-
-        //如果对应不上那么只能遍历搜索
-        for (size_t i = 0; i < vImage.size(); i++) {
-            if (vImage[i].camera->camIndex == camIndex) {
-                return &vImage[i];
-            }
-        }
-        LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
-        return nullptr;
-    }
 
     CameraThread::CameraThread(const pCamera& cp)
     {
@@ -50,15 +32,6 @@ namespace dxlib {
     CameraThread::~CameraThread()
     {
         close();
-    }
-
-    bool CameraThread::isHasThread()
-    {
-        if (_thread != nullptr) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     void CameraThread::dowork()

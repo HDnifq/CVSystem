@@ -15,7 +15,12 @@ namespace dxlib {
         ~Event();
 
         /// <summary> 单例. </summary>
-        static Event* GetInst();
+        static Event* GetInst()
+        {
+            if (m_pInstance == NULL)
+                m_pInstance = new Event();
+            return m_pInstance;
+        }
 
         /// <summary>
         /// 当前opencv界面来的待处理的key值，如果无按键那么为-1.

@@ -14,7 +14,12 @@ namespace dxlib {
         CameraManger();
         ~CameraManger();
 
-        static CameraManger* GetInst();
+        static CameraManger* GetInst()
+        {
+            if (m_pInstance == NULL)
+                m_pInstance = new CameraManger();
+            return m_pInstance;
+        }
 
         /// <summary> 所有相机的map，以camIndex为key. </summary>
         std::map<int, pCamera> camMap;

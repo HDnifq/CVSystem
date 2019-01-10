@@ -28,12 +28,6 @@ namespace dxlib {
 
     MultiCamera* MultiCamera::m_pInstance = NULL;
 
-    MultiCamera* MultiCamera::GetInst()
-    {
-        if (m_pInstance == NULL) m_pInstance = new MultiCamera();
-        return m_pInstance;
-    }
-
     //线程函数
     void MultiCamera::run()
     {

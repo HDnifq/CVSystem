@@ -12,13 +12,6 @@ namespace dxlib {
 
     CameraManger* CameraManger::m_pInstance = NULL;
 
-    CameraManger* CameraManger::GetInst()
-    {
-        if (m_pInstance == NULL)
-            m_pInstance = new CameraManger();
-        return m_pInstance;
-    }
-
     void CameraManger::add(const pCamera& cp, bool isVirtualCamera)
     {
         camMap[cp->camIndex] = cp;

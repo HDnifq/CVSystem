@@ -55,7 +55,12 @@ namespace dxlib {
 
         ~MultiCamera();
 
-        static MultiCamera* GetInst();
+        static MultiCamera* GetInst()
+        {
+            if (m_pInstance == NULL)
+                m_pInstance = new MultiCamera();
+            return m_pInstance;
+        }
 
         ///// <summary> 是否进入睡眠模式，在睡眠模式下不取图，不处理. </summary> //由于处理线程受采图线程供图处理，所以这里睡眠不在这里可以控制
         //bool isSleep = false;

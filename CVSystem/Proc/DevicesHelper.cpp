@@ -47,13 +47,6 @@ namespace dxlib {
         delete devList;
     }
 
-    DevicesHelper* DevicesHelper::GetInst()
-    {
-        if (m_pInstance == NULL)  //判断是否第一次调用
-            m_pInstance = new DevicesHelper();
-        return m_pInstance;
-    }
-
     bool DevicesHelper::comInit()
     {
         HRESULT hr = NOERROR;
