@@ -69,13 +69,13 @@
     <ClInclude Include="Data\Debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Data\Scene.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Proc\CameraManger.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Proc\Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Scene.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

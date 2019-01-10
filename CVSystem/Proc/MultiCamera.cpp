@@ -191,6 +191,16 @@ namespace dxlib {
         }
     }
 
+    void MultiCamera::addProc(const pFrameProc& proc)
+    {
+        this->vProc.push_back(proc);
+    }
+
+    void MultiCamera::addProc(FrameProc* proc)
+    {
+        this->vProc.push_back(pFrameProc(proc));
+    }
+
     void MultiCamera::setActiveProc(uint index)
     {
         //这个函数现在做了修改不再由外部线程去执行enable和disable
