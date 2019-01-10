@@ -26,19 +26,24 @@ namespace dxlib {
 
     CameraThread::CameraThread(const pCamera& cp)
     {
-        vCameras.push_back(cp);
+        if (!cp->isVirtualCamera)
+            vCameras.push_back(cp);
     }
 
     CameraThread::CameraThread(const std::vector<pCamera>& cps)
     {
-        vCameras = cps;
+        for (auto& item : cps) {
+            if (!item->isVirtualCamera)
+                vCameras.push_back(item);
+        }
     }
 
     CameraThread::CameraThread(const std::map<int, pCamera>& cps)
     {
         //使用这个那么没有办法保证一个vCameras的顺序等于index
         for (auto& kvp : cps) {
-            vCameras.push_back(kvp.second);
+            if (!kvp.second->isVirtualCamera)
+                vCameras.push_back(kvp.second);
         }
     }
 
@@ -47,18 +52,32 @@ namespace dxlib {
         close();
     }
 
+    bool CameraThread::isHasThread()
+    {
+        if (_thread != nullptr) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     void CameraThread::dowork()
     {
+        isThreadRunning = true;
+
         //等待外面主线程一声令下大家一起开始采
         if(mtx_ct != nullptr) { //如果有设置过锁才等
-            LogI("CameraThread.dowork():Camera线程id= %d 在等待外面启动通知...", std::this_thread::get_id());
             std::unique_lock<std::mutex> lck(*mtx_ct);
 
+            LogI("CameraThread.dowork():Camera线程id= %d 在等待外面启动通知嗯...", std::this_thread::get_id());
             isThreadWaitingStart = true;//标记线程是否在工作（放在这里防止外面过早通知里面解锁）
             cv_ct->wait(lck);
+            LogI("CameraThread.dowork():收到通知,线程启动啦,开始采图!");
+        } else {
+            LogI("CameraThread.dowork():没有设置等待直接启动啦,开始采图!");
         }
         isThreadWaitingStart = false;//已经开始工作了
-        LogI("CameraThread.dowork():收到通知,线程启动啦,开始采图!");
+
 
         //重置然后开始
         reset();
@@ -116,6 +135,8 @@ namespace dxlib {
                     cv_mt->notify_one();
             }
         }
+
+        isThreadRunning = false;
     }
 
     bool CameraThread::open(bool isRunInError)
@@ -124,6 +145,11 @@ namespace dxlib {
             LogW("CameraThread.open():重复打开相机，采图线程正在工作，不做操作直接返回！");
             return false;
         }
+        if (vCameras.size() == 0) {
+            LogW("CameraThread.open():事先没有录入有效的相机（vCameras.size()=0），不做操作直接返回！");
+            return false;
+        }
+
         bool isSuccess = true;
         for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
             LogI("CameraThread.open():尝试打开相机%s...", ws2s(vCameras[camIndex]->devName));

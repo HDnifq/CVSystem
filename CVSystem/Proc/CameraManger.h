@@ -34,9 +34,10 @@ namespace dxlib {
         ///
         /// <remarks> Dx, 2018/11/29. </remarks>
         ///
-        /// <param name="cp"> 要添加的相机. </param>
+        /// <param name="cp">              要添加的相机. </param>
+        /// <param name="isVirtualCamera"> (Optional) 是否这是一个虚拟相机. </param>
         ///-------------------------------------------------------------------------------------------------
-        void add(pCamera cp);
+        void add(const pCamera& cp,bool isVirtualCamera = false);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 从文件里载入参数，这个函数将来应该做更灵活的操作. </summary>

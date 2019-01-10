@@ -8,6 +8,7 @@
 #include "../Common/CoolTime.hpp"
 #include "../dlog/dlog.h"
 #include "CameraManger.h"
+#include "Event.h"
 
 //都是c11的
 #include <Chrono>
@@ -37,11 +38,13 @@ namespace dxlib {
     void MultiCamera::run()
     {
         std::unique_lock<std::mutex> lck(mtx_mt);
-        while (true) {
+        while (cameraThread->isHasThread()) {//如果存在采图线程
             if (cameraThread->isThreadWaitingStart.load() == true) {
                 break;
+            } else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));//等待相机线程进入了线程函数并且在等待了
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));//等待相机线程进入了线程函数并且在等待了
+
         }
         cv_ct.notify_all();//一声令下小线程们同时开始工作
 
@@ -92,7 +95,7 @@ namespace dxlib {
                     if (activeProcIndex < vProc.size()) {
                         int ckey = vProc[activeProcIndex]->process(cimg);
                         if (ckey != -1) {//如果有按键按下那么修改最近的按键值
-                            key.exchange(ckey);
+                            Event::GetInst()->cvKey.exchange(ckey);
                         }
                         //如果有定义按键事件响应那么就执行这个函数（一般不使用这个）
                         //if (procKeyEvent != nullptr) {
@@ -106,7 +109,7 @@ namespace dxlib {
         }
     }
 
-    void MultiCamera::openCamera(uint activeIndex, bool isStartThread)
+    bool MultiCamera::openCamera(uint activeIndex, OpenCameraType openType)
     {
         //根据当前录入的相机的东西里的设置来打开相机
         std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
@@ -116,21 +119,32 @@ namespace dxlib {
         cameraThread->mtx_ct = &mtx_ct;
         cameraThread->cv_ct = &cv_ct;
 
-        if (cameraThread->open()) { //如果成功打开了所有相机，启动计算
-            isStop.exchange(false);
+        isStop.exchange(false);
+        //设置当前的帧处理
+        this->setActiveProc(activeIndex);
 
-            //设置当前的帧处理
-            this->setActiveProc(activeIndex);
+        //如果成功打开了所有相机，启动计算
+        if (cameraThread->open()) {
 
-            if(isStartThread) {
-                LogI("MultiCamera.openCamera():相机打开完成！isStartThread=true,创建计算线程。");
+            if(openType == OpenCameraType::StartCalcThread ||
+                    openType == OpenCameraType::ForceStartCalcThread) {
+                LogI("MultiCamera.openCamera():相机打开完成！创建计算线程。");
                 //综合分析计算线程
                 this->_thread = new std::thread(&MultiCamera::run, this);
-            } else {
-                LogI("MultiCamera.openCamera():相机打开完成！isStartThread=false,不创建计算线程。");
+            } else if(openType == OpenCameraType::NotStartCalcThread) {
+                LogI("MultiCamera.openCamera():相机打开完成！但不创建计算线程。");
             }
+            return true;
+
         } else {
+            //如果相机打开失败
             LogE("MultiCamera.openCamera():相机打开失败！");
+            if (openType == OpenCameraType::ForceStartCalcThread) {
+                LogI("MultiCamera.openCamera():强制创建计算线程...");
+                //综合分析计算线程
+                this->_thread = new std::thread(&MultiCamera::run, this);
+            }
+            return false;
         }
     }
 
@@ -166,6 +180,9 @@ namespace dxlib {
         cameraThread->close();
         delete cameraThread;
 
+        //重置这些状态吧
+        frameCount = 0;
+        fps = 0;
         fpsCalc.reset();
 
         if (isDeleteProc) {

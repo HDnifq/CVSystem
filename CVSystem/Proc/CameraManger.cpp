@@ -19,9 +19,10 @@ namespace dxlib {
         return m_pInstance;
     }
 
-    void CameraManger::add(pCamera cp)
+    void CameraManger::add(const pCamera& cp, bool isVirtualCamera)
     {
-        camMap[cp->camIndex] = pCamera(cp);//在这里生成智能指针
+        camMap[cp->camIndex] = cp;
+        cp->isVirtualCamera = isVirtualCamera;
     }
 
     void CameraManger::clear()

@@ -22,8 +22,12 @@ TEST(CameraThread, new_delte)
         CameraThread* ct = new CameraThread(cp);
 
         EXPECT_TRUE(ct->open() == true);
+        EXPECT_TRUE(ct->isHasThread() == true);
         EXPECT_TRUE(cp->capture->isOpened() == true);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));//工作100秒
+        EXPECT_TRUE(ct->isThreadRunning.load() == true);
+        EXPECT_TRUE(ct->isThreadWaitingStart.load() == false);//它不用等待通知
+
         delete ct;
     }
 }

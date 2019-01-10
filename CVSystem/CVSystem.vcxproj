@@ -170,6 +170,7 @@
     <ClInclude Include="Proc\CameraThread.h" />
     <ClInclude Include="Proc\CamImageProc.hpp" />
     <ClInclude Include="Proc\DevicesHelper.h" />
+    <ClInclude Include="Proc\Event.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Proc\CameraManger.cpp" />
     <ClCompile Include="Proc\CameraThread.cpp" />
     <ClCompile Include="Proc\DevicesHelper.cpp" />
+    <ClCompile Include="Proc\Event.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -9,19 +9,22 @@ namespace dxlib {
         : camIndex(aCamIndex), devName(aDevName), size(aSize), brightness(aBrightness)
     {
         devNameA = ws2s(aDevName);
+        capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());//一开始也构造一个，简化判断
     }
 
-    void Camera::setBrightness(int aBrightness, bool isForce )
+    void Camera::setBrightness(int aBrightness, bool isForce)
     {
         if (aBrightness != this->brightness || isForce) {
-            if (!capture->isOpened()) {
-                LogW("Camera.setBrightness():设置相机%d亮度失败,相机未打开!", camIndex);
+
+            if (capture == nullptr || !capture->isOpened()) {
+                LogW("Camera.setBrightness():设置相机%s亮度失败,相机未打开!", devNameA.c_str());
                 return;
             }
             LogI("Camera.setBrightness():设置相机%d亮度为%d", camIndex, aBrightness);
-            if (! capture->set(CV_CAP_PROP_BRIGHTNESS, aBrightness)) {
+            if (!capture->set(CV_CAP_PROP_BRIGHTNESS, aBrightness)) {
                 LogW("Camera.setBrightness():设置亮度BRIGHTNESS失败.");
             }
+
             this->brightness = aBrightness;
         }
     }

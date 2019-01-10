@@ -75,6 +75,9 @@
     <ClInclude Include="Proc\CameraManger.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Proc\Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -111,6 +114,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\CameraManger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Proc\Event.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,7 +6,11 @@
 #include "./Common/CoolTime.hpp"
 #include "./Common/Draw.h"
 #include "./Common/FileHelper.h"
+#include "./Common/FPSCalc.hpp"
 
+#include "./Data/Scene.hpp"
+
+#include "./Proc/Event.h"
 #include "./Proc/CameraManger.h"
 #include "./Proc/CameraThread.h"
 #include "./Proc/DevicesHelper.h"

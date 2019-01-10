@@ -43,15 +43,6 @@ namespace dxlib {
     typedef std::shared_ptr<FrameProc> pFrameProc;
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// void*参数是MultiCamera对象本身，int参数是按键的key.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2017/7/18. </remarks>
-    ///-------------------------------------------------------------------------------------------------
-    typedef void(*MultiCameraKeyEvent)(void*, int);
-
-    ///-------------------------------------------------------------------------------------------------
     /// <summary> 多摄像机，它使用一个线程进行所有图像的处理工作. </summary>
     ///
     /// <remarks> Surface, 2018/11/16. </remarks>
@@ -66,14 +57,11 @@ namespace dxlib {
 
         static MultiCamera* GetInst();
 
-        /// <summary> 是否进入睡眠模式，在睡眠模式下不取图，不处理. </summary>
-        bool isSleep = false;
+        ///// <summary> 是否进入睡眠模式，在睡眠模式下不取图，不处理. </summary> //由于处理线程受采图线程供图处理，所以这里睡眠不在这里可以控制
+        //bool isSleep = false;
 
-        /// <summary> 是否进入深度睡眠模式，在深度睡眠模式下关闭摄像机. </summary>
-        bool isDeepSleep = false;
-
-        /// <summary> 构造函数上写的默认是1. </summary>
-        int delay = 1;
+        ///// <summary> 是否进入深度睡眠模式，在深度睡眠模式下关闭摄像机. </summary>
+        //bool isDeepSleep = false;
 
         /// <summary> 帧处理计数. </summary>
         uint frameCount = 0;
@@ -87,14 +75,14 @@ namespace dxlib {
         /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
         std::vector<pFrameProc> vProc;
 
-        /// <summary> (直接暴露出来使用)当前激活的处理Index. </summary>
+        /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
         uint activeProcIndex = 0;
 
-        /// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
+        ///// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
         //MultiCameraKeyEvent procKeyEvent = nullptr;
 
-        /// <summary> 当前待处理的key值，如果无按键那么为-1. </summary>
-        std::atomic_int key = -1;
+        ///// <summary> 当前待处理的key值，如果无按键那么为-1. (换成Event单例)</summary>
+        //std::atomic_int key = -1;
 
         /// <summary> 是否停止. </summary>
         std::atomic_bool isStop = false;
@@ -114,19 +102,35 @@ namespace dxlib {
         /// <summary> 其他人向自己的通知. </summary>
         std::condition_variable cv_mt;
 
+        /// <summary> openCamera函数的设置. </summary>
+        enum OpenCameraType
+        {
+            /// <summary> 如果打开相机成功就启动一个计算线程. </summary>
+            StartCalcThread,
+
+            /// <summary> 不启动计算线程，时候自己运行run()函数. </summary>
+            NotStartCalcThread,
+
+            /// <summary> 不管打开相机是否成功都强制启动一个计算线程. </summary>
+            ForceStartCalcThread,
+        };
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         /// 打开相机会启动线程函数,目前一般尝试创建一个线程来计算,
-        /// 这里需要做一个预先的激活proc的设置（activeIndex赋值）,以便第一帧运行就能正确的执行到想要的proc.
-        /// 如果相机打开失败的话那么就不会创建分析线程。采图线程也不会创建了。
+        /// 这里需要做一个预先的激活proc的设置（activeIndex赋值）,
+        /// 以便第一帧运行就能正确的执行到想要的proc.
+        /// 如果相机打开失败的话那么就不会创建分析线程。采图线程也不会创建了。.
         /// </summary>
         ///
         /// <remarks> Dx, 2018/2/1. </remarks>
         ///
-        /// <param name="activeIndex">   (Optional)设置当前激活的Proc. </param>
-        /// <param name="isStartThread"> (Optional)为true则创建计算线程，为false则需要手动的运行run函数. </param>
+        /// <param name="activeIndex"> (Optional)设置当前激活的Proc. </param>
+        /// <param name="openType">    (Optional)为true则创建计算线程，为false则需要手动的运行run函数. </param>
+        ///
+        /// <returns> 打开成功返回ture. </returns>
         ///-------------------------------------------------------------------------------------------------
-        void openCamera(uint activeIndex = 0, bool isStartThread = true);
+        bool openCamera(uint activeIndex = 0, OpenCameraType openType = OpenCameraType::StartCalcThread);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 关闭所有相机. </summary>

@@ -26,6 +26,12 @@ namespace dxlib {
         /// <summary> 非宽字符的设备名. </summary>
         std::string devNameA;
 
+        /// <summary>
+        /// 是否是一个不存在的虚拟的相机，仅仅只是利用这个录入参数，然后载入图像计算.
+        /// (即如果设置了它为true，那么MultiCamera在根据CameraManger里录入的内容来open相机的时候不会自动的打开它).
+        /// </summary>
+        bool isVirtualCamera = false;
+
         /// <summary> 设备的id顺序. </summary>
         int devID = -1;
 
@@ -64,9 +70,12 @@ namespace dxlib {
 
         #pragma region 工作状态
 
-        /// <summary> 相机的capture，这里基本应该是只读的. </summary>
+        /// <summary>
+        /// 相机的capture，这里基本应该是只读的。
+        /// (构造的时候就会实例化一个，另外在CameraThread的openCamera函数中也会重新new一个).
+        /// </summary>
         std::shared_ptr<cv::VideoCapture> capture = nullptr;
-
+        
         /// <summary> 这是相机采图的帧率. </summary>
         float FPS = 0;
 
