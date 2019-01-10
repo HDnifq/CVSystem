@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <math.h>
 #include <opencv2/opencv.hpp>
 
 namespace dxlib {
@@ -137,7 +136,7 @@ namespace dxlib {
 
             #pragma region obj<->json
             void toJson(void* jsonObj);
-           #pragma endregion
+            #pragma endregion
         private:
 
         };
