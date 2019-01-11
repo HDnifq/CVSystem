@@ -18,11 +18,15 @@ TEST(MultiCamera, open)
 
     CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
 
-    MultiCamera::GetInst()->openCamera();//打开相机
-    EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->capture->isOpened());
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
-    EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
-    MultiCamera::GetInst()->release();
+    for (size_t i = 0; i < 2; i++)
+    {
+        MultiCamera::GetInst()->openCamera();//打开相机
+        EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
+        EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
+        MultiCamera::GetInst()->release();
+    }
+
 }
 
 //创建虚拟相机的时候不会打开相机
@@ -33,7 +37,7 @@ TEST(MultiCamera, AddVirtualCamera)
 
     bool result = MultiCamera::GetInst()->openCamera();//打开相机
     EXPECT_FALSE(result);
-    EXPECT_FALSE(CameraManger::GetInst()->camMap[0]->capture->isOpened());
-    EXPECT_FALSE(CameraManger::GetInst()->camMap[1]->capture->isOpened());
+    EXPECT_FALSE(CameraManger::GetInst()->camMap[0]->isOpened());
+    EXPECT_FALSE(CameraManger::GetInst()->camMap[1]->isOpened());
     MultiCamera::GetInst()->release();
 }

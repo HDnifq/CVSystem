@@ -23,7 +23,7 @@ TEST(CameraThread, new_delte)
 
         EXPECT_TRUE(ct->open() == true);
         EXPECT_TRUE(ct->isHasThread() == true);
-        EXPECT_TRUE(cp->capture->isOpened() == true);
+        EXPECT_TRUE(cp->isOpened() == true);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));//工作100秒
         EXPECT_TRUE(ct->isThreadRunning.load() == true);
         EXPECT_TRUE(ct->isThreadWaitingStart.load() == false);//它不用等待通知
@@ -47,15 +47,15 @@ TEST(CameraThread, OpenClose)
         CameraThread* ct = new CameraThread(cp);
 
         EXPECT_TRUE(ct->open() == true);
-        EXPECT_TRUE(cp->capture->isOpened() == true);
+        EXPECT_TRUE(cp->isOpened() == true);
         EXPECT_TRUE(ct->open() == false);//重复打开，这里函数应该返回失败
-        EXPECT_TRUE(cp->capture->isOpened() == true);//但是cp里对相机状态的标记应该是打开的
+        EXPECT_TRUE(cp->isOpened() == true);//但是cp里对相机状态的标记应该是打开的
         EXPECT_TRUE(ct->open() == false);
-        EXPECT_TRUE(cp->capture->isOpened() == true);
+        EXPECT_TRUE(cp->isOpened() == true);
         EXPECT_TRUE(ct->open() == false);
-        EXPECT_TRUE(cp->capture->isOpened() == true);
+        EXPECT_TRUE(cp->isOpened() == true);
         ct->close();
-        EXPECT_TRUE(cp->capture->isOpened() == false);
+        EXPECT_TRUE(cp->capture == nullptr);
         ct->close();
         ct->close();
         ct->close();
@@ -84,10 +84,10 @@ TEST(CameraThread, OpenClose2)
         CameraThread* ct2 = new CameraThread(cp2);
 
         EXPECT_TRUE(ct->open() == true);
-        EXPECT_TRUE(cp->capture->isOpened() == true);
+        EXPECT_TRUE(cp->isOpened() == true);
 
         EXPECT_TRUE(ct2->open() == true);
-        EXPECT_TRUE(cp2->capture->isOpened() == true);
+        EXPECT_TRUE(cp2->isOpened() == true);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
         delete ct;

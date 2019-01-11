@@ -105,6 +105,11 @@ namespace dxlib {
 
     bool MultiCamera::openCamera(uint activeIndex, OpenCameraType openType)
     {
+        if (cameraThread != nullptr || this->_thread != nullptr) {
+            LogI("MultiCamera.openCamera():当前系统正在运行,需要先release(),函数直接返回...");
+            return false;
+        }
+
         //根据当前录入的相机的东西里的设置来打开相机
         std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
 
@@ -173,6 +178,7 @@ namespace dxlib {
         LogI("MultiCamera.release():释放采图线程...");
         cameraThread->close();
         delete cameraThread;
+        cameraThread = nullptr;
 
         //重置这些状态吧
         frameCount = 0;

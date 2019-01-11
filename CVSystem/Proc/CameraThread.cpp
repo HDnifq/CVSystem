@@ -55,7 +55,8 @@ namespace dxlib {
 
     CameraThread::~CameraThread()
     {
-        close();
+        if(this->_thread != nullptr)
+            close();
         delete this->queueData;
     }
 
@@ -80,11 +81,18 @@ namespace dxlib {
         reset();
 
         while (!isStop.load()) {
+
+            //执行完毕之后就更新相机的属性状态
+            for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
+                vCameras[camIndex]->applyCapProp();
+            }
+
             if(this->isGrab.load()) {//如果采图(用于睡眠模式的控制)
                 //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
                 ++fnumber;
 
-                pCameraImage cimg(new CameraImage());//一个结构体包含4个相机的图
+                //采图：一个结构体包含4个相机的图
+                pCameraImage cimg(new CameraImage());
                 cimg->fnum = fnumber;
                 cimg->startTime = clock();
                 cimg->vImage.resize(vCameras.size());//先直接创建算了
@@ -94,7 +102,7 @@ namespace dxlib {
                     try {
                         cimg->vImage[camIndex].camera = vCameras[camIndex].get();//标记camera来源
 
-                        if (!vCameras[camIndex]->capture->isOpened()) {
+                        if (!vCameras[camIndex]->isOpened()) {
                             LogE("CameraThread.dowork():cam %d 相机没有打开！", camIndex);
                             continue;
                         }
@@ -121,7 +129,7 @@ namespace dxlib {
 
                 //如果没有一个相机采到图
                 if (isHavaImg == false) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
 
             } else {//如果不采图就睡眠200ms
@@ -151,7 +159,8 @@ namespace dxlib {
         for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
             LogI("CameraThread.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
             boost::timer t;
-            if (openCamera(vCameras[camIndex])) {
+            //调用私有函数去打开相机
+            if (this->openCamera(vCameras[camIndex])) {
                 double costTime = t.elapsed();
 
                 //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
@@ -198,7 +207,9 @@ namespace dxlib {
 
         for (size_t i = 0; i < vCameras.size(); i++) {
             if(vCameras[i]->capture != nullptr) {
+                LogI("CameraThread.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
                 vCameras[i]->capture->release();
+                vCameras[i]->capture = nullptr;
             }
             if (vCameras[i] != nullptr) {
                 vCameras[i]->FPS = 0;
@@ -211,47 +222,31 @@ namespace dxlib {
 
     #pragma region 私有函数
 
-    bool CameraThread::openCamera(pCamera& cameraParam)
+    bool CameraThread::openCamera(pCamera& camera)
     {
         //如果存在VideoCapture那么就释放
-        if (cameraParam->capture != nullptr) {
-            cameraParam->capture->release();
+        if (camera->capture != nullptr) {
+            camera->capture->release();
         }
-        cameraParam->capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
+
+        camera->capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
+        camera->resetProp();
 
         //列出设备
         DevicesHelper::GetInst()->listDevices();
-        cameraParam->devID = DevicesHelper::GetInst()->getIndexWithName(cameraParam->devName);//记录devID
-        if (cameraParam->devID != -1) { //如果打开失败会返回-1
+        camera->devID = DevicesHelper::GetInst()->getIndexWithName(camera->devName);//记录devID
+        if (camera->devID != -1) { //如果打开失败会返回-1
 
             // In case a resource was already
             // associated with the VideoCapture instance
-            cameraParam->capture->release();
+            camera->capture->release();
 
             int count = 0;
             while (count < 3) { //重试3次
                 try {
                     //调用opencv的打开相机
-                    if (cameraParam->capture->open(cameraParam->devID)) {
-                        //打开成功的话就设置相机
-                        if (!cameraParam->capture->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'))) {
-                            LogE("CameraThread.openCamera(): Set FOURCC fail");
-                        }
-                        if (!cameraParam->capture->set(CV_CAP_PROP_BRIGHTNESS, cameraParam->brightness)) {
-                            LogE("CameraThread.openCamera(): Set BRIGHTNESS fail");
-                            //设置亮度是不能容忍失败的
-                            cameraParam->capture->release();//关闭相机
-                            continue;
-                        }
-                        if (!cameraParam->capture->set(CV_CAP_PROP_FPS, 50)) {
-                            LogE("CameraThread.openCamera(): Set FPS fail");
-                        }
-                        if (!cameraParam->capture->set(CV_CAP_PROP_FRAME_HEIGHT, cameraParam->size.height)) {
-                            LogE("CameraThread.openCamera(): 设置分辨率HEIGHT失败");
-                        }
-                        if (!cameraParam->capture->set(CV_CAP_PROP_FRAME_WIDTH, cameraParam->size.width)) {
-                            LogE("CameraThread.openCamera(): 设置分辨率WIDTH失败");
-                        }
+                    if (camera->capture->open(camera->devID)) {
+                        camera->applyCapProp();
                         break;//打开成功
                     } else {
                         LogW("CameraThread.openCamera():打开摄像头失败，重试。。。");
@@ -261,7 +256,7 @@ namespace dxlib {
                 }
                 count++;
 
-                cameraParam->capture->release();
+                camera->capture->release();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));//休眠1000ms
 
             }
@@ -271,17 +266,7 @@ namespace dxlib {
                 return false;
             }
 
-            int w = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_FRAME_WIDTH));
-            int h = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_FRAME_HEIGHT));
-            int fps = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_FPS));
-            int mode = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_MODE));
-            int ex = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_FOURCC));
-            char fourcc[] = { (char)(ex & 0XFF), (char)((ex & 0XFF00) >> 8), (char)((ex & 0XFF0000) >> 16), (char)((ex & 0XFF000000) >> 24), 0 };
-
-            int brightness = static_cast<int>(cameraParam->capture->get(CV_CAP_PROP_BRIGHTNESS));
-
-            LogI("CameraThread.openCamera()相机当前w =%d h=%d fps=%d mode=%d fourcc=%s brightness=%d", w, h, fps, mode, fourcc, brightness);
-
+            camera->outputProp();
             return true;
         } else {
             LogE("CameraThread.openCamera():列出摄像头失败，相机数为0!");
@@ -294,7 +279,7 @@ namespace dxlib {
         clock_t now = clock();
         double costTime = (double)(now - _lastTime) / CLOCKS_PER_SEC;
         if (costTime > 1.0) { //如果经过了1秒
-            //FPS写入到了cameraParam
+            //FPS写入到了camera
             for (size_t i = 0; i < vCameras.size(); i++) {
                 vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f;//这里把float截断后两位
             }
@@ -302,7 +287,7 @@ namespace dxlib {
             _lastTime = now; //记录现在的最近一次的时间
             _lastfnumber = fnumber;//记录现在最近的帧数
         } else if (costTime > 0.5) { //在0.5秒之后可以开始计算了
-            //FPS写入到了cameraParam
+            //FPS写入到了camera
             for (size_t i = 0; i < vCameras.size(); i++) {
                 vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f;//这里把float截断后两位
             }
