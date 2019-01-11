@@ -1,6 +1,9 @@
 ﻿#pragma once
-#include <opencv2/opencv.hpp>
+#include <Eigen/Geometry>
+#include <vector>
+#include <string>
 
+//因为Eigen库里的v3的计算函数多一些，所以就使用它了
 namespace dxlib {
     namespace u3d {
 
@@ -30,7 +33,7 @@ namespace dxlib {
                 name(name),
                 type(type) {}
 
-            GameObj(std::wstring name, int type, cv::Vec3d position, cv::Vec4d rotation):
+            GameObj(std::wstring name, int type, Eigen::Vector3d position, Eigen::Vector4d rotation):
                 name(name),
                 type(type),
                 position(position),
@@ -45,10 +48,10 @@ namespace dxlib {
             int type = ObjType::Empty;
 
             /// <summary> 世界坐标. </summary>
-            cv::Vec3d position = cv::Vec3d(0, 0, 0);
+            Eigen::Vector3d position = Eigen::Vector3d(0, 0, 0);
 
             /// <summary> 旋转. </summary>
-            cv::Vec4d rotation = cv::Vec4d(0, 0, 0, 1);
+            Eigen::Vector4d rotation = Eigen::Vector4d(0, 0, 0, 1);
 
             /// <summary> 这个物体的子物体. </summary>
             std::vector<GameObj> children;
@@ -73,7 +76,7 @@ namespace dxlib {
                 name(name),
                 type(type) {}
 
-            Line(std::wstring name, int type, cv::Vec3d position0, cv::Vec3d position1):
+            Line(std::wstring name, int type, Eigen::Vector3d position0, Eigen::Vector3d position1):
                 name(name),
                 type(type),
                 pos0(position0),
@@ -88,10 +91,10 @@ namespace dxlib {
             int type = 0;
 
             /// <summary> 世界坐标. </summary>
-            cv::Vec3d pos0 = cv::Vec3d(0, 0, 0);
+            Eigen::Vector3d pos0 = Eigen::Vector3d(0, 0, 0);
 
             /// <summary> 世界坐标. </summary>
-            cv::Vec3d pos1 = cv::Vec3d(0, 0, 0);
+            Eigen::Vector3d pos1 = Eigen::Vector3d(0, 0, 0);
 
             #pragma region obj<->json
             void toJson(void* jsonObj);

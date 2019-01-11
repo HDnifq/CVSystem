@@ -56,7 +56,6 @@ namespace dxlib {
             out.close();
         }
 
-
         void Scene::toJson(void* jsonObj)
         {
             web::json::value& jv = *((web::json::value*)jsonObj);

@@ -28,7 +28,6 @@ namespace dxlib {
         /// </summary>
         std::atomic_int cvKey = -1;
 
-
         /// <summary> 相机错误?. </summary>
         std::atomic_int cameraError;
 

@@ -50,10 +50,10 @@ TEST(Scene, GameObj)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(U("a"), 1, cv::Vec3d(1, 2, 3), cv::Vec4d(0, 0, 0, 1)));
-    scene.vGameObj.push_back(GameObj(U("b"), 2, cv::Vec3d(2, 2, 3), cv::Vec4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("a"), 1, Eigen::Vector3d(1, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("b"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
 
-    scene.vGameObj.push_back(GameObj(U("中文1"), 2, cv::Vec3d(2, 2, 3), cv::Vec4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
 
     scene.save("test1.json");
 
