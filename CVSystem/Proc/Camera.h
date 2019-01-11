@@ -127,6 +127,8 @@ namespace dxlib {
             if (capture == nullptr || !capture->isOpened()) {
                 return false;
             }
+            //******************** 这里考虑还是把curProp作为当前值，搞几个数组免得这么多代码
+            //*****************一启动就读一遍相机属性
             //响应属性变化
             if (curProp.FOURCC != prepareProp.FOURCC) {
                 curProp.FOURCC = prepareProp.FOURCC;

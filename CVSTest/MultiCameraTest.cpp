@@ -6,6 +6,31 @@ using namespace dxlib;
 using namespace std;
 
 
+class TestProc : public FrameProc
+{
+public:
+    TestProc() {}
+    ~TestProc() {}
+
+    int process(pCameraImage camImage) override
+    {
+        cv::Mat image = camImage->vImage[0].image;
+        EXPECT_FALSE(image.empty());//确实能采图
+
+        int key = -1;
+        key = cv::waitKey(1);//一定要加waitKey无法显示图片
+        return key;
+    }
+    void onEnable() override
+    {
+    }
+
+    void onDisable() override
+    {
+    }
+};
+
+
 //测试MultiCamera的open是否正常
 TEST(MultiCamera, open)
 {
@@ -17,9 +42,11 @@ TEST(MultiCamera, open)
     wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
 
     CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
+    CameraManger::GetInst()->camMap[0]->setProp().AUTO_EXPOSURE = 0;
 
-    for (size_t i = 0; i < 2; i++)
-    {
+    MultiCamera::GetInst()->addProc(new TestProc());
+
+    for (size_t i = 0; i < 2; i++) {
         MultiCamera::GetInst()->openCamera();//打开相机
         EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
         std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
