@@ -62,7 +62,7 @@ namespace dxlib {
         void onEnable() override
         {
             for (auto& kvp : CameraManger::GetInst()->camMap) {
-                kvp.second->setProp().BRIGHTNESS = 64;
+                kvp.second->setProp(CV_CAP_PROP_BRIGHTNESS, 64);
             }
         }
 

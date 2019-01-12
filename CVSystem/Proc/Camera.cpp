@@ -170,7 +170,7 @@ namespace dxlib {
                 }
             }
         }
-
+        return true;
     }
 
     void Camera::outputProp()
