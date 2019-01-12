@@ -1,9 +1,7 @@
 ﻿#pragma once
-
 #include <opencv2/opencv.hpp>
 
 #include "Camera.h"
-#include "time.h"
 
 #include <thread>
 #include <mutex>
@@ -184,9 +182,6 @@ namespace dxlib {
 
         /// <summary> 线程函数. </summary>
         void dowork();
-
-        /// <summary> 打开一个相机. </summary>
-        bool openCamera(pCamera& cameraParam);
 
         /// <summary> 统计FPS需要的变量. </summary>
         clock_t _lastTime = 0;

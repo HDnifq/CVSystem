@@ -1,37 +1,176 @@
 ﻿#include "Camera.h"
 #include "../dlog/dlog.h"
 #include "../Common/Common.h"
-
+#include "DevicesHelper.h"
+#include <Chrono>
+#include <Thread>
 
 namespace dxlib {
+
+    const char* CAP_PROP_STR[] = {
+        "POS_MSEC",
+        "POS_FRAMES",
+        "POS_AVI_RATIO",
+        "FRAME_WIDTH",
+        "FRAME_HEIGHT",
+        "FPS",
+        "FOURCC",
+        "FRAME_COUNT",
+        "FORMAT",
+        "MODE",
+        "BRIGHTNESS",
+        "CONTRAST",
+        "SATURATION",
+        "HUE",
+        "GAIN",
+        "EXPOSURE",
+        "CONVERT_RGB",
+        "WHITE_BALANCE_BLUE_U",
+        "RECTIFICATION",
+        "MONOCHROME",
+        "SHARPNESS",
+        "AUTO_EXPOSURE",
+        "GAMMA",
+        "TEMPERATURE",
+        "TRIGGER",
+        "TRIGGER_DELAY",
+        "WHITE_BALANCE_RED_V",
+        "ZOOM",
+        "FOCUS",
+        "GUID",
+        "ISO_SPEED",
+        "MAX_DC1394",
+        "BACKLIGHT",
+        "PAN",
+        "TILT",
+        "ROLL",
+        "IRIS",
+        "SETTINGS",
+        "BUFFERSIZE",
+        "AUTOFOCUS",
+        "SAR_NUM",
+        "SAR_DEN",
+    };
+
 
     Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBrightness)
         : camIndex(aCamIndex), devName(aDevName), size(aSize)
     {
+        for (size_t i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
+            lastCapProp[i] = FLT_MIN;
+        }
+        for (size_t i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
+            _setCapProp[i] = FLT_MIN;
+        }
+
         //默认设置一个属性值
-        prepareProp.BRIGHTNESS = aBrightness;
-        prepareProp.FRAME_HEIGHT = aSize.height;
-        prepareProp.FRAME_WIDTH = aSize.width;
-        prepareProp.FOURCC = FLT_MIN;// CV_FOURCC('M', 'J', 'P', 'G');
-        prepareProp.FPS = FLT_MIN;
-        prepareProp.AUTO_EXPOSURE = FLT_MIN; //1
-        prepareProp.FOCUS = FLT_MIN;
-        prepareProp.EXPOSURE = FLT_MIN;
+        _setCapProp[CV_CAP_PROP_BRIGHTNESS] = aBrightness;
+        _setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
+        _setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
         devNameA = ws2s(aDevName);
-        //capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());//一开始也构造一个，简化判断
     }
 
-    void Camera::resetProp()
+    bool Camera::openCamera()
     {
-        curProp.BRIGHTNESS = FLT_MIN;
-        curProp.FRAME_HEIGHT = FLT_MIN;
-        curProp.FRAME_WIDTH = FLT_MIN;
-        curProp.FOURCC = FLT_MIN;
-        curProp.FPS = FLT_MIN;
-        curProp.AUTO_EXPOSURE = FLT_MIN;
-        curProp.FOCUS = FLT_MIN;
-        curProp.EXPOSURE = FLT_MIN;
+        //如果存在VideoCapture那么就释放
+        if (capture != nullptr) {
+            capture->release();
+        }
+
+        capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
+
+        //重设一下等会要打开相机的时候需要设置的属性
+        _setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = size.height;
+        _setCapProp[CV_CAP_PROP_FRAME_WIDTH] = size.width;
+        // CV_FOURCC('M', 'J', 'P', 'G');
+
+        //列出设备
+        DevicesHelper::GetInst()->listDevices();
+        devID = DevicesHelper::GetInst()->getIndexWithName(devName);//记录devID
+        if (devID != -1) { //如果打开失败会返回-1
+
+            // In case a resource was already
+            // associated with the VideoCapture instance
+            capture->release();
+
+            int count = 0;
+            while (count < 3) { //重试3次
+                try {
+                    //调用opencv的打开相机
+                    if (capture->open(devID)) {
+                        applyCapProp();//打开成功之后设置一下相机属性
+                        break;//打开成功
+                    } else {
+                        LogW("Camera.openCamera():打开摄像头失败，重试。。。");
+                    }
+                } catch (const std::exception& e) {
+                    LogE("Camera.openCamera():打开摄像头异常:%s ", e.what());
+                }
+                count++;
+
+                capture->release();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));//休眠1000ms
+
+            }
+
+            if (count == 3) {//失败超过3次
+                LogE("Camera.openCamera():打开摄像头失败!");
+                return false;
+            }
+
+            outputProp();//输出一下当前关心的相机属性状态
+            return true;
+        } else {
+            LogE("Camera.openCamera():列出摄像头失败，相机数为0!");
+            return false;
+        }
+    }
+
+    void Camera::releaseCamera()
+    {
+        if (capture != nullptr) {
+            capture->release();
+        }
+        FPS = 0;
+    }
+
+    bool Camera::applyCapProp()
+    {
+        if (capture == nullptr || !capture->isOpened()) {
+            return false;
+        }
+
+        for (size_t i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
+            if (_setCapProp[i] != FLT_MIN) { //不等于表示有用户设置过了
+                const char* str = CAP_PROP_STR[i];//这个属性的字符串
+                double setValue = _setCapProp[i];//用户想设置的值
+
+                //输出用户想设置的值
+                if (i == CV_CAP_PROP_FOURCC) {//fourcc这个值得转一下才能log
+                    std::string fourcc = toFOURCC(setValue);
+                    LogI("Camera.applyCapProp():设置相机%d -> %s = %s", camIndex, str, fourcc.c_str());
+                } else {
+                    LogI("Camera.applyCapProp():设置相机%d -> %s = %d", camIndex, str, (int)setValue);
+                }
+
+                //进行设置
+                if (!capture->set(i, setValue)) {
+                    LogW("Camera.applyCapProp():设置%s失败.", str);
+                }
+                _setCapProp[i] = FLT_MIN;//重新标记为默认值
+
+                //读当前值然后顺便记录一下
+                lastCapProp[i] = capture->get(i);
+                if (i == CV_CAP_PROP_FOURCC) {//fourcc这个值得转一下才能log
+                    std::string fourcc = toFOURCC(lastCapProp[i]);
+                    LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %s", camIndex, str, fourcc.c_str());
+                } else {
+                    LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %d", camIndex, str, (int)lastCapProp[i]);
+                }
+            }
+        }
+
     }
 
     void Camera::outputProp()

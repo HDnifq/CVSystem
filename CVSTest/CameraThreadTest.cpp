@@ -55,7 +55,7 @@ TEST(CameraThread, OpenClose)
         EXPECT_TRUE(ct->open() == false);
         EXPECT_TRUE(cp->isOpened() == true);
         ct->close();
-        EXPECT_TRUE(cp->capture == nullptr);
+        EXPECT_TRUE(cp->isOpened() == false);
         ct->close();
         ct->close();
         ct->close();

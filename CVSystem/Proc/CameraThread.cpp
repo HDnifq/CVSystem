@@ -159,8 +159,9 @@ namespace dxlib {
         for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
             LogI("CameraThread.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
             boost::timer t;
-            //调用私有函数去打开相机
-            if (this->openCamera(vCameras[camIndex])) {
+
+            //打开相机
+            if (vCameras[camIndex]->openCamera()) {
                 double costTime = t.elapsed();
 
                 //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
@@ -206,14 +207,8 @@ namespace dxlib {
         }
 
         for (size_t i = 0; i < vCameras.size(); i++) {
-            if(vCameras[i]->capture != nullptr) {
-                LogI("CameraThread.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
-                vCameras[i]->capture->release();
-                vCameras[i]->capture = nullptr;
-            }
-            if (vCameras[i] != nullptr) {
-                vCameras[i]->FPS = 0;
-            }
+            LogI("CameraThread.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
+            vCameras[i]->releaseCamera();
         }
 
         reset();//清空队列
@@ -221,58 +216,6 @@ namespace dxlib {
     }
 
     #pragma region 私有函数
-
-    bool CameraThread::openCamera(pCamera& camera)
-    {
-        //如果存在VideoCapture那么就释放
-        if (camera->capture != nullptr) {
-            camera->capture->release();
-        }
-
-        camera->capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
-        camera->resetProp();
-
-        //列出设备
-        DevicesHelper::GetInst()->listDevices();
-        camera->devID = DevicesHelper::GetInst()->getIndexWithName(camera->devName);//记录devID
-        if (camera->devID != -1) { //如果打开失败会返回-1
-
-            // In case a resource was already
-            // associated with the VideoCapture instance
-            camera->capture->release();
-
-            int count = 0;
-            while (count < 3) { //重试3次
-                try {
-                    //调用opencv的打开相机
-                    if (camera->capture->open(camera->devID)) {
-                        camera->applyCapProp();
-                        break;//打开成功
-                    } else {
-                        LogW("CameraThread.openCamera():打开摄像头失败，重试。。。");
-                    }
-                } catch (const std::exception& e) {
-                    LogE("CameraThread.openCamera():打开摄像头异常:%s ", e.what());
-                }
-                count++;
-
-                camera->capture->release();
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));//休眠1000ms
-
-            }
-
-            if (count == 3) {//失败超过3次
-                LogE("CameraThread.openCamera():打开摄像头失败!");
-                return false;
-            }
-
-            camera->outputProp();
-            return true;
-        } else {
-            LogE("CameraThread.openCamera():列出摄像头失败，相机数为0!");
-            return false;
-        }
-    }
 
     void CameraThread::updateFPS()
     {

@@ -1,7 +1,8 @@
 ﻿#pragma once
-
 #include <opencv2/opencv.hpp>
-#include "../dlog/dlog.h"
+
+//所有的CV_CAP_PROP的数组的长度
+#define DXLIB_CAMERA_CAP_PROP_LEN 128
 
 namespace dxlib {
 
@@ -72,9 +73,24 @@ namespace dxlib {
 
         /// <summary>
         /// 相机的capture，这里基本应该是只读的。
-        /// 构造capture的时候就要重置resetProp().
         /// </summary>
         std::shared_ptr<cv::VideoCapture> capture = nullptr;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 打开这个相机. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/12. </remarks>
+        ///
+        /// <returns> 打开成功返回true. </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool openCamera();
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 关闭相机设备. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/12. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+        void releaseCamera();
 
         /// <summary> 相机是否打开了. </summary>
         bool isOpened()
@@ -84,33 +100,16 @@ namespace dxlib {
             } else {
                 return capture->isOpened();
             }
-
         }
 
-        /// <summary> 相机的一些属性. </summary>
-        struct CAP_PROP
-        {
-            double BRIGHTNESS;
-            double FOURCC;
-            double FPS;
-            double FRAME_HEIGHT;
-            double FRAME_WIDTH;
-            double AUTO_EXPOSURE;
-            double FOCUS;
-            double EXPOSURE;
-        };
-
-        /// <summary> 当前的相机属性(外面用来只读). </summary>
-        CAP_PROP curProp;
+        /// <summary> 暂存的上次设置的结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
+        double lastCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 
         /// <summary> 设置当前的相机的属性. </summary>
-        CAP_PROP& setProp()
+        void setProp(int CV_CAP_PROP, double value)
         {
-            return prepareProp;
+            _setCapProp[CV_CAP_PROP] = value;
         }
-
-        /// <summary> 重置当前的相机属性. </summary>
-        void resetProp();
 
         /// <summary> 这是相机采图的帧率. </summary>
         float FPS = 0;
@@ -122,86 +121,7 @@ namespace dxlib {
         ///
         /// <returns> 如果设置成功返回true. </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool applyCapProp()
-        {
-            if (capture == nullptr || !capture->isOpened()) {
-                return false;
-            }
-            //******************** 这里考虑还是把curProp作为当前值，搞几个数组免得这么多代码
-            //*****************一启动就读一遍相机属性
-            //响应属性变化
-            if (curProp.FOURCC != prepareProp.FOURCC) {
-                curProp.FOURCC = prepareProp.FOURCC;
-                std::string fourcc = toFOURCC(curProp.FOURCC);
-                LogI("Camera.applyCapProp():设置相机%d -> FOURCC = %s", camIndex, fourcc.c_str());
-                if (!capture->set(CV_CAP_PROP_FOURCC, curProp.FOURCC)) {
-                    LogW("Camera.applyCapProp():设置FOURCC失败.");
-                }
-            }
-            if (curProp.BRIGHTNESS != prepareProp.BRIGHTNESS) {
-                curProp.BRIGHTNESS = prepareProp.BRIGHTNESS;
-                LogI("Camera.applyCapProp():设置相机%d -> BRIGHTNESS = %d", camIndex, (int)curProp.BRIGHTNESS);
-                if (!capture->set(CV_CAP_PROP_BRIGHTNESS, curProp.BRIGHTNESS)) {
-                    LogW("Camera.applyCapProp():设置BRIGHTNESS失败.");
-                }
-            }
-            if (curProp.FPS != prepareProp.FPS) {
-                curProp.FPS = prepareProp.FPS;
-                LogI("Camera.applyCapProp():设置相机%d -> FPS = %d", camIndex, (int)curProp.FPS);
-                if (!capture->set(CV_CAP_PROP_FPS, curProp.FPS)) {
-                    LogW("Camera.applyCapProp():设置FPS失败.");
-                }
-            }
-            if (curProp.FRAME_HEIGHT != prepareProp.FRAME_HEIGHT) {
-                curProp.FRAME_HEIGHT = prepareProp.FRAME_HEIGHT;
-                LogI("Camera.applyCapProp():设置相机%d -> FRAME_HEIGHT = %d", camIndex, (int)curProp.FRAME_HEIGHT);
-                if (!capture->set(CV_CAP_PROP_FRAME_HEIGHT, curProp.FRAME_HEIGHT)) {
-                    LogW("Camera.applyCapProp():设置FRAME_HEIGHT失败.");
-                }
-            }
-            if (curProp.FRAME_WIDTH != prepareProp.FRAME_WIDTH) {
-                curProp.FRAME_WIDTH = prepareProp.FRAME_WIDTH;
-                LogI("Camera.applyCapProp():设置相机%d -> RAME_WIDTH = %d", camIndex, (int)curProp.FRAME_WIDTH);
-                if (!capture->set(CV_CAP_PROP_FRAME_WIDTH, curProp.FRAME_WIDTH)) {
-                    LogW("Camera.applyCapProp():设置FRAME_WIDTH失败.");
-                }
-            }
-            if (curProp.FOCUS != prepareProp.FOCUS) {
-                curProp.FOCUS = prepareProp.FOCUS;
-                LogI("Camera.applyCapProp():设置相机%d -> FOCUS = %f", camIndex, curProp.FOCUS);
-                if (!capture->set(CV_CAP_PROP_FOCUS, curProp.FOCUS)) {
-                    LogW("Camera.applyCapProp():设置FOCUS失败.");
-                }
-
-                int FOCUS = static_cast<int>(capture->get(CV_CAP_PROP_FOCUS));
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> FOCUS = %d", camIndex, FOCUS);
-            }
-            if (curProp.AUTO_EXPOSURE != prepareProp.AUTO_EXPOSURE) {
-                curProp.AUTO_EXPOSURE = prepareProp.AUTO_EXPOSURE;
-                //outputAllProp();
-                LogI("Camera.applyCapProp():设置相机%d -> AUTO_EXPOSURE = %f", camIndex, curProp.AUTO_EXPOSURE);
-                if (!capture->set(CV_CAP_PROP_AUTO_EXPOSURE, curProp.AUTO_EXPOSURE)) {
-                    LogW("Camera.applyCapProp():设置AUTO_EXPOSURE失败.");
-                }
-
-                int AUTO_EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_AUTO_EXPOSURE));
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> AUTO_EXPOSURE = %d", camIndex, AUTO_EXPOSURE);
-                //outputAllProp();
-            }
-            if (curProp.EXPOSURE != prepareProp.EXPOSURE) {
-                curProp.EXPOSURE = prepareProp.EXPOSURE;
-                //outputAllProp();
-                LogI("Camera.applyCapProp():设置相机%d -> EXPOSURE = %f", camIndex, curProp.EXPOSURE);
-                if (!capture->set(CV_CAP_PROP_EXPOSURE, curProp.EXPOSURE)) {
-                    LogW("Camera.applyCapProp():设置EXPOSURE失败.");
-                }
-
-                int EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_EXPOSURE));
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> EXPOSURE = %d", camIndex, EXPOSURE);
-                //outputAllProp();
-            }
-            return true;
-        }
+        bool applyCapProp();
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 在控制台输出当前实际的相机状态. </summary>
@@ -232,8 +152,8 @@ namespace dxlib {
         #pragma endregion
 
     private:
-        /// <summary> 准备要设置的属性(外面用来写入). </summary>
-        CAP_PROP prepareProp;
+        /// <summary> 用来做状态的记录，好触发设置动作. </summary>
+        double _setCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
     };
     /// <summary>定义这个智能指针类型. </summary>
     typedef std::shared_ptr<Camera> pCamera;
