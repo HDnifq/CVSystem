@@ -96,7 +96,7 @@ namespace dxlib {
         std::vector<pCamera> vCameras;
 
         /// <summary> 是否停止运行（由外部操作）. </summary>
-        std::atomic_bool isStop = false;
+        std::atomic_bool isStop = true;
 
         /// <summary> 是否进行采图,如果为false则只占用相机不进行采图（由外部操作）. </summary>
         std::atomic_bool isGrab = true;

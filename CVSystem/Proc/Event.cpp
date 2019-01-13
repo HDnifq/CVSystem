@@ -41,7 +41,7 @@ namespace dxlib {
         }
 
         EventItem* ptr = (EventItem*)memEventData;
-        for (size_t i = 0; i < 256; i++) { //最多支持256条事件吧
+        for (size_t i = 0; i < 64; i++) { //最多支持64条事件吧
             if (ptr[i].flag != 0) {
                 ptr[i].flag = 0;//标记回0
 

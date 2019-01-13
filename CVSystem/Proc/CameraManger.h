@@ -42,7 +42,7 @@ namespace dxlib {
         /// <param name="cp">              要添加的相机. </param>
         /// <param name="isVirtualCamera"> (Optional) 是否这是一个虚拟相机. </param>
         ///-------------------------------------------------------------------------------------------------
-        void add(const pCamera& cp,bool isVirtualCamera = false);
+        void add(const pCamera& cp, bool isVirtualCamera = false);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 从文件里载入参数，这个函数将来应该做更灵活的操作. </summary>
@@ -59,6 +59,19 @@ namespace dxlib {
         /// <returns> The stereo. </returns>
         ///-------------------------------------------------------------------------------------------------
         pStereoCamera getStereo(pCamera camera);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 设置某一个相机的属性. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/13. </remarks>
+        ///
+        /// <param name="camIndex"> 相机的index. </param>
+        /// <param name="CAP_PROP"> The capability property. </param>
+        /// <param name="value">    The value. </param>
+        ///
+        /// <returns> 如果存在这个相机就进行设置并且返回true. </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool setProp(int camIndex, int CAP_PROP, double value);
 
     private:
 

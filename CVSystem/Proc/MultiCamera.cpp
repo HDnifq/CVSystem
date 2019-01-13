@@ -91,11 +91,11 @@ namespace dxlib {
                         if (ckey != -1) {//如果有按键按下那么修改最近的按键值
                             Event::GetInst()->cvKey.exchange(ckey);
                         }
-                        //如果有定义按键事件响应那么就执行这个函数（一般不使用这个）
-                        //if (procKeyEvent != nullptr) {
-                        //    procKeyEvent(this, key);
-                        //}
                     }
+
+                    //干脆用这个线程来驱动检查事件
+                    Event::GetInst()->checkMemEvent();
+
                 } else {
                     break;
                 }

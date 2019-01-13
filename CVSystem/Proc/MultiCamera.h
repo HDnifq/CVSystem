@@ -90,7 +90,7 @@ namespace dxlib {
         //std::atomic_int key = -1;
 
         /// <summary> 是否停止. </summary>
-        std::atomic_bool isStop = false;
+        std::atomic_bool isStop = true;
 
         /// <summary> 是否显示窗口. </summary>
         bool isShowWin = false;

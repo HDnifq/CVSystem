@@ -75,6 +75,16 @@ namespace dxlib {
         return nullptr;
     }
 
+    bool CameraManger::setProp(int camIndex, int CAP_PROP, double value)
+    {
+        auto iter = camMap.find(camIndex);
+        if (iter != camMap.end()) {
+            iter->second->setProp(CAP_PROP, value);
+            return true;
+        }
+        return false;
+    }
+
     void CameraManger::initUndistortRectifyMap(pCamera& camera)
     {
         cv::initUndistortRectifyMap(camera->camMatrix, camera->distCoeffs, camera->R, camera->P, camera->size, CV_16SC2, camera->rmap1, camera->rmap2);
