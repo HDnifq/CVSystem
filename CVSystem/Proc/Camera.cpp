@@ -141,7 +141,7 @@ namespace dxlib {
             return false;
         }
 
-        for (size_t i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
+        for (int i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
             if (_setCapProp[i] != FLT_MIN) { //不等于表示有用户设置过了
                 const char* str = CAP_PROP_STR[i];//这个属性的字符串
                 double setValue = _setCapProp[i];//用户想设置的值
@@ -199,7 +199,7 @@ namespace dxlib {
         if (capture == nullptr || !capture->isOpened()) {
             return;
         }
-        for (size_t i = 0; i <= 41; i++) {
+        for (int i = 0; i <= 41; i++) {
             int w = static_cast<int>(capture->get(i));
             LogI("Camera.outputAllProp(): %d = %d", i, w);
         }
