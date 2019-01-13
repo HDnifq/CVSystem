@@ -165,6 +165,14 @@
     <ClInclude Include="Data\Debug.h" />
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="dlog\dlog.h" />
+    <ClInclude Include="eventbus\AsyncEventBus.h" />
+    <ClInclude Include="eventbus\EventBus.h" />
+    <ClInclude Include="eventbus\EventCollector.h" />
+    <ClInclude Include="eventbus\internal\AsyncCallbackVector.h" />
+    <ClInclude Include="eventbus\internal\CallbackVector.h" />
+    <ClInclude Include="eventbus\internal\common.h" />
+    <ClInclude Include="eventbus\internal\TransactionCallbackVector.h" />
+    <ClInclude Include="eventbus\TokenHolder.h" />
     <ClInclude Include="Proc\Camera.h" />
     <ClInclude Include="Proc\CameraManger.h" />
     <ClInclude Include="Proc\CameraThread.h" />
@@ -182,6 +190,7 @@
     <ClCompile Include="CVSystem.cpp" />
     <ClCompile Include="Data\Debug.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
+    <ClCompile Include="eventbus\AsyncEventBus.cpp" />
     <ClCompile Include="Proc\Camera.cpp" />
     <ClCompile Include="Proc\CameraManger.cpp" />
     <ClCompile Include="Proc\CameraThread.cpp" />

@@ -78,6 +78,30 @@
     <ClInclude Include="Data\Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="eventbus\internal\AsyncCallbackVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\internal\CallbackVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\internal\common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\internal\TransactionCallbackVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\AsyncEventBus.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\EventBus.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\EventCollector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="eventbus\TokenHolder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -117,6 +141,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Data\Scene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="eventbus\AsyncEventBus.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

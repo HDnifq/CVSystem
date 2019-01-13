@@ -3,6 +3,8 @@
 #define _CVSYSTEM_H_
 
 #include "./dlog/dlog.h"
+#include "./eventbus/EventBus.h"
+#include "./eventbus/EventCollector.h"
 
 #include "./Common/Common.h"
 #include "./Common/CoolTime.hpp"

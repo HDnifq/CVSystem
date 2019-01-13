@@ -50,6 +50,7 @@
     <ClCompile Include="CommonTest.cpp" />
     <ClCompile Include="DevicesHelperTest.cpp" />
     <ClCompile Include="DrawTest.cpp" />
+    <ClCompile Include="EventbusTest.cpp" />
     <ClCompile Include="FileHelperTest.cpp" />
     <ClCompile Include="MultiCameraTest.cpp" />
     <ClCompile Include="pch.cpp">

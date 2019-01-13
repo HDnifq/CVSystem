@@ -1,7 +1,20 @@
 ﻿#pragma once
 #include <atomic>
+#include "../eventbus/EventBus.h"
 
 namespace dxlib {
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 内存事件定义. </summary>
+    ///
+    /// <remarks> Dx, 2019/1/13. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    struct MemEvent
+    {
+        /// <summary> 事件类型. </summary>
+        int id;
+        int value[128];
+    };
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 系统的公共的状态事件. </summary>
@@ -31,9 +44,35 @@ namespace dxlib {
         /// <summary> 相机错误?. </summary>
         std::atomic_int cameraError;
 
+        /// <summary> 事件总线. </summary>
+        std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
+
+        #pragma region 使用共享内存的方法来判断事件发出事件
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 设置共享内存中数据位置起始地址. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/13. </remarks>
+        ///
+        /// <param name="data"> [in,out] If non-null, the data. </param>
+        ///-------------------------------------------------------------------------------------------------
+        void setMemEventData(void* data);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 检查是否有一条事件. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/13. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+        void checkMemEvent();
+
+        #pragma endregion
+
     private:
         /// <summary> 单例. </summary>
         static Event* m_pInstance;
+
+        /// <summary> 共享内存的消息模式. </summary>
+        void* memEventData = nullptr;
     };
 
 
