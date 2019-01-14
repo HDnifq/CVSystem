@@ -24,6 +24,9 @@ namespace dxlib {
 
         /// <summary> 需要退出的线程队列. </summary>
         moodycamel::ConcurrentQueue<std::thread::id> needStopQueue;
+
+        /// <summary> 是否正在等待上一个线程release. </summary>
+        std::atomic_bool isWaitingLastThreadStop = false;
     };
 
     MultiCamera::MultiCamera()
@@ -42,6 +45,11 @@ namespace dxlib {
     //线程函数
     void MultiCamera::run()
     {
+        //一直等待上一个线程正确释放
+        while (_releaseInfo->isWaitingLastThreadStop){
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));//等待相机线程进入了线程函数并且在等待了
+        }
+
         std::unique_lock<std::mutex> lck(mtx_mt);
         while (cameraThread->isHasThread()) {//如果存在采图线程
             if (cameraThread->isThreadWaitingStart.load() == true) {
