@@ -9,8 +9,7 @@
 #include "../dlog/dlog.h"
 #include "CameraManger.h"
 #include "Event.h"
-#include "../Common/concurrentqueue.h"
-#include "../Common/blockingconcurrentqueue.h"
+
 //都是c11的
 #include <Chrono>
 #include <thread>
@@ -22,8 +21,8 @@ namespace dxlib {
         /// <summary> 是否有必要检查这个release. </summary>
         std::atomic_bool isNeedCheck = false;
 
-        /// <summary> 需要退出的线程队列. </summary>
-        moodycamel::ConcurrentQueue<std::thread::id> needStopQueue;
+        /// <summary> 需要退出的线程ID. </summary>
+        std::thread::id needStopID;
 
         /// <summary> 是否正在等待上一个线程release. </summary>
         std::atomic_bool isWaitingLastThreadStop = false;
@@ -46,7 +45,7 @@ namespace dxlib {
     void MultiCamera::run()
     {
         //一直等待上一个线程正确释放
-        while (_releaseInfo->isWaitingLastThreadStop){
+        while (_releaseInfo->isWaitingLastThreadStop) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));//等待相机线程进入了线程函数并且在等待了
         }
 
@@ -70,8 +69,10 @@ namespace dxlib {
                 //响应退出
                 if (isStop.load()) {
                     //退出前disable一下
-                    if(vProc.size() > activeProcIndex)//防止用户没有加入proc的情况，还是应该判断一下
+                    if (vProc.size() > activeProcIndex)//防止用户没有加入proc的情况，还是应该判断一下
                         vProc[activeProcIndex]->onDisable();
+
+                    LogI("MultiCamera.run():计算线程id=%d执行函数已经返回.", std::this_thread::get_id());
                     return;
                 }
 
@@ -115,30 +116,23 @@ namespace dxlib {
                     //干脆用这个线程来驱动检查事件
                     Event::GetInst()->checkMemEvent();
 
-                    //检查一下自己的id在不在这个记录里
-                    if (_releaseInfo->isNeedCheck.load()) {
-                        std::thread::id ntid;
-                        if (_releaseInfo->needStopQueue.try_dequeue(ntid)) {
-                            if (ntid == std::this_thread::get_id()) {
-                                LogI("MultiCamera.run():计算线程id=%d发现了自己应该返回了,return.", std::this_thread::get_id());
-                                if (vProc.size() > activeProcIndex)//防止用户没有加入proc的情况，还是应该判断一下
-                                    vProc[activeProcIndex]->onDisable();
-                                if (_releaseInfo->needStopQueue.size_approx() == 0) {
-                                    _releaseInfo->isNeedCheck = false;
-                                }
-                                return;
-                            } else {
-                                _releaseInfo->needStopQueue.enqueue(ntid);
-                            }
+                    //如果执行完事件和处理之后，进入了标记等待的状态
+                    if (_releaseInfo->isWaitingLastThreadStop) {
+                        if (_releaseInfo->needStopID == std::this_thread::get_id()) {
+                            LogI("MultiCamera.run():计算线程id=%d发现了自己应该返回了,return.", std::this_thread::get_id());
+                            if (vProc.size() > activeProcIndex)//防止用户没有加入proc的情况，还是应该判断一下
+                                vProc[activeProcIndex]->onDisable();
+
+                            _releaseInfo->isWaitingLastThreadStop = false;
+                            return;
                         }
                     }
+
                 } else {
                     break;
                 }
             }
         }
-
-        LogI("MultiCamera.run():计算线程id=%d执行函数已经返回.", std::this_thread::get_id());
     }
 
     bool MultiCamera::openCamera(uint activeIndex, OpenCameraType openType)
@@ -163,12 +157,12 @@ namespace dxlib {
         //如果成功打开了所有相机，启动计算
         if (cameraThread->open()) {
 
-            if(openType == OpenCameraType::StartCalcThread ||
+            if (openType == OpenCameraType::StartCalcThread ||
                     openType == OpenCameraType::ForceStartCalcThread) {
                 LogI("MultiCamera.openCamera():相机打开完成！创建计算线程。");
                 //综合分析计算线程
                 this->_thread = new std::thread(&MultiCamera::run, this);
-            } else if(openType == OpenCameraType::NotStartCalcThread) {
+            } else if (openType == OpenCameraType::NotStartCalcThread) {
                 LogI("MultiCamera.openCamera():相机打开完成！但不创建计算线程。");
             }
             return true;
@@ -187,7 +181,7 @@ namespace dxlib {
 
     void MultiCamera::release(bool isDeleteProc)
     {
-        if (isStop.load() == true || cameraThread == nullptr) {
+        if (isStop.load() == true || cameraThread == nullptr || _releaseInfo->isWaitingLastThreadStop) {
             LogI("MultiCamera.release():已经停止，函数直接返回.");
             return;
         }
@@ -201,18 +195,18 @@ namespace dxlib {
 
             //标记自己已经停止
             LogI("MultiCamera.release():标记自己停止...执行release()线程id=%d,计算线程id=%d", std::this_thread::get_id(), this->_thread->get_id());
-        
-            //添加一条记录，表示这个id的线程需要退出哦
+
+            //添加一条记录，表示这个自己这个id的线程等会需要退出哦
             if (std::this_thread::get_id() == this->_thread->get_id()) {
-                _releaseInfo->isNeedCheck = true;
-                _releaseInfo->needStopQueue.enqueue(this->_thread->get_id());
+                _releaseInfo->isWaitingLastThreadStop = true;
+                _releaseInfo->needStopID = this->_thread->get_id();
             }
 
             if (this->_thread->joinable() && std::this_thread::get_id() != this->_thread->get_id()) {
                 LogI("MultiCamera.release():当前线程进入join()");
                 this->_thread->join();//等待综合分析线程退出
             }
-            if(std::this_thread::get_id() != this->_thread->get_id()) {
+            if (std::this_thread::get_id() != this->_thread->get_id()) {
                 LogI("MultiCamera.release():delete 综合分析线程...");
                 delete this->_thread;
             }
@@ -253,7 +247,7 @@ namespace dxlib {
         if (index < vProc.size()) {
             if (index == activeProcIndex) {//如果相等就是重置
                 _isResetActiveProc = true;
-            } else {//如果不相等就是重设一个active的proc
+            } else { //如果不相等就是重设一个active的proc
                 _nextActiveProcIndex = index;
             }
         }
