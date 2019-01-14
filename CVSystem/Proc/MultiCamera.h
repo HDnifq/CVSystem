@@ -202,6 +202,12 @@ namespace dxlib {
         /// <summary> 是否对当前proc重新执行一次disable和enable. </summary>
         bool _isResetActiveProc = false;
 
+        /// <summary> 用于在不管哪个线程执行了release函数，都能确保释放上一个计算线程. </summary>
+        struct ReleaseInfo;
+
+        /// <summary> 用于在不管哪个线程执行了release函数，都能确保释放上一个计算线程. </summary>
+        ReleaseInfo* _releaseInfo;
+
         //计算fps的辅助
         FPSCalc fpsCalc;
     };

@@ -31,6 +31,27 @@ public:
 };
 
 
+class TestProcRelease : public FrameProc
+{
+public:
+    TestProcRelease() {}
+    ~TestProcRelease() {}
+
+    int process(pCameraImage camImage) override
+    {
+        MultiCamera::GetInst()->release();
+        return -1;
+    }
+    void onEnable() override
+    {
+    }
+
+    void onDisable() override
+    {
+    }
+};
+
+
 //测试MultiCamera的open是否正常
 TEST(MultiCamera, open)
 {
@@ -67,4 +88,28 @@ TEST(MultiCamera, AddVirtualCamera)
     EXPECT_FALSE(CameraManger::GetInst()->camMap[0]->isOpened());
     EXPECT_FALSE(CameraManger::GetInst()->camMap[1]->isOpened());
     MultiCamera::GetInst()->release();
+}
+
+
+//测试MultiCamera的open是否正常
+TEST(MultiCamera, release)
+{
+    //得到第一个相机名
+    DevicesHelper::GetInst()->listDevices();
+    if (DevicesHelper::GetInst()->devList->size() == 0) {
+        return;
+    }
+    wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+
+    CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
+    CameraManger::GetInst()->camMap[0]->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
+
+    MultiCamera::GetInst()->addProc(new TestProcRelease());
+
+    for (size_t i = 0; i < 4; i++) {
+        MultiCamera::GetInst()->openCamera();//打开相机
+        EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
+    }
+
 }
