@@ -102,6 +102,12 @@
     <ClInclude Include="eventbus\TokenHolder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Common\WorkThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\BaseThread.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -144,6 +150,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="eventbus\AsyncEventBus.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\WorkThread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

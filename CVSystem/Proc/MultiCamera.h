@@ -5,7 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-
+#include "../Common/BaseThread.hpp"
 
 namespace dxlib {
 
@@ -89,9 +89,6 @@ namespace dxlib {
         ///// <summary> 当前待处理的key值，如果无按键那么为-1. (换成Event单例)</summary>
         //std::atomic_int key = -1;
 
-        /// <summary> 是否停止. </summary>
-        std::atomic_bool isStop = true;
-
         /// <summary> 是否显示窗口. </summary>
         bool isShowWin = false;
 
@@ -144,14 +141,7 @@ namespace dxlib {
         ///
         /// <param name="isDeleteProc"> (Optional)是否要释放所有proc. </param>
         ///-------------------------------------------------------------------------------------------------
-        void release(bool isDeleteProc = false);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary> 线程函数,也可以不使用线程自己从外面调用. </summary>
-        ///
-        /// <remarks> Dx, 2018/1/30. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-        void run();
+        void close(bool isDeleteProc = false);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 添加一个Proc. </summary>
@@ -189,12 +179,32 @@ namespace dxlib {
         ///-------------------------------------------------------------------------------------------------
         void setIsGrab(bool isGrab);
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 是否当前正在正常工作. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/16. </remarks>
+        ///
+        /// <returns> True if run, false if not. </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool isRun()
+        {
+            return _isRun.load();
+        }
     private:
 
         static MultiCamera* m_pInstance;
 
+        /// <summary> 是否停止. </summary>
+        std::atomic_bool _isRun = false;
+
+        /// <summary> 是否正在打开. </summary>
+        std::atomic_bool _isOpening = false;
+
+        /// <summary> 是否正在停止. </summary>
+        std::atomic_bool _isStopping = false;
+
         /// <summary> 综合分析线程. </summary>
-        std::thread* _thread = nullptr;
+        pBaseThread _thread = nullptr;
 
         /// <summary> 设置的下一个激活index. </summary>
         uint _nextActiveProcIndex = 0;
@@ -202,11 +212,12 @@ namespace dxlib {
         /// <summary> 是否对当前proc重新执行一次disable和enable. </summary>
         bool _isResetActiveProc = false;
 
-        /// <summary> 用于在不管哪个线程执行了release函数，都能确保释放上一个计算线程. </summary>
-        struct ReleaseInfo;
+        void init(std::shared_ptr<BaseThread>& tb);
 
-        /// <summary> 用于在不管哪个线程执行了release函数，都能确保释放上一个计算线程. </summary>
-        ReleaseInfo* _releaseInfo;
+        void workonce(std::shared_ptr<BaseThread>& tb);
+
+        void release();
+
 
         //计算fps的辅助
         FPSCalc fpsCalc;

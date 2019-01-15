@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/Data/Scene.h"
+#include "../CVSystem/CVSystem.h"
 #ifndef _NO_ASYNCRTIMP
 #define _NO_ASYNCRTIMP
 #endif // !_NO_ASYNCRTIMP
@@ -25,8 +25,11 @@ TEST(Scene, json)
 
     utility::string_t str = obj.serialize();
 
+    std::string md = FileHelper::getModuleDir();
+    std::string filePath = md + "\\test0.json";
+
     //只有这样才能把一个wchar_t(utf16)写入utf8文件
-    utility::ofstream_t out(L"test0.json", std::ios::out | std::ios::binary);
+    utility::ofstream_t out(filePath, std::ios::out | std::ios::binary);
 
     //这里只能new一个，不能完美释放
     const std::locale utf8_locale = std::locale(std::locale(), new std::codecvt_utf8<wchar_t>());
@@ -55,6 +58,6 @@ TEST(Scene, GameObj)
 
     scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
 
-    scene.save("test1.json");
+    scene.save(FileHelper::getModuleDir() + "\\test1.json");
 
 }

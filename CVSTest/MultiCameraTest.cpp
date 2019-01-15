@@ -39,7 +39,9 @@ public:
 
     int process(pCameraImage camImage) override
     {
-        MultiCamera::GetInst()->release();
+        LogI("TestProcRelease.process():开始执行！");
+        MultiCamera::GetInst()->close();
+        LogI("TestProcRelease.process():执行完毕！");
         return -1;
     }
     void onEnable() override
@@ -72,9 +74,12 @@ TEST(MultiCamera, open)
         EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
         std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
         EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
-        MultiCamera::GetInst()->release();
+        MultiCamera::GetInst()->close();
     }
 
+
+    MultiCamera::GetInst()->vProc.clear();
+    CameraManger::GetInst()->clear();
 }
 
 //创建虚拟相机的时候不会打开相机
@@ -87,13 +92,20 @@ TEST(MultiCamera, AddVirtualCamera)
     EXPECT_FALSE(result);
     EXPECT_FALSE(CameraManger::GetInst()->camMap[0]->isOpened());
     EXPECT_FALSE(CameraManger::GetInst()->camMap[1]->isOpened());
-    MultiCamera::GetInst()->release();
+    MultiCamera::GetInst()->close();
+
+
+
+    MultiCamera::GetInst()->vProc.clear();
+    CameraManger::GetInst()->clear();
 }
 
 
-//测试MultiCamera的open是否正常
+//测试MultiCamera的release是否正常，加入的proc是 TestProcRelease
 TEST(MultiCamera, release)
 {
+    dlog_set_usual_thr(DLOG_Debug);
+
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
     if (DevicesHelper::GetInst()->devList->size() == 0) {
@@ -106,10 +118,18 @@ TEST(MultiCamera, release)
 
     MultiCamera::GetInst()->addProc(new TestProcRelease());
 
-    for (size_t i = 0; i < 4; i++) {
-        MultiCamera::GetInst()->openCamera();//打开相机
-        EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
+    for (size_t i = 0; i < 2; i++) {
+        EXPECT_TRUE(MultiCamera::GetInst()->openCamera());//打开相机
+        LogI("TEST(MultiCamera, release):当前MT工作状态 = %d", MultiCamera::GetInst()->isRun());
+        while (MultiCamera::GetInst()->isRun()) {
+            LogI("TEST(MultiCamera, release):主线程等待关闭！id=%d", std::this_thread::get_id());
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));//等待500
+        }
+
+        LogI("TEST(MultiCamera, release):主线程发现已经关闭！");
     }
 
+    MultiCamera::GetInst()->vProc.clear();
+    CameraManger::GetInst()->clear();
+    dlog_set_usual_thr(DLOG_INFO);
 }

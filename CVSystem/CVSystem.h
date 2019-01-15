@@ -6,6 +6,8 @@
 #include "./eventbus/EventBus.h"
 #include "./eventbus/EventCollector.h"
 
+#include "./Common/WorkThread.h"
+
 #include "./Common/Common.h"
 #include "./Common/CoolTime.hpp"
 #include "./Common/Draw.h"
