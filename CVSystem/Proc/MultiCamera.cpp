@@ -214,7 +214,7 @@ namespace dxlib {
         fpsCalc.reset();
 
         if (isDeleteProc) {
-            LogI("MultiCamera.release():释放所有proc...");
+            LogI("MultiCamera.close():释放所有proc...");
             vProc.clear();
         }
 
