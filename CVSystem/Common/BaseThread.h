@@ -135,8 +135,10 @@ namespace dxlib {
 
             //如果是当前线程执行的Stop，那么就直接执行一次
             if (std::this_thread::get_id() == _thread->get_id()) {
-                if (_release != nullptr)
+                if (!_isReleaseProc.load() && _release != nullptr) {
+                    _isReleaseProc = true;
                     _release(_self);
+                }
                 _release = nullptr;
             } else { //否则就等待线程执行完毕
                 if (isWait) {
@@ -198,7 +200,8 @@ namespace dxlib {
         /// <param name="pWorkOnce"> [in] 函数指针委托. </param>
         /// <param name="pRelease">  [in] 函数指针委托. </param>
         ///-------------------------------------------------------------------------------------------------
-        BaseThread(FunInit pInit, FunWorkOnce pWorkOnce, FunRelease pRelease) : _init(pInit), _workOnce(pWorkOnce), _release(pRelease)
+        BaseThread(FunInit pInit, FunWorkOnce pWorkOnce, FunRelease pRelease)
+            : _init(pInit), _workOnce(pWorkOnce), _release(pRelease)
         {
         }
 
@@ -216,6 +219,9 @@ namespace dxlib {
 
         /// <summary> 执行委托 Release. (不是原子操作，所以用线程参数传值补救一下)</summary>
         FunRelease _release = nullptr;
+
+        /// <summary> 确保只执行一次release的标记</summary>
+        std::atomic_bool _isReleaseProc = false;
 
         /// <summary> 是否线程函数已经执行完毕了. </summary>
         std::atomic_bool _isThreadFunReturn = false;
@@ -266,8 +272,10 @@ namespace dxlib {
                     break;//连工作委托都没有那么就直接退出吧
             }
 
-            if (_release != nullptr)
+            if (!_isReleaseProc.load() && _release != nullptr) {
+                _isReleaseProc = true;
                 _release(bt);
+            }
 
             //归还自身引用持有
             bt->_self = nullptr;
