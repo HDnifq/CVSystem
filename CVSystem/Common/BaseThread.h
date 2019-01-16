@@ -78,7 +78,7 @@ namespace dxlib {
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary> 手动找个时间进行GC. </summary>
+        /// <summary> 手动找个时间进行GC,避免出现线程自己释放自己. </summary>
         ///
         /// <remarks> Dx, 2019/1/16. </remarks>
         ///-------------------------------------------------------------------------------------------------
@@ -208,13 +208,13 @@ namespace dxlib {
         /// <summary> 实际线程. </summary>
         std::shared_ptr<std::thread> _thread = nullptr;
 
-        /// <summary> 执行委托 Init. (不是原子操作，可能出问题这里) </summary>
+        /// <summary> 执行委托 Init. (不是原子操作，所以用线程参数传值补救一下) </summary>
         FunInit _init = nullptr;
 
-        /// <summary> 执行委托 WorkOnce. (不是原子操作，可能出问题这里) </summary>
+        /// <summary> 执行委托 WorkOnce. (不是原子操作，所以用线程参数传值补救一下) </summary>
         FunWorkOnce _workOnce = nullptr;
 
-        /// <summary> 执行委托 Release. (不是原子操作，可能出问题这里)</summary>
+        /// <summary> 执行委托 Release. (不是原子操作，所以用线程参数传值补救一下)</summary>
         FunRelease _release = nullptr;
 
         /// <summary> 是否线程函数已经执行完毕了. </summary>
@@ -233,8 +233,9 @@ namespace dxlib {
         void start(const std::shared_ptr<BaseThread>& spbt)
         {
             _isRun = true;
+            _self = spbt;//不是原子操作（有隐患）
             //要注意this->thread的赋值并不是一个原子操作
-            this->_thread = std::shared_ptr<std::thread>(new std::thread(&BaseThread::doWork, this, spbt)); //成员函数可能都有一个默认对象函数指针
+            this->_thread = std::shared_ptr<std::thread>(new std::thread(&BaseThread::doWork, this, spbt, _init, _workOnce, _release)); //成员函数可能都有一个默认对象函数指针
             LogI("BaseThread.start():创建线程id=%d!", _thread->get_id());
         }
 
@@ -243,34 +244,39 @@ namespace dxlib {
         ///
         /// <remarks> Dx, 2019/1/15. </remarks>
         ///-------------------------------------------------------------------------------------------------
-        void doWork(std::shared_ptr<BaseThread> bt)
+        void doWork(std::shared_ptr<BaseThread> bt, FunInit init, FunWorkOnce workOnce, FunRelease release)
         {
             bt->_self = bt;//记录一个自身的持有
 
+            //哎，没办法，这里赋值一下再，后面就自求多福吧
+            _init = init;
+            _workOnce = workOnce;
+            _release = release;
+
             //执行一次初始化 Init
-            if (bt->_isRun.load() && bt->_init != nullptr)
-                bt->_init(bt);
+            if (bt->_isRun.load() && init != nullptr)
+                init(bt);
 
             //不停的执行执行委托工作 WorkOnce
             while (_isRun.load()) {
-                if (bt->_workOnce != nullptr)
-                    bt->_workOnce(bt);
+                if (workOnce != nullptr)
+                    workOnce(bt);
                 else
                     break;//连工作委托都没有那么就直接退出吧
             }
 
-            if (bt->_release != nullptr)
-                _release(_self);
+            if (release != nullptr)
+                release(bt);
 
             //归还自身引用持有
             bt->_self = nullptr;
 
-            //标记一下线程真的已经退出了
-            _isThreadFunReturn = true;
             //执行到这里之后,然而此时出栈导致bt释放
 #ifdef USE_BTGC
             btgc->add(bt);
 #endif // USE_BTGC
+            //标记一下线程真的已经退出了
+            _isThreadFunReturn = true;
         }
 
     };

@@ -131,5 +131,6 @@ TEST(MultiCamera, release)
 
     MultiCamera::GetInst()->vProc.clear();
     CameraManger::GetInst()->clear();
+    BaseThread::GC();
     dlog_set_usual_thr(DLOG_INFO);
 }
