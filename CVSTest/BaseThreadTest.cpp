@@ -7,18 +7,22 @@ using namespace dxlib;
 TEST(BaseThread, new_delete)
 {
     std::shared_ptr<BaseThread> spbt;
-    //这里并不能无脑创建太多线程，否则会导致系统崩溃
+    //这里无脑创建线程并且瞬间执行完毕
     for (size_t i = 0; i < 5; i++) {
         spbt = BaseThread::creat(nullptr, nullptr);
-
+        BaseThread::GC();//直接无脑GC
         //还是等他执行完毕，因为没有加入工作函数，所以一下子就会执行完毕
         while (!spbt->isThreadFunReturn()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         spbt = nullptr;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    BaseThread::GC();
+
+    for (size_t i = 0; i < 5; i++) {
+        spbt = BaseThread::creat(nullptr, nullptr);
+        spbt = nullptr;
+        BaseThread::GC();//直接无脑GC
+    }
 
     for (size_t i = 0; i < 5; i++) {
         spbt = BaseThread::creat(nullptr, nullptr);
@@ -31,7 +35,6 @@ TEST(BaseThread, new_delete)
     }
     BaseThread::GC();
 }
-
 
 TEST(BaseThread, stop)
 {
