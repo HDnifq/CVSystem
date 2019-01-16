@@ -49,7 +49,7 @@ namespace dxlib {
         LogI("MultiCamera.init():init委托结束!");
     }
 
-    void MultiCamera::release()
+    void MultiCamera::release(std::shared_ptr<BaseThread>& tb)
     {
         LogI("MultiCamera.release():开始执行release委托!");
 
@@ -156,7 +156,7 @@ namespace dxlib {
                 //综合分析计算线程
                 this->_thread = BaseThread::creat(std::bind(&MultiCamera::init, this, std::placeholders::_1),
                                                   std::bind(&MultiCamera::workonce, this, std::placeholders::_1),
-                                                  std::bind(&MultiCamera::release, this));
+                                                  std::bind(&MultiCamera::release, this, std::placeholders::_1));
             } else if (openType == OpenCameraType::NotStartCalcThread) {
                 LogI("MultiCamera.openCamera():相机打开完成！但不创建计算线程。");
             }
@@ -196,7 +196,7 @@ namespace dxlib {
             //标记自己已经停止
             LogI("MultiCamera.close():执行close()");
             this->_thread->stop();
-            //this->_thread = nullptr;//这里不要急着干掉引用,不然引起线程自己释放自己...
+            this->_thread = nullptr;//这里不要急着干掉引用,不然引起线程自己释放自己...
 
             LogI("MultiCamera.close():综合分析线程已经关闭！");
         }

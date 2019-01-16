@@ -17,16 +17,19 @@ TEST(BaseThread, new_delete)
         }
         spbt = nullptr;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    BaseThread::GC();
 
     for (size_t i = 0; i < 5; i++) {
         spbt = BaseThread::creat(nullptr, nullptr);
 
         //还是等他执行完毕，因为没有加入工作函数，所以一下子就会执行完毕
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         while (!spbt->isThreadFunReturn()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
-
+    BaseThread::GC();
 }
 
 

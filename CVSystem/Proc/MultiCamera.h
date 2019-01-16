@@ -5,7 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-#include "../Common/BaseThread.hpp"
+#include "../Common/BaseThread.h"
 
 namespace dxlib {
 
@@ -216,7 +216,7 @@ namespace dxlib {
 
         void workonce(std::shared_ptr<BaseThread>& tb);
 
-        void release();
+        void release(std::shared_ptr<BaseThread>& tb);
 
 
         //计算fps的辅助

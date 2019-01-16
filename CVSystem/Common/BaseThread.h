@@ -19,6 +19,8 @@
 #define TO_USER_OBJ(T,tb) (*(T*)tb->userObj);
 #endif
 
+#define USE_BTGC 1
+
 namespace dxlib {
 
     ///-------------------------------------------------------------------------------------------------
@@ -34,7 +36,26 @@ namespace dxlib {
     {
         typedef std::function<void(std::shared_ptr<BaseThread>&)> FunInit;
         typedef std::function<void(std::shared_ptr<BaseThread>&)> FunWorkOnce;
-        typedef std::function<void()> FunRelease;
+        typedef std::function<void(std::shared_ptr<BaseThread>&)> FunRelease;
+
+#ifdef USE_BTGC
+        /// <summary> BaseThread的垃圾堆. </summary>
+        class BTGC
+        {
+        public:
+            BTGC();
+            ~BTGC();
+            /// <summary> 添加进垃圾堆. </summary>
+            void add(std::shared_ptr<BaseThread>& bt);
+            /// <summary> 清空垃圾堆. </summary>
+            void clear();
+        private:
+            struct Data;
+            Data* data;
+        };
+        static BTGC* btgc;
+#endif // USE_BTGC
+
     public:
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 构造:创建一个BaseThread对象,创建的同时启动. </summary>
@@ -54,6 +75,18 @@ namespace dxlib {
             spbt->userObj = userObj;
             spbt->start(spbt);
             return spbt;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 手动找个时间进行GC. </summary>
+        ///
+        /// <remarks> Dx, 2019/1/16. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+        static void GC()
+        {
+#ifdef USE_BTGC
+            btgc->clear();
+#endif // USE_BTGC
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -98,11 +131,12 @@ namespace dxlib {
         {
             _isRun = false;
             _init = nullptr;
+            _workOnce = nullptr;
 
             //如果是当前线程执行的Stop，那么就直接执行一次
             if (std::this_thread::get_id() == _thread->get_id()) {
                 if (_release != nullptr)
-                    _release();
+                    _release(_self);
                 _release = nullptr;
             } else { //否则就等待线程执行完毕
                 if (isWait) {
@@ -110,7 +144,6 @@ namespace dxlib {
                         std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     }
                 }
-
             }
         }
 
@@ -175,20 +208,20 @@ namespace dxlib {
         /// <summary> 实际线程. </summary>
         std::shared_ptr<std::thread> _thread = nullptr;
 
-        /// <summary> 执行委托 Init. </summary>
+        /// <summary> 执行委托 Init. (不是原子操作，可能出问题这里) </summary>
         FunInit _init = nullptr;
 
-        /// <summary> 执行委托 WorkOnce. </summary>
+        /// <summary> 执行委托 WorkOnce. (不是原子操作，可能出问题这里) </summary>
         FunWorkOnce _workOnce = nullptr;
 
-        /// <summary> 执行委托 Release. </summary>
+        /// <summary> 执行委托 Release. (不是原子操作，可能出问题这里)</summary>
         FunRelease _release = nullptr;
 
         /// <summary> 是否线程函数已经执行完毕了. </summary>
         std::atomic_bool _isThreadFunReturn = false;
 
-        ///// <summary> 自身引用的持有. </summary>
-        //std::shared_ptr<BaseThread> _self;
+        /// <summary> 自身引用的持有. </summary>
+        std::shared_ptr<BaseThread> _self;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 启动线程. </summary>
@@ -212,6 +245,8 @@ namespace dxlib {
         ///-------------------------------------------------------------------------------------------------
         void doWork(std::shared_ptr<BaseThread> bt)
         {
+            bt->_self = bt;//记录一个自身的持有
+
             //执行一次初始化 Init
             if (bt->_isRun.load() && bt->_init != nullptr)
                 bt->_init(bt);
@@ -225,14 +260,19 @@ namespace dxlib {
             }
 
             if (bt->_release != nullptr)
-                _release();
+                _release(_self);
 
             //归还自身引用持有
-            //bt->_self = nullptr;
+            bt->_self = nullptr;
+
             //标记一下线程真的已经退出了
             _isThreadFunReturn = true;
             //执行到这里之后,然而此时出栈导致bt释放
+#ifdef USE_BTGC
+            btgc->add(bt);
+#endif // USE_BTGC
         }
+
     };
     typedef std::shared_ptr<BaseThread> pBaseThread;
 }

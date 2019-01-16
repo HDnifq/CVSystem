@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "BaseThread.hpp"
+#include "BaseThread.h"
 //
 //namespace dxlib {
 //
