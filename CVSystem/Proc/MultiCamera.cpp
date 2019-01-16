@@ -132,6 +132,8 @@ namespace dxlib {
             LogI("MultiCamera.openCamera():当前系统正在运行,需要先close(),函数直接返回...");
             return false;
         }
+        BaseThread::GC();//随便释放一下
+
         _isOpening.exchange(true);//标记正在打开了
         LogI("MultiCamera.openCamera():开始打开相机...");
 

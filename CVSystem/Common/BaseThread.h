@@ -252,21 +252,22 @@ namespace dxlib {
             _init = init;
             _workOnce = workOnce;
             _release = release;
+            //这个的后面都使用成员对象，方便响应stop的时候置为了null
 
             //执行一次初始化 Init
-            if (bt->_isRun.load() && init != nullptr)
-                init(bt);
+            if (bt->_isRun.load() && _init != nullptr)
+                _init(bt);
 
             //不停的执行执行委托工作 WorkOnce
             while (_isRun.load()) {
-                if (workOnce != nullptr)
-                    workOnce(bt);
+                if (_workOnce != nullptr)
+                    _workOnce(bt);
                 else
                     break;//连工作委托都没有那么就直接退出吧
             }
 
-            if (release != nullptr)
-                release(bt);
+            if (_release != nullptr)
+                _release(bt);
 
             //归还自身引用持有
             bt->_self = nullptr;
