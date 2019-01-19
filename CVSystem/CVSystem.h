@@ -21,5 +21,6 @@
 #include "./Proc/CameraThread.h"
 #include "./Proc/DevicesHelper.h"
 #include "./Proc/MultiCamera.h"
+#include  "./Proc/SimpleModule.hpp"
 
 #endif // !_CVSYSTEM_H_
