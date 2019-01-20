@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "../CVSystem/eventbus/EventBus.h"
-#include "../CVSystem/eventbus/EventCollector.h""
+#include "../CVSystem/eventbus/EventCollector.h"
 
 std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
 
@@ -13,7 +13,7 @@ namespace Event {
 
     struct Event2
     {
-        int value = 0;
+        double value = 0;
     };
 }
 
