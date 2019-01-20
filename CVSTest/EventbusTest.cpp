@@ -1,84 +1,53 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/CVSystem.h"
+#include "../CVSystem/eventbus/EventBus.h"
+#include "../CVSystem/eventbus/EventCollector.h""
 
+std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
 
-Dexode::EventBus bus;
+namespace Event {
+    struct Event1
+    {
+        int value = 0;
+    };
 
-namespace Event { // Example namespace for events
-    struct Gold // Event that will be proceed when our gold changes
+    struct Event2
     {
         int value = 0;
     };
 }
 
-enum class Monster
-{
-    Frog,
-    Tux,
-    Shark
-};
-
-///-------------------------------------------------------------------------------------------------
-/// <summary> 一个示例类. </summary>
-///
-/// <remarks> Dx, 2019/1/13. </remarks>
-///-------------------------------------------------------------------------------------------------
-class ShopButton
-{
-public:
-    ShopButton(const std::shared_ptr<Dexode::EventBus>& eventBus)
-        : _listener{ eventBus }
-    {
-        // We can use lambda or bind your choice
-        _listener.listen<Event::Gold>(
-            std::bind(&ShopButton::onGoldUpdated, this, std::placeholders::_1));
-        // Also we use RAII idiom to handle unlisten
-    }
-
-    bool isEnabled() const
-    {
-        return _isEnabled;
-    }
-
-private:
-    Dexode::EventCollector _listener;
-    bool _isEnabled = false;
-
-    void onGoldUpdated(const Event::Gold& event)
-    {
-        _isEnabled = event.value > 0;
-        std::cout << "Shop button is:" << _isEnabled << std::endl; // some kind of logs
-    }
-};
-
-
 bool isEnter;
 int enterCount;
 
-//内存事件的响应
-void onMemEvent(const Event::Gold& e)
+void onEvent1(const Event::Event1& e)
 {
+    std::cout << "enter envent 1 " << std::endl;
+    isEnter = true;
+    enterCount++;
+}
+void onEvent2(const Event::Event2& e)
+{
+    std::cout << "enter envent 2 " << std::endl;
     isEnter = true;
     enterCount++;
 }
 
 
-TEST(Eventbus, base)
+TEST(Eventbus, Event1_Event2)
 {
+    //reset flag
     isEnter = false;
     enterCount = 0;
 
-    Dexode::EventCollector _listener(dxlib::Event::GetInst()->bus);
+    Dexode::EventCollector _listener(bus);
 
-    //绑定了两次就会进入两次函数
-    _listener.listen<Event::Gold>(onMemEvent);
-    _listener.listen<Event::Gold>(onMemEvent);
+    _listener.listen<Event::Event1>(std::bind(&onEvent1, std::placeholders::_1));
+    _listener.listen<Event::Event2>(std::bind(&onEvent2, std::placeholders::_1));
 
-    dxlib::Event::GetInst()->bus->notify(Event::Gold{ 123 });
+    bus->notify(Event::Event1{ 1 });
 
     EXPECT_TRUE(isEnter);
-
-    EXPECT_TRUE(enterCount == 2);
+    EXPECT_TRUE(enterCount == 1);//fail！ enterCount=2
 }
 
