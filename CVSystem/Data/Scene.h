@@ -1,5 +1,10 @@
 ﻿#pragma once
 //#include <Eigen/Geometry> //原本是使用它的，但是它和一些库有冲突
+// eigen库里有一个代码会和U()宏冲突，微软注释说明可以使用_TURN_OFF_PLATFORM_STRING宏来去掉U(),
+//然后使用_XPLATSTR来代替U()
+//#ifndef _TURN_OFF_PLATFORM_STRING
+//#define _TURN_OFF_PLATFORM_STRING
+//#endif // !_TURN_OFF_PLATFORM_STRING
 #include <vector>
 #include <string>
 #include <array>

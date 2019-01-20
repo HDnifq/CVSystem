@@ -4,6 +4,9 @@
 #ifndef _NO_ASYNCRTIMP
 #define _NO_ASYNCRTIMP
 #endif // !_NO_ASYNCRTIMP
+#ifndef _TURN_OFF_PLATFORM_STRING
+#define _TURN_OFF_PLATFORM_STRING
+#endif // !_TURN_OFF_PLATFORM_STRING
 #include "cpprest/json.h"
 #include <codecvt>
 #include <locale>
@@ -20,8 +23,8 @@ TEST(Scene, json)
     obj[L"key1"] = web::json::value::boolean(false);
     obj[L"key2"] = web::json::value::number(44);
     obj[L"key3"] = web::json::value::number(43.6);
-    obj[L"key4"] = web::json::value::string(U("str"));
-    obj[L"key5"] = web::json::value::string(U("中文"));
+    obj[L"key4"] = web::json::value::string(_XPLATSTR("str"));
+    obj[L"key5"] = web::json::value::string(_XPLATSTR("中文"));
     obj[L"arr"] = web::json::value::array({ 1, 2, 3 });
 
     utility::string_t str = obj.serialize();
@@ -39,7 +42,6 @@ TEST(Scene, json)
     out.flush();
     out.close();
 
-
     web::json::value obj2;
     obj2.parse(str);
 
@@ -54,11 +56,10 @@ TEST(Scene, GameObj)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(U("a"), 1, Eigen::Vector3d(1, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
-    scene.vGameObj.push_back(GameObj(U("b"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, Eigen::Vector3d(1, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
 
-    scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
 
     scene.save(FileHelper::getModuleDir() + "\\test1.json");
-
 }

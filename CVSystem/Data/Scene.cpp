@@ -3,6 +3,10 @@
 #ifndef _NO_ASYNCRTIMP
 #define _NO_ASYNCRTIMP
 #endif // !_NO_ASYNCRTIMP
+#ifndef _TURN_OFF_PLATFORM_STRING
+#define _TURN_OFF_PLATFORM_STRING
+#endif // !_TURN_OFF_PLATFORM_STRING
+
 #include "cpprest/json.h"
 
 #include <codecvt>
