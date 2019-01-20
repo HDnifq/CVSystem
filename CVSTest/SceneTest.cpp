@@ -7,6 +7,7 @@
 #include "cpprest/json.h"
 #include <codecvt>
 #include <locale>
+#include <Eigen/Geometry>
 
 using namespace dxlib;
 
@@ -53,10 +54,10 @@ TEST(Scene, GameObj)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(U("a"), 1, Eigen::Vector3d(1, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
-    scene.vGameObj.push_back(GameObj(U("b"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("a"), 1, Eigen::Vector3d(1, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(U("b"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
 
-    scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3), Eigen::Vector4d(0, 0, 0, 1)));
+    scene.vGameObj.push_back(GameObj(U("中文1"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
 
     scene.save(FileHelper::getModuleDir() + "\\test1.json");
 

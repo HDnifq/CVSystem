@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include <Eigen/Geometry>
+//#include <Eigen/Geometry> //原本是使用它的，但是它和一些库有冲突
 #include <vector>
 #include <string>
+#include <array>
 
 //因为Eigen库里的v3的计算函数多一些，所以就使用它了
 namespace dxlib {
     namespace u3d {
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary> 使用枚举定义物体的类型. </summary>
         ///
@@ -29,15 +29,21 @@ namespace dxlib {
         public:
             GameObj() {}
 
-            GameObj(std::wstring name, int type = ObjType::Cube):
+            GameObj(std::wstring name, int type = ObjType::Cube) :
                 name(name),
                 type(type) {}
 
-            GameObj(std::wstring name, int type, Eigen::Vector3d position, Eigen::Vector4d rotation):
+            GameObj(std::wstring name, int type, std::array<double, 3> position, std::array<double, 4> rotation) :
                 name(name),
                 type(type),
                 position(position),
                 rotation(rotation) {}
+            GameObj(std::wstring name, int type, double* position, double* rotation) :
+                name(name),
+                type(type) {
+                this->position = { position[0], position[1], position[2] };
+                this->rotation = { rotation[0], rotation[1], rotation[2], rotation[3] };
+            }
 
             ~GameObj() {}
 
@@ -48,17 +54,17 @@ namespace dxlib {
             int type = ObjType::Empty;
 
             /// <summary> 世界坐标. </summary>
-            Eigen::Vector3d position = Eigen::Vector3d(0, 0, 0);
+            std::array<double, 3> position = { 0, 0, 0 };
 
             /// <summary> 旋转. </summary>
-            Eigen::Vector4d rotation = Eigen::Vector4d(0, 0, 0, 1);
+            std::array<double, 4> rotation = { 0, 0, 0, 1 };
 
             /// <summary> 这个物体的子物体. </summary>
             std::vector<GameObj> children;
 
-            #pragma region obj<->json
+#pragma region obj<->json
             void toJson(void* jsonObj);
-            #pragma endregion
+#pragma endregion
         };
 
         ///-------------------------------------------------------------------------------------------------
@@ -72,15 +78,21 @@ namespace dxlib {
 
             Line() {}
 
-            Line(std::wstring name, int type = 0):
+            Line(std::wstring name, int type = 0) :
                 name(name),
                 type(type) {}
 
-            Line(std::wstring name, int type, Eigen::Vector3d position0, Eigen::Vector3d position1):
+            Line(std::wstring name, int type, std::array<double, 3> position0, std::array<double, 3> position1) :
                 name(name),
                 type(type),
                 pos0(position0),
                 pos1(position1) {}
+            Line(std::wstring name, int type, double* position0, double* position1) :
+                name(name),
+                type(type) {
+                this->pos0 = { position0[0], position0[1], position0[2] };
+                this->pos1 = { position1[0], position1[1], position1[2] };
+            }
 
             ~Line() { }
 
@@ -91,14 +103,14 @@ namespace dxlib {
             int type = 0;
 
             /// <summary> 世界坐标. </summary>
-            Eigen::Vector3d pos0 = Eigen::Vector3d(0, 0, 0);
+            std::array<double, 3> pos0 = { 0, 0, 0 };
 
             /// <summary> 世界坐标. </summary>
-            Eigen::Vector3d pos1 = Eigen::Vector3d(0, 0, 0);
+            std::array<double, 3> pos1 = { 0, 0, 0 };
 
-            #pragma region obj<->json
+#pragma region obj<->json
             void toJson(void* jsonObj);
-            #pragma endregion
+#pragma endregion
         };
 
         ///-------------------------------------------------------------------------------------------------
@@ -112,12 +124,10 @@ namespace dxlib {
 
             Scene()
             {
-
             }
 
             ~Scene()
             {
-
             }
 
             /// <summary> 所有物体的列表. </summary>
@@ -135,12 +145,10 @@ namespace dxlib {
             ///-------------------------------------------------------------------------------------------------
             void save(std::string filePath);
 
-            #pragma region obj<->json
+#pragma region obj<->json
             void toJson(void* jsonObj);
-            #pragma endregion
+#pragma endregion
         private:
-
         };
-
     }
 }
