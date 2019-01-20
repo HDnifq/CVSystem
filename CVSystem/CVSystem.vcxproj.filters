@@ -33,9 +33,6 @@
     <ClInclude Include="Common\CoolTime.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Draw.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Common\FileHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -70,9 +67,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Proc\CameraManger.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Proc\Event.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Data\Scene.h">
@@ -111,15 +105,21 @@
     <ClInclude Include="Proc\SimpleModule.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Proc\Draw.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Common\Common.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\Draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Common\FileHelper.cpp">
@@ -146,9 +146,6 @@
     <ClCompile Include="Proc\CameraManger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Proc\Event.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Data\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -159,6 +156,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Common\BaseThread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Event.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Proc\Draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
