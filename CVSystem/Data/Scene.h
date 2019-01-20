@@ -45,7 +45,8 @@ namespace dxlib {
                 rotation(rotation) {}
             GameObj(std::wstring name, int type, double* position, double* rotation) :
                 name(name),
-                type(type) {
+                type(type)
+            {
                 this->position = { position[0], position[1], position[2] };
                 this->rotation = { rotation[0], rotation[1], rotation[2], rotation[3] };
             }
@@ -67,9 +68,9 @@ namespace dxlib {
             /// <summary> 这个物体的子物体. </summary>
             std::vector<GameObj> children;
 
-#pragma region obj<->json
+            #pragma region obj<->json
             void toJson(void* jsonObj);
-#pragma endregion
+            #pragma endregion
         };
 
         ///-------------------------------------------------------------------------------------------------
@@ -94,7 +95,8 @@ namespace dxlib {
                 pos1(position1) {}
             Line(std::wstring name, int type, double* position0, double* position1) :
                 name(name),
-                type(type) {
+                type(type)
+            {
                 this->pos0 = { position0[0], position0[1], position0[2] };
                 this->pos1 = { position1[0], position1[1], position1[2] };
             }
@@ -113,9 +115,9 @@ namespace dxlib {
             /// <summary> 世界坐标. </summary>
             std::array<double, 3> pos1 = { 0, 0, 0 };
 
-#pragma region obj<->json
+            #pragma region obj<->json
             void toJson(void* jsonObj);
-#pragma endregion
+            #pragma endregion
         };
 
         ///-------------------------------------------------------------------------------------------------
@@ -150,9 +152,9 @@ namespace dxlib {
             ///-------------------------------------------------------------------------------------------------
             void save(std::string filePath);
 
-#pragma region obj<->json
+            #pragma region obj<->json
             void toJson(void* jsonObj);
-#pragma endregion
+            #pragma endregion
         private:
         };
     }

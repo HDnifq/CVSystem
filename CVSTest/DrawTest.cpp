@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/Common/Draw.h"
+#include "../CVSystem/Proc/Draw.h"
 
 using namespace dxlib;
 
