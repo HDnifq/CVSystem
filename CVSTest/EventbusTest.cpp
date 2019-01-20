@@ -48,6 +48,6 @@ TEST(Eventbus, Event1_Event2)
     bus->notify(Event::Event1{ 1 });
 
     EXPECT_TRUE(isEnter);
-    EXPECT_TRUE(enterCount == 1);//fail！ enterCount=2
+    EXPECT_TRUE(enterCount == 1);
 }
 
