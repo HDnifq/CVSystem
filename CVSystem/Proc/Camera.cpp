@@ -214,6 +214,14 @@ namespace dxlib {
 
     void Camera::initUndistortRectifyMap()
     {
+        if (this->camMatrix.empty()) {
+            LogE("Camera.initUndistortRectifyMap():当前相机camMatrix为空!");
+            return;
+        }
+        if (!this->distCoeffs.empty()) {
+            LogE("Camera.initUndistortRectifyMap():当前相机distCoeffs为空!");
+            return;
+        }
         cv::initUndistortRectifyMap(this->camMatrix, this->distCoeffs, this->R, this->P, this->size, CV_16SC2, this->rmap1, this->rmap2);
     }
 
