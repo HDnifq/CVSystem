@@ -44,20 +44,28 @@ namespace dxlib {
             return false;    // this is not a directory!
     }
 
+    //只需要使用api获得一次就行了
+    std::string moduleDir;
+
     //得到模块目录末尾不带斜杠"D:\\Work\\F3DSys\\F3DSystem"
     std::string FileHelper::getModuleDir()
     {
-        wchar_t exeFullPath[MAX_PATH]; // Full path
-        std::string strPath = "";
+        if (!moduleDir.empty()) {
+            return moduleDir;//只要有记录了就直接使用
+        } else {
+            wchar_t exeFullPath[MAX_PATH]; // Full path
+            std::string strPath = "";
 
-        GetModuleFileName(NULL, exeFullPath, MAX_PATH);
+            GetModuleFileName(NULL, exeFullPath, MAX_PATH);
 
-        char CharString[MAX_PATH];
-        size_t convertedChars = 0;
-        wcstombs_s(&convertedChars, CharString, MAX_PATH, exeFullPath, _TRUNCATE);
-        strPath = (std::string)CharString;    // Get full path of the file
-        size_t pos = strPath.find_last_of('\\', strPath.length());
-        return strPath.substr(0, pos);  // Return the directory without the file name
+            char CharString[MAX_PATH];
+            size_t convertedChars = 0;
+            wcstombs_s(&convertedChars, CharString, MAX_PATH, exeFullPath, _TRUNCATE);
+            strPath = (std::string)CharString;    // Get full path of the file
+            size_t pos = strPath.find_last_of('\\', strPath.length());
+            moduleDir = strPath.substr(0, pos); // Return the directory without the file name
+            return moduleDir;
+        }
     }
 
     void FileHelper::isExistsAndCreat(std::wstring dirPath)
