@@ -218,7 +218,7 @@ namespace dxlib {
             LogE("Camera.initUndistortRectifyMap():当前相机camMatrix为空!");
             return;
         }
-        if (!this->distCoeffs.empty()) {
+        if (this->distCoeffs.empty()) {
             LogE("Camera.initUndistortRectifyMap():当前相机distCoeffs为空!");
             return;
         }
