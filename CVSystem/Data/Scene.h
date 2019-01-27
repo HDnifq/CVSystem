@@ -22,7 +22,7 @@ namespace dxlib {
             Empty = -1,
             Cube = 0,
             Point = 100,
-            Borad = 200,
+            Board = 200,
         };
 
         ///-------------------------------------------------------------------------------------------------
@@ -44,6 +44,7 @@ namespace dxlib {
                 type(type),
                 position(position),
                 rotation(rotation) {}
+
             GameObj(std::wstring name, int type, double* position, double* rotation) :
                 name(name),
                 type(type)
@@ -94,6 +95,7 @@ namespace dxlib {
                 type(type),
                 pos0(position0),
                 pos1(position1) {}
+
             Line(std::wstring name, int type, double* position0, double* position1) :
                 name(name),
                 type(type)
