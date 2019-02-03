@@ -67,11 +67,15 @@ namespace dxlib {
             /// <summary> 旋转. </summary>
             std::array<double, 4> rotation = { 0, 0, 0, 1 };
 
+            /// <summary> 本地缩放. </summary>
+            std::array<double, 3> localScale = { 1, 1, 1 };
+
             /// <summary> 这个物体的子物体. </summary>
             std::vector<GameObj> children;
 
             #pragma region obj<->json
-            void toJson(void* jsonObj);
+            void toJson(void* jsonValue);
+            static GameObj toObj(void* jsonValue);
             #pragma endregion
         };
 
@@ -119,7 +123,8 @@ namespace dxlib {
             std::array<double, 3> pos1 = { 0, 0, 0 };
 
             #pragma region obj<->json
-            void toJson(void* jsonObj);
+            void toJson(void* jsonValue);
+            static Line toObj(void* jsonValue);
             #pragma endregion
         };
 
@@ -156,7 +161,8 @@ namespace dxlib {
             void save(std::string filePath);
 
             #pragma region obj<->json
-            void toJson(void* jsonObj);
+            void toJson(void* jsonValue);
+            static Scene toObj(void* jsonValue);
             #pragma endregion
         private:
         };

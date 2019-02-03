@@ -54,12 +54,69 @@ TEST(Scene, json)
 
 TEST(Scene, GameObj)
 {
+    GameObj obj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 });
+    obj.localScale = { 3, 4, 5 };
+    for (size_t i = 0; i < 3; i++) {
+        obj.children.push_back(obj);
+    }
+
+    //序列化
+    web::json::value json;
+    obj.toJson(&json);
+    //反序列化
+    GameObj obj2 = GameObj::toObj(&json);
+
+    EXPECT_TRUE(obj.name == obj2.name);
+    EXPECT_TRUE(obj.type == obj2.type);
+    EXPECT_TRUE(obj.position == obj2.position);
+    EXPECT_TRUE(obj.rotation == obj2.rotation);
+    EXPECT_TRUE(obj.localScale == obj2.localScale);
+    EXPECT_TRUE(obj.children.size() == obj2.children.size());
+}
+
+TEST(Scene, Line)
+{
+    Line obj(L"abc", 100, { 1, 2, 3 }, { 4, 5, 6 });
+
+    //序列化
+    web::json::value json;
+    obj.toJson(&json);
+    //反序列化
+    Line obj2 = Line::toObj(&json);
+
+    EXPECT_TRUE(obj.name == obj2.name);
+    EXPECT_TRUE(obj.type == obj2.type);
+    EXPECT_TRUE(obj.pos0 == obj2.pos0);
+    EXPECT_TRUE(obj.pos1 == obj2.pos1);
+}
+
+TEST(Scene, Scene)
+{
+    Scene obj;
+
+    obj.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 }));
+    obj.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
+
+    obj.vLine.push_back(Line(L"l1", 100, { 1, 2, 3 }, { 4, 5, 6 }));
+
+    //序列化
+    web::json::value json;
+    obj.toJson(&json);
+    //反序列化
+    Scene obj2 = Scene::toObj(&json);
+
+    EXPECT_TRUE(obj.vGameObj.size() == obj2.vGameObj.size());
+    EXPECT_TRUE(obj.vGameObj.size() == obj2.vGameObj.size());
+}
+
+TEST(Scene, save)
+{
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, Eigen::Vector3d(1, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 }));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, Eigen::Vector3d(2, 2, 3).data(), Eigen::Vector4d(0, 0, 0, 1).data()));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
 
     scene.save(FileHelper::getModuleDir() + "\\test1.json");
 }
