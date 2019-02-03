@@ -46,6 +46,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlgoTest.cpp" />
     <ClCompile Include="BaseThreadTest.cpp" />
     <ClCompile Include="CameraThreadTest.cpp" />
     <ClCompile Include="CommonTest.cpp" />

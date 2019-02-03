@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _CVSYSTEM_COMMON_H_
 #define _CVSYSTEM_COMMON_H_
 
@@ -11,6 +11,6 @@
 #include "./Common/FileHelper.h"
 #include "./Common/FPSCalc.hpp"
 #include "./Common/Event.h"
-
+#include "./Common/ALGO.hpp"
 #endif
 
