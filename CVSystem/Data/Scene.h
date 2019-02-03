@@ -67,8 +67,8 @@ namespace dxlib {
             /// <summary> 旋转. </summary>
             std::array<double, 4> rotation = { 0, 0, 0, 1 };
 
-            /// <summary> 本地缩放. </summary>
-            std::array<double, 3> localScale = { 1, 1, 1 };
+            /// <summary> 本地缩放(如果为0认为忽略缩放设置，使用u3d资源里的缩放). </summary>
+            std::array<double, 3> localScale = { 0, 0, 0 };
 
             /// <summary> 这个物体的子物体. </summary>
             std::vector<GameObj> children;
