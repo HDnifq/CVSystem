@@ -33,13 +33,10 @@ namespace dxlib {
         class GameObj
         {
         public:
-            GameObj() {}
-
-            GameObj(std::wstring name, int type = ObjType::Cube) :
-                name(name),
-                type(type) {}
-
-            GameObj(std::wstring name, int type, std::array<double, 3> position, std::array<double, 4> rotation) :
+            GameObj(std::wstring name = L"unnamed",
+                    int type = ObjType::Empty,
+                    std::array<double, 3> position = { 0, 0, 0 },
+                    std::array<double, 4> rotation = { 0, 0, 0, 1 }) :
                 name(name),
                 type(type),
                 position(position),

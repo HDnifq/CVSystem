@@ -18,3 +18,14 @@ TEST(ALGO, findIndex)
     EXPECT_TRUE(res[2] == 4);
     EXPECT_TRUE(res.size() == 3);
 }
+
+TEST(ALGO, select)
+{
+    vector<int> vec = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    vector<int> indexs = { 3, 4, 5 };
+    vector<int> res = ALGO::select(vec, indexs);
+
+    EXPECT_TRUE(res[0] == 4);
+    EXPECT_TRUE(res[1] == 5);
+    EXPECT_TRUE(res[2] == 6);
+}
