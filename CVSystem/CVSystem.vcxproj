@@ -154,7 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Common\ALGO.hpp" />
+    <ClInclude Include="ALGO.hpp" />
     <ClInclude Include="Common\BaseThread.h" />
     <ClInclude Include="Common\blockingconcurrentqueue.h" />
     <ClInclude Include="Common\Common.h" />

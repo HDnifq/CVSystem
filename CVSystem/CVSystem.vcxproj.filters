@@ -114,7 +114,7 @@
     <ClInclude Include="Common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Common\ALGO.hpp">
+    <ClInclude Include="ALGO.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
