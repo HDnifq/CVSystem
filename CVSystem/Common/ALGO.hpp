@@ -2,6 +2,10 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/assign.hpp>
+#include <algorithm>
 
 namespace dxlib {
 
@@ -95,6 +99,60 @@ namespace dxlib {
                 result.push_back(vec[indexs[i]]);
             }
             return result;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 从map里按一组key选出几项来组成一个新的数组. </summary>
+        ///
+        /// <remarks> Surface, 2019/2/4. </remarks>
+        ///
+        /// <typeparam name="T"> Generic type parameter. </typeparam>
+        /// <param name="vec">    The vector. </param>
+        /// <param name="indexs"> 使用这一组index来选择. </param>
+        ///
+        /// <returns> 选择出的几项组成的新数组; </returns>
+        ///-------------------------------------------------------------------------------------------------
+        template<typename K, typename V>
+        static std::vector<V> select(const std::map<K, V>& m, const std::vector<K>& keys)
+        {
+            std::vector<V> result;//本来有一个pushback了拷贝了一次,后面不差再拷贝一次了,直接返回算了= =
+            for (size_t i = 0; i < keys.size(); i++) {
+                //如果keys里有错误的index，那么就直接崩溃算了
+                result.push_back(m.at(keys[i]));
+            }
+            return result;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 得到map的所有Key. </summary>
+        ///
+        /// <remarks> Surface, 2019/2/4. </remarks>
+        ///
+        /// <typeparam name="K"> Generic type parameter. </typeparam>
+        /// <typeparam name="V"> Generic type parameter. </typeparam>
+        /// <param name="m">    map. </param>
+        /// <param name="keys"> [out] 所有key. </param>
+        ///-------------------------------------------------------------------------------------------------
+        template<typename K, typename V>
+        static void mapKeys(const std::map<K, V>& m, std::vector<K>& keys)
+        {
+            boost::copy(m | boost::adaptors::map_keys, std::back_inserter(keys));
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 得到map的所有Key. </summary>
+        ///
+        /// <remarks> Surface, 2019/2/4. </remarks>
+        ///
+        /// <typeparam name="K"> Generic type parameter. </typeparam>
+        /// <typeparam name="V"> Generic type parameter. </typeparam>
+        /// <param name="m">     map. </param>
+        /// <param name="keys"> [out] 所有value. </param>
+        ///-------------------------------------------------------------------------------------------------
+        template<typename K, typename V>
+        static void mapValues(const std::map<K, V>& m, std::vector<V>& values)
+        {
+            boost::copy(m | boost::adaptors::map_values, std::back_inserter(values));
         }
 
     };

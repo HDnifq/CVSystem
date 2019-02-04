@@ -52,3 +52,17 @@ TEST(Common, shared_ptr)
     vec.clear();//这里testClass就执行了析构
     EXPECT_TRUE(msg.length() > 0);
 }
+
+TestClass func(std::string* aStr)
+{
+    TestClass tc(aStr);
+    return tc;
+}
+
+//测试对象作为参数传递是否会拷贝一次
+TEST(Common, returnTest)
+{
+    std::string msg;
+    TestClass tc = func(&msg);//这里赋值执行了拷贝构造函数
+    EXPECT_TRUE(msg.length() > 0);
+}
