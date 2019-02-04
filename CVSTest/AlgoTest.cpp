@@ -60,3 +60,19 @@ TEST(ALGO, mapKeysValues)
     EXPECT_TRUE(values.size() == 3);
     //EXPECT_TRUE(res[2] == 6);
 }
+
+TEST(ALGO, findMap)
+{
+    map<int, string> m;
+    m[0] = "123";
+    m[1] = "123";
+    m[2] = "123";
+
+    map<int, int> m2;
+    m2[0] = 123;
+    m2[1] = 345;
+    m2[2] = 456;
+    auto itr = ALGO::find(m2, 345);
+
+    EXPECT_TRUE(itr->first == 1);
+}

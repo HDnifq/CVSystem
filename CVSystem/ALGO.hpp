@@ -155,5 +155,48 @@ namespace dxlib {
             boost::copy(m | boost::adaptors::map_values, std::back_inserter(values));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 是否包含键值key. </summary>
+        ///
+        /// <remarks> Dx, 2019/2/5. </remarks>
+        ///
+        /// <typeparam name="K"> Generic type parameter. </typeparam>
+        /// <typeparam name="V"> Generic type parameter. </typeparam>
+        /// <param name="m">   map. </param>
+        /// <param name="key"> The key. </param>
+        ///-------------------------------------------------------------------------------------------------
+        template<typename K, typename V>
+        static void isContainKey(const std::map<K, V>& m, const K& key)
+        {
+            if (m.find(key) != m.end()) {
+                return true;
+            } else {
+                return false;
+            }
+            //也可以使用m.count(key)判断是0还是1
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary> 根据一个value在map里寻找第一个. </summary>
+        ///
+        /// <remarks> Dx, 2019/2/5. </remarks>
+        ///
+        /// <typeparam name="K"> Generic type parameter. </typeparam>
+        /// <typeparam name="V"> Generic type parameter. </typeparam>
+        /// <param name="m">   map. </param>
+        /// <param name="val"> The value. </param>
+        ///
+        /// <returns> 返回值使用了auto,因为搞不清楚返回值类型,模板嵌套了模板. </returns>
+        ///-------------------------------------------------------------------------------------------------
+        template<typename K, typename V>
+        static auto find(const std::map<K, V>& m, const V val)
+        {
+            return std::find_if(
+                       m.begin(),
+                       m.end(),
+            [val](const auto & itr) {
+                return itr.second == val;
+            });
+        }
     };
 }
