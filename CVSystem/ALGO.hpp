@@ -166,7 +166,7 @@ namespace dxlib {
         /// <param name="key"> The key. </param>
         ///-------------------------------------------------------------------------------------------------
         template<typename K, typename V>
-        static void isContainKey(const std::map<K, V>& m, const K& key)
+        static bool isContainKey(const std::map<K, V>& m, const K& key)
         {
             if (m.find(key) != m.end()) {
                 return true;
