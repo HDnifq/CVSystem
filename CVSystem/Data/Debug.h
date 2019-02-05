@@ -1,24 +1,21 @@
 ﻿#pragma once
 
-namespace dxlib
+namespace dxlib {
+
+class Debug
 {
+  public:
+    Debug();
+    ~Debug();
 
+  private:
+};
 
-    class Debug
-    {
-    public:
-        Debug();
-        ~Debug();
-
-    private:
-
-    };
-
-    Debug::Debug()
-    {
-    }
-
-    Debug::~Debug()
-    {
-    }
+Debug::Debug()
+{
 }
+
+Debug::~Debug()
+{
+}
+} // namespace dxlib

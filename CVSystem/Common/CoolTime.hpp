@@ -52,7 +52,7 @@ class CoolTime
     bool isDone()
     {
         clock_t now = clock();
-        float costTime = (float) (now - _lastTime) / CLOCKS_PER_SEC;
+        float costTime = (float)(now - _lastTime) / CLOCKS_PER_SEC;
         if (costTime > CD || count == 0) //如果经过了（CD时间）秒,或者是初始状态
         {
             _lastTime = now; //记录现在的最近一次的时间

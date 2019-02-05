@@ -16,7 +16,7 @@
 //把userObj的指针转换成对象引用
 //第一个参数T为要转换的类型，第二个参数tb为BaseThread指针
 #ifndef TO_USER_OBJ
-#define TO_USER_OBJ(T, tb) (*(T*) tb->userObj);
+#define TO_USER_OBJ(T, tb) (*(T*)tb->userObj);
 #endif
 
 #define USE_BTGC 1

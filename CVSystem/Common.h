@@ -12,4 +12,3 @@
 #include "./Common/FPSCalc.hpp"
 #include "./Common/Event.h"
 #endif
-

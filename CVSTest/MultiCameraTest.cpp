@@ -5,20 +5,19 @@
 using namespace dxlib;
 using namespace std;
 
-
 class TestProc : public FrameProc
 {
-public:
+  public:
     TestProc() {}
     ~TestProc() {}
 
     int process(pCameraImage camImage) override
     {
         cv::Mat image = camImage->vImage[0].image;
-        EXPECT_FALSE(image.empty());//确实能采图
+        EXPECT_FALSE(image.empty()); //确实能采图
 
         int key = -1;
-        key = cv::waitKey(1);//一定要加waitKey无法显示图片
+        key = cv::waitKey(1); //一定要加waitKey无法显示图片
         return key;
     }
     void onEnable() override
@@ -30,10 +29,9 @@ public:
     }
 };
 
-
 class TestProcRelease : public FrameProc
 {
-public:
+  public:
     TestProcRelease() {}
     ~TestProcRelease() {}
 
@@ -53,7 +51,6 @@ public:
     }
 };
 
-
 //测试MultiCamera的open是否正常
 TEST(MultiCamera, open)
 {
@@ -70,13 +67,12 @@ TEST(MultiCamera, open)
     MultiCamera::GetInst()->addProc(new TestProc());
 
     for (size_t i = 0; i < 2; i++) {
-        MultiCamera::GetInst()->openCamera();//打开相机
+        MultiCamera::GetInst()->openCamera(); //打开相机
         EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));//工作500秒
+        std::this_thread::sleep_for(std::chrono::milliseconds(500)); //工作500秒
         EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
         MultiCamera::GetInst()->close();
     }
-
 
     MultiCamera::GetInst()->vProc.clear();
     CameraManger::GetInst()->clear();
@@ -88,18 +84,15 @@ TEST(MultiCamera, AddVirtualCamera)
     CameraManger::GetInst()->add(pCamera(new Camera(0, L"VirtualCamera0")), true);
     CameraManger::GetInst()->add(pCamera(new Camera(1, L"VirtualCamera0")), true);
 
-    bool result = MultiCamera::GetInst()->openCamera();//打开相机
+    bool result = MultiCamera::GetInst()->openCamera(); //打开相机
     EXPECT_FALSE(result);
     EXPECT_FALSE(CameraManger::GetInst()->camMap[0]->isOpened());
     EXPECT_FALSE(CameraManger::GetInst()->camMap[1]->isOpened());
     MultiCamera::GetInst()->close();
 
-
-
     MultiCamera::GetInst()->vProc.clear();
     CameraManger::GetInst()->clear();
 }
-
 
 //测试MultiCamera的release是否正常，加入的proc是 TestProcRelease
 TEST(MultiCamera, release)
@@ -119,11 +112,11 @@ TEST(MultiCamera, release)
     MultiCamera::GetInst()->addProc(new TestProcRelease());
 
     for (size_t i = 0; i < 2; i++) {
-        EXPECT_TRUE(MultiCamera::GetInst()->openCamera());//打开相机
+        EXPECT_TRUE(MultiCamera::GetInst()->openCamera()); //打开相机
         LogI("TEST(MultiCamera, release):当前MT工作状态 = %d", MultiCamera::GetInst()->isRun());
         while (MultiCamera::GetInst()->isRun()) {
             LogI("TEST(MultiCamera, release):主线程等待关闭！id=%d", std::this_thread::get_id());
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));//等待500
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); //等待500
         }
 
         LogI("TEST(MultiCamera, release):主线程发现已经关闭！");

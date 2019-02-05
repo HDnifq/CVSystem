@@ -62,7 +62,7 @@ std::string FileHelper::getModuleDir()
         char CharString[MAX_PATH];
         size_t convertedChars = 0;
         wcstombs_s(&convertedChars, CharString, MAX_PATH, exeFullPath, _TRUNCATE);
-        strPath = (std::string) CharString; // Get full path of the file
+        strPath = (std::string)CharString; // Get full path of the file
         size_t pos = strPath.find_last_of('\\', strPath.length());
         moduleDir = strPath.substr(0, pos); // Return the directory without the file name
         return moduleDir;

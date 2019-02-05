@@ -141,7 +141,7 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devList)
             while (pEnum->Next(1, &pMoniker, NULL) == S_OK) {
                 IPropertyBag* pPropBag;
                 hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
-                                             (void**) (&pPropBag));
+                                             (void**)(&pPropBag));
 
                 if (FAILED(hr)) {
                     pMoniker->Release();
@@ -161,7 +161,7 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devList)
                     int count = 0;
                     int maxLen = sizeof(deviceNames[0]) / sizeof(deviceNames[0][0]) - 2;
                     while (varName.bstrVal[count] != 0x00 && count < maxLen) {
-                        deviceNames[deviceCounter][count] = (char) varName.bstrVal[count];
+                        deviceNames[deviceCounter][count] = (char)varName.bstrVal[count];
                         count++;
                     }
                     deviceNames[deviceCounter][count] = 0;

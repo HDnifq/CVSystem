@@ -120,7 +120,7 @@ void CameraThread::dowork()
                 }
             }
 
-            cimg->costTime = (float) (clock() - cimg->startTime) / CLOCKS_PER_SEC; //计算一个采图消耗时间
+            cimg->costTime = (float)(clock() - cimg->startTime) / CLOCKS_PER_SEC; //计算一个采图消耗时间
             queueData->frameQueue.enqueue(cimg);
 
             limitQueue(this->queueMaxLen);
@@ -224,11 +224,11 @@ bool CameraThread::close()
 void CameraThread::updateFPS()
 {
     clock_t now = clock();
-    double costTime = (double) (now - _lastTime) / CLOCKS_PER_SEC;
+    double costTime = (double)(now - _lastTime) / CLOCKS_PER_SEC;
     if (costTime > 1.0) { //如果经过了1秒
         //FPS写入到了camera
         for (size_t i = 0; i < vCameras.size(); i++) {
-            vCameras[i]->FPS = ((int) (((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+            vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
         }
 
         _lastTime = now;        //记录现在的最近一次的时间
@@ -237,7 +237,7 @@ void CameraThread::updateFPS()
     else if (costTime > 0.5) { //在0.5秒之后可以开始计算了
         //FPS写入到了camera
         for (size_t i = 0; i < vCameras.size(); i++) {
-            vCameras[i]->FPS = ((int) (((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+            vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
         }
     }
 }

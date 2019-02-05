@@ -43,21 +43,21 @@ class FPSCalc
         }
 
         clock_t now = clock();
-        float costTime = (float) (now - _lastTime) / CLOCKS_PER_SEC;
+        float costTime = (float)(now - _lastTime) / CLOCKS_PER_SEC;
 
         //这里认为消耗时间至少应该小于1微秒（防止除零）
         if (costTime < 1E-03f) {
             costTime = 1E-03f;
         }
 
-        if (costTime > 1.0f) {                                                    //如果经过了1秒
-            fps = ((int) (((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+        if (costTime > 1.0f) {                                                   //如果经过了1秒
+            fps = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
 
             _lastTime = now;        //记录现在的最近一次的时间
             _lastfnumber = fnumber; //记录现在最近的帧数
         }
-        else if (costTime > 0.5f) {                                               //在0.5秒之后可以开始计算了
-            fps = ((int) (((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+        else if (costTime > 0.5f) {                                              //在0.5秒之后可以开始计算了
+            fps = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
         }
         return fps;
     }

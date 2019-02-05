@@ -71,7 +71,7 @@ std::wstring s2ws(const std::string& s)
 ///-------------------------------------------------------------------------------------------------
 std::string byte2str(const void* data, int length)
 {
-    unsigned char* pChar = (unsigned char*) data;
+    unsigned char* pChar = (unsigned char*)data;
     std::string msg;
     for (int i = 0; i < length; i++) {
         char b[8];

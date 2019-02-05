@@ -8,7 +8,7 @@ using namespace std;
 
 class TestClass
 {
-public:
+  public:
     TestClass(std::string* aStr)
     {
         str = aStr;
@@ -19,11 +19,10 @@ public:
     }
     int i;
     std::string* str;
-private:
 
+  private:
 };
 typedef std::shared_ptr<TestClass> pTestClass;
-
 
 //宽字符的转换测试
 TEST(Common, s2ws_ws2s)
@@ -37,7 +36,6 @@ TEST(Common, s2ws_ws2s)
 
     EXPECT_TRUE(s1 == s);
     EXPECT_TRUE(ws1 == ws);
-
 }
 
 //指针使用测试
@@ -49,7 +47,7 @@ TEST(Common, shared_ptr)
     std::string msg;
     std::vector<pTestClass> vec;
     vec.push_back(pTestClass(new TestClass(&msg)));
-    vec.clear();//这里testClass就执行了析构
+    vec.clear(); //这里testClass就执行了析构
     EXPECT_TRUE(msg.length() > 0);
 }
 
@@ -63,6 +61,6 @@ TestClass func(std::string* aStr)
 TEST(Common, returnTest)
 {
     std::string msg;
-    TestClass tc = func(&msg);//这里赋值执行了拷贝构造函数
+    TestClass tc = func(&msg); //这里赋值执行了拷贝构造函数
     EXPECT_TRUE(msg.length() > 0);
 }

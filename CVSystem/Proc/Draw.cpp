@@ -195,7 +195,7 @@ cv::Mat Draw::drawTextLine(const std::string text, cv::Scalar color)
     }
 
     Draw::drawText(text, _m->point_line, color);
-    _m->point_line.y += (int) (5 / k * 3); //递增起始点记录
+    _m->point_line.y += (int)(5 / k * 3); //递增起始点记录
     _m->point_line.x = 0;
     return _m->diagram;
 }
@@ -277,8 +277,8 @@ void Draw::writeMemImgToMem(void* buff)
 
 void Draw::clear()
 {
-    _m->diagram.setTo(cv::Scalar(0, 0, 0));           //黑色背景
-    _m->point_line = cv::Point(0, (int) (5 / k * 3)); //重置文本位置
+    _m->diagram.setTo(cv::Scalar(0, 0, 0));          //黑色背景
+    _m->point_line = cv::Point(0, (int)(5 / k * 3)); //重置文本位置
 }
 
 void Draw::clearMemory()

@@ -13,7 +13,6 @@
 #include <Eigen/Geometry>
 
 using namespace dxlib;
-
 using namespace dxlib::u3d;
 
 TEST(Scene, json)
@@ -25,7 +24,7 @@ TEST(Scene, json)
     obj[L"key3"] = web::json::value::number(43.6);
     obj[L"key4"] = web::json::value::string(_XPLATSTR("str"));
     obj[L"key5"] = web::json::value::string(_XPLATSTR("中文"));
-    obj[L"arr"] = web::json::value::array({ 1, 2, 3 });
+    obj[L"arr"] = web::json::value::array({1, 2, 3});
 
     utility::string_t str = obj.serialize();
 
@@ -54,8 +53,8 @@ TEST(Scene, json)
 
 TEST(Scene, GameObj)
 {
-    GameObj obj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 });
-    obj.localScale = { 3, 4, 5 };
+    GameObj obj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1});
+    obj.localScale = {3, 4, 5};
     for (size_t i = 0; i < 3; i++) {
         obj.children.push_back(obj);
     }
@@ -76,7 +75,7 @@ TEST(Scene, GameObj)
 
 TEST(Scene, Line)
 {
-    Line obj(L"abc", 100, { 1, 2, 3 }, { 4, 5, 6 });
+    Line obj(L"abc", 100, {1, 2, 3}, {4, 5, 6});
 
     //序列化
     web::json::value json;
@@ -94,10 +93,10 @@ TEST(Scene, Scene)
 {
     Scene obj;
 
-    obj.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 }));
-    obj.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
+    obj.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
+    obj.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
 
-    obj.vLine.push_back(Line(L"l1", 100, { 1, 2, 3 }, { 4, 5, 6 }));
+    obj.vLine.push_back(Line(L"l1", 100, {1, 2, 3}, {4, 5, 6}));
 
     //序列化
     web::json::value json;
@@ -113,10 +112,10 @@ TEST(Scene, save)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, { 1, 2, 3 }, { 0, 0, 0, 1 }));
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, { 2, 2, 3 }, { 0, 0, 0, 1 }));
+    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, {2, 2, 3}, {0, 0, 0, 1}));
 
     scene.save(FileHelper::getModuleDir() + "\\test1.json");
 }

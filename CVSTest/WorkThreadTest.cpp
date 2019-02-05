@@ -2,13 +2,10 @@
 
 #include "../CVSystem/CVSystem.h"
 
-
 using namespace dxlib;
-
 using namespace dxlib::u3d;
 
 int workCount1 = 0;
-
 
 //工作一次就是sleep 100毫秒
 void WorkOnce1()
@@ -70,7 +67,7 @@ void WorkOnce1()
 //        wt = new WorkThread();
 //        wt->workOnce = WorkOnce2;
 //        wt->Start();
-//        
+//
 //        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 //        //不做stop,直接delete
 //        delete wt;

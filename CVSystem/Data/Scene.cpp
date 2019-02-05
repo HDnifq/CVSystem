@@ -17,7 +17,7 @@ namespace u3d {
 
 void GameObj::toJson(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue);
+    web::json::value& jv = *((web::json::value*)jsonValue);
     jv[L"name"] = web::json::value::string(name);
     jv[L"type"] = web::json::value::number(type);
     jv[L"position"] = web::json::value::array({position[0], position[1], position[2]});
@@ -41,7 +41,7 @@ void GameObj::toJson(void* jsonValue)
 
 GameObj GameObj::toObj(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue); //这应该是已经parse过的
+    web::json::value& jv = *((web::json::value*)jsonValue); //这应该是已经parse过的
     GameObj obj;
     obj.name = jv[L"name"].as_string();
     obj.type = jv[L"type"].as_integer();
@@ -61,7 +61,7 @@ GameObj GameObj::toObj(void* jsonValue)
 
 void Line::toJson(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue);
+    web::json::value& jv = *((web::json::value*)jsonValue);
     jv[L"name"] = web::json::value::string(name);
     jv[L"type"] = web::json::value::number(type);
     jv[L"pos0"] = web::json::value::array({pos0[0], pos0[1], pos0[2]});
@@ -70,7 +70,7 @@ void Line::toJson(void* jsonValue)
 
 Line Line::toObj(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue); //这应该是已经parse过的
+    web::json::value& jv = *((web::json::value*)jsonValue); //这应该是已经parse过的
     Line obj;
     obj.name = jv[L"name"].as_string();
     obj.type = jv[L"type"].as_integer();
@@ -96,7 +96,7 @@ void Scene::save(std::string filePath)
 
 void Scene::toJson(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue);
+    web::json::value& jv = *((web::json::value*)jsonValue);
 
     //对vGameObj中的每一项进行序列化
     std::vector<web::json::value> vObj;
@@ -119,7 +119,7 @@ void Scene::toJson(void* jsonValue)
 
 Scene Scene::toObj(void* jsonValue)
 {
-    web::json::value& jv = *((web::json::value*) jsonValue); //这应该是已经parse过的
+    web::json::value& jv = *((web::json::value*)jsonValue); //这应该是已经parse过的
     Scene obj;
 
     web::json::array arr = jv[L"vGameObj"].as_array();

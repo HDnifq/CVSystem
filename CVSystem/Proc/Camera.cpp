@@ -153,7 +153,7 @@ bool Camera::applyCapProp()
                 LogI("Camera.applyCapProp():设置相机%d -> %s = %s", camIndex, str, fourcc.c_str());
             }
             else {
-                LogI("Camera.applyCapProp():设置相机%d -> %s = %d", camIndex, str, (int) setValue);
+                LogI("Camera.applyCapProp():设置相机%d -> %s = %d", camIndex, str, (int)setValue);
             }
 
             //进行设置
@@ -169,7 +169,7 @@ bool Camera::applyCapProp()
                 LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %s", camIndex, str, fourcc.c_str());
             }
             else {
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %d", camIndex, str, (int) lastCapProp[i]);
+                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %d", camIndex, str, (int)lastCapProp[i]);
             }
         }
     }
@@ -186,7 +186,7 @@ void Camera::outputProp()
     int fps = static_cast<int>(capture->get(CV_CAP_PROP_FPS));
     int mode = static_cast<int>(capture->get(CV_CAP_PROP_MODE));
     int ex = static_cast<int>(capture->get(CV_CAP_PROP_FOURCC));
-    char fourcc[] = {(char) (ex & 0XFF), (char) ((ex & 0XFF00) >> 8), (char) ((ex & 0XFF0000) >> 16), (char) ((ex & 0XFF000000) >> 24), 0};
+    char fourcc[] = {(char)(ex & 0XFF), (char)((ex & 0XFF00) >> 8), (char)((ex & 0XFF0000) >> 16), (char)((ex & 0XFF000000) >> 24), 0};
 
     int brightness = static_cast<int>(capture->get(CV_CAP_PROP_BRIGHTNESS));
     int EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_EXPOSURE));
@@ -210,8 +210,8 @@ void Camera::outputAllProp()
 
 std::string Camera::toFOURCC(double FOURCC)
 {
-    int ex = (int) FOURCC;
-    char fourcc[] = {(char) (ex & 0XFF), (char) ((ex & 0XFF00) >> 8), (char) ((ex & 0XFF0000) >> 16), (char) ((ex & 0XFF000000) >> 24), 0};
+    int ex = (int)FOURCC;
+    char fourcc[] = {(char)(ex & 0XFF), (char)((ex & 0XFF00) >> 8), (char)((ex & 0XFF0000) >> 16), (char)((ex & 0XFF000000) >> 24), 0};
     return std::string(fourcc);
 }
 
