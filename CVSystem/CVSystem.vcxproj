@@ -183,7 +183,6 @@
     <ClInclude Include="Proc\DevicesHelper.h" />
     <ClInclude Include="Common\Event.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
-    <ClInclude Include="Common\WorkThread.h" />
     <ClInclude Include="Proc\SimpleModule.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -193,7 +192,6 @@
     <ClCompile Include="Common\Common.cpp" />
     <ClCompile Include="Proc\Draw.cpp" />
     <ClCompile Include="Common\FileHelper.cpp" />
-    <ClCompile Include="Common\WorkThread.cpp" />
     <ClCompile Include="CVSystem.cpp" />
     <ClCompile Include="Data\Debug.cpp" />
     <ClCompile Include="Data\Scene.cpp" />

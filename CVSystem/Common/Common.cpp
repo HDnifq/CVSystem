@@ -13,7 +13,6 @@
 //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
 //devNameA = converter.to_bytes(aDevName);
 
-
 std::string ws2s(const std::wstring& ws)
 {
     std::string curLocale = setlocale(LC_ALL, "chs");
@@ -26,7 +25,7 @@ std::string ws2s(const std::wstring& ws)
     size_t i;
     wcstombs_s(&i, _Dest, _Dsize, _Source, _Dsize);
     std::string result = _Dest;
-    delete[]_Dest;
+    delete[] _Dest;
 
     setlocale(LC_ALL, curLocale.c_str());
 
@@ -54,7 +53,7 @@ std::wstring s2ws(const std::string& s)
     size_t i;
     mbstowcs_s(&i, _Dest, _Dsize, _Source, _Dsize);
     std::wstring result = _Dest;
-    delete[]_Dest;
+    delete[] _Dest;
 
     setlocale(LC_ALL, curLocale.c_str());
     return result;
@@ -72,7 +71,7 @@ std::wstring s2ws(const std::string& s)
 ///-------------------------------------------------------------------------------------------------
 std::string byte2str(const void* data, int length)
 {
-    unsigned char* pChar = (unsigned char*)data;
+    unsigned char* pChar = (unsigned char*) data;
     std::string msg;
     for (int i = 0; i < length; i++) {
         char b[8];
@@ -91,8 +90,8 @@ std::string byte2str(const void* data, int length)
 ///-------------------------------------------------------------------------------------------------
 std::string secTimeStr()
 {
-    std::string strTime = boost::posix_time::to_iso_string(\
-                          boost::posix_time::second_clock::local_time());
+    std::string strTime = boost::posix_time::to_iso_string(
+        boost::posix_time::second_clock::local_time());
 
     // 这时候strTime里存放时间的格式是YYYYMMDDTHHMMSS，日期和时间用大写字母T隔开了
 

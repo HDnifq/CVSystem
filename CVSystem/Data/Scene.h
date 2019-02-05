@@ -11,157 +11,150 @@
 
 //因为Eigen库里的v3的计算函数多一些，所以就使用它了
 namespace dxlib {
-    namespace u3d {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary> 使用枚举定义物体的类型. </summary>
-        ///
-        /// <remarks> Dx, 2019/1/7. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-        enum ObjType
-        {
-            Empty = -1,
-            Cube = 0,
-            Point = 100,
-            Board = 200,
-        };
+namespace u3d {
+///-------------------------------------------------------------------------------------------------
+/// <summary> 使用枚举定义物体的类型. </summary>
+///
+/// <remarks> Dx, 2019/1/7. </remarks>
+///-------------------------------------------------------------------------------------------------
+enum ObjType
+{
+    Empty = -1,
+    Cube = 0,
+    Point = 100,
+    Board = 200,
+};
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary> 一个要显示的物体. </summary>
-        ///
-        /// <remarks> Dx, 2018/12/29. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-        class GameObj
-        {
-        public:
-            GameObj(std::wstring name = L"unnamed",
-                    int type = ObjType::Empty,
-                    std::array<double, 3> position = { 0, 0, 0 },
-                    std::array<double, 4> rotation = { 0, 0, 0, 1 }) :
-                name(name),
-                type(type),
-                position(position),
-                rotation(rotation) {}
+///-------------------------------------------------------------------------------------------------
+/// <summary> 一个要显示的物体. </summary>
+///
+/// <remarks> Dx, 2018/12/29. </remarks>
+///-------------------------------------------------------------------------------------------------
+class GameObj
+{
+  public:
+    GameObj(std::wstring name = L"unnamed",
+            int type = ObjType::Empty,
+            std::array<double, 3> position = {0, 0, 0},
+            std::array<double, 4> rotation = {0, 0, 0, 1}) : name(name),
+                                                             type(type),
+                                                             position(position),
+                                                             rotation(rotation) {}
 
-            GameObj(std::wstring name, int type, double* position, double* rotation) :
-                name(name),
-                type(type)
-            {
-                this->position = { position[0], position[1], position[2] };
-                this->rotation = { rotation[0], rotation[1], rotation[2], rotation[3] };
-            }
-
-            ~GameObj() {}
-
-            /// <summary> 物体名字. </summary>
-            std::wstring name;
-
-            /// <summary> 物体类型. </summary>
-            int type = ObjType::Empty;
-
-            /// <summary> 世界坐标. </summary>
-            std::array<double, 3> position = { 0, 0, 0 };
-
-            /// <summary> 旋转. </summary>
-            std::array<double, 4> rotation = { 0, 0, 0, 1 };
-
-            /// <summary> 本地缩放(如果为0认为忽略缩放设置，使用u3d资源里的缩放). </summary>
-            std::array<double, 3> localScale = { 0, 0, 0 };
-
-            /// <summary> 这个物体的子物体. </summary>
-            std::vector<GameObj> children;
-
-            #pragma region obj<->json
-            void toJson(void* jsonValue);
-            static GameObj toObj(void* jsonValue);
-            #pragma endregion
-        };
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary> 一条线. </summary>
-        ///
-        /// <remarks> Dx, 2019/1/3. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-        class Line
-        {
-        public:
-
-            Line() {}
-
-            Line(std::wstring name, int type = 0) :
-                name(name),
-                type(type) {}
-
-            Line(std::wstring name, int type, std::array<double, 3> position0, std::array<double, 3> position1) :
-                name(name),
-                type(type),
-                pos0(position0),
-                pos1(position1) {}
-
-            Line(std::wstring name, int type, double* position0, double* position1) :
-                name(name),
-                type(type)
-            {
-                this->pos0 = { position0[0], position0[1], position0[2] };
-                this->pos1 = { position1[0], position1[1], position1[2] };
-            }
-
-            ~Line() { }
-
-            /// <summary> 物体名字. </summary>
-            std::wstring name;
-
-            /// <summary> 物体类型. </summary>
-            int type = 0;
-
-            /// <summary> 世界坐标. </summary>
-            std::array<double, 3> pos0 = { 0, 0, 0 };
-
-            /// <summary> 世界坐标. </summary>
-            std::array<double, 3> pos1 = { 0, 0, 0 };
-
-            #pragma region obj<->json
-            void toJson(void* jsonValue);
-            static Line toObj(void* jsonValue);
-            #pragma endregion
-        };
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary> 一个场景. </summary>
-        ///
-        /// <remarks> Dx, 2018/12/29. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-        class Scene
-        {
-        public:
-
-            Scene()
-            {
-            }
-
-            ~Scene()
-            {
-            }
-
-            /// <summary> 所有物体的列表. </summary>
-            std::vector<GameObj> vGameObj;
-
-            /// <summary> 所有绘制线的列表. </summary>
-            std::vector<Line> vLine;
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary> 保存到文件. </summary>
-            ///
-            /// <remarks> Dx, 2018/12/29. </remarks>
-            ///
-            /// <param name="filePath"> 文件路径. </param>
-            ///-------------------------------------------------------------------------------------------------
-            void save(std::string filePath);
-
-            #pragma region obj<->json
-            void toJson(void* jsonValue);
-            static Scene toObj(void* jsonValue);
-            #pragma endregion
-        private:
-        };
+    GameObj(std::wstring name, int type, double* position, double* rotation) : name(name),
+                                                                               type(type)
+    {
+        this->position = {position[0], position[1], position[2]};
+        this->rotation = {rotation[0], rotation[1], rotation[2], rotation[3]};
     }
-}
+
+    ~GameObj() {}
+
+    /// <summary> 物体名字. </summary>
+    std::wstring name;
+
+    /// <summary> 物体类型. </summary>
+    int type = ObjType::Empty;
+
+    /// <summary> 世界坐标. </summary>
+    std::array<double, 3> position = {0, 0, 0};
+
+    /// <summary> 旋转. </summary>
+    std::array<double, 4> rotation = {0, 0, 0, 1};
+
+    /// <summary> 本地缩放(如果为0认为忽略缩放设置，使用u3d资源里的缩放). </summary>
+    std::array<double, 3> localScale = {0, 0, 0};
+
+    /// <summary> 这个物体的子物体. </summary>
+    std::vector<GameObj> children;
+
+#pragma region obj <->json
+    void toJson(void* jsonValue);
+    static GameObj toObj(void* jsonValue);
+#pragma endregion
+};
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 一条线. </summary>
+///
+/// <remarks> Dx, 2019/1/3. </remarks>
+///-------------------------------------------------------------------------------------------------
+class Line
+{
+  public:
+    Line() {}
+
+    Line(std::wstring name, int type = 0) : name(name),
+                                            type(type) {}
+
+    Line(std::wstring name, int type, std::array<double, 3> position0, std::array<double, 3> position1) : name(name),
+                                                                                                          type(type),
+                                                                                                          pos0(position0),
+                                                                                                          pos1(position1) {}
+
+    Line(std::wstring name, int type, double* position0, double* position1) : name(name),
+                                                                              type(type)
+    {
+        this->pos0 = {position0[0], position0[1], position0[2]};
+        this->pos1 = {position1[0], position1[1], position1[2]};
+    }
+
+    ~Line() {}
+
+    /// <summary> 物体名字. </summary>
+    std::wstring name;
+
+    /// <summary> 物体类型. </summary>
+    int type = 0;
+
+    /// <summary> 世界坐标. </summary>
+    std::array<double, 3> pos0 = {0, 0, 0};
+
+    /// <summary> 世界坐标. </summary>
+    std::array<double, 3> pos1 = {0, 0, 0};
+
+#pragma region obj <->json
+    void toJson(void* jsonValue);
+    static Line toObj(void* jsonValue);
+#pragma endregion
+};
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 一个场景. </summary>
+///
+/// <remarks> Dx, 2018/12/29. </remarks>
+///-------------------------------------------------------------------------------------------------
+class Scene
+{
+  public:
+    Scene()
+    {
+    }
+
+    ~Scene()
+    {
+    }
+
+    /// <summary> 所有物体的列表. </summary>
+    std::vector<GameObj> vGameObj;
+
+    /// <summary> 所有绘制线的列表. </summary>
+    std::vector<Line> vLine;
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 保存到文件. </summary>
+    ///
+    /// <remarks> Dx, 2018/12/29. </remarks>
+    ///
+    /// <param name="filePath"> 文件路径. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void save(std::string filePath);
+
+#pragma region obj <->json
+    void toJson(void* jsonValue);
+    static Scene toObj(void* jsonValue);
+#pragma endregion
+  private:
+};
+} // namespace u3d
+} // namespace dxlib

@@ -4,8 +4,6 @@
 
 #include "Common.h"
 
-#include "./Common/WorkThread.h"
-
 #include "./Data/Scene.h"
 
 #include "./Proc/Draw.h"
