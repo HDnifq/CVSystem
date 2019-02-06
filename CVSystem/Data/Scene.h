@@ -65,6 +65,9 @@ class GameObj
     /// <summary> 本地缩放(如果为0认为忽略缩放设置，使用u3d资源里的缩放). </summary>
     std::array<double, 3> localScale = {0, 0, 0};
 
+    /// <summary> 上面提供的坐标系是否是本地坐标. </summary>
+    bool isLocal = false;
+
     /// <summary> 这个物体的子物体. </summary>
     std::vector<GameObj> children;
 

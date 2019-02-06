@@ -23,6 +23,7 @@ void GameObj::toJson(void* jsonValue)
     jv[L"position"] = web::json::value::array({position[0], position[1], position[2]});
     jv[L"rotation"] = web::json::value::array({rotation[0], rotation[1], rotation[2], rotation[3]});
     jv[L"localScale"] = web::json::value::array({localScale[0], localScale[1], localScale[2]});
+    jv[L"isLocal"] = web::json::value::boolean(isLocal);
 
     if (children.size() > 0) {
         //对children中的每一项进行序列化
@@ -45,6 +46,7 @@ GameObj GameObj::toObj(void* jsonValue)
     GameObj obj;
     obj.name = jv[L"name"].as_string();
     obj.type = jv[L"type"].as_integer();
+    obj.isLocal = jv[L"isLocal"].as_bool();
     web::json::array arr = jv[L"position"].as_array();
     obj.position = {arr[0].as_double(), arr[1].as_double(), arr[2].as_double()};
     arr = jv[L"rotation"].as_array();

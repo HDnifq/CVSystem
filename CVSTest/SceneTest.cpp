@@ -55,6 +55,7 @@ TEST(Scene, GameObj)
 {
     GameObj obj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1});
     obj.localScale = {3, 4, 5};
+    obj.isLocal = true;
     for (size_t i = 0; i < 3; i++) {
         obj.children.push_back(obj);
     }
@@ -70,6 +71,7 @@ TEST(Scene, GameObj)
     EXPECT_TRUE(obj.position == obj2.position);
     EXPECT_TRUE(obj.rotation == obj2.rotation);
     EXPECT_TRUE(obj.localScale == obj2.localScale);
+    EXPECT_TRUE(obj.isLocal == obj2.isLocal);
     EXPECT_TRUE(obj.children.size() == obj2.children.size());
 }
 
