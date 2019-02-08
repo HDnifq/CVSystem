@@ -76,3 +76,32 @@ TEST(ALGO, findMap)
 
     EXPECT_TRUE(itr->first == 1);
 }
+
+class TestClass
+{
+  public:
+    TestClass(string a, string b, string c) : a(a),
+                                              b(b),
+                                              c(c)
+    {
+    }
+    string a;
+    string b;
+    string c;
+};
+
+//测试一下reserve来避免引用&的错误
+TEST(ALGO, vectorReserveTest)
+{
+    vector<TestClass> v;
+    v.reserve(2);
+    v.push_back({"x", "x", "x"});
+    TestClass& v0 = v[0]; //当使用这个引用的时候,如果数组发生了大小改变,那么这个引用就会错误
+    v0.a = "1";
+    EXPECT_TRUE(v0.a == "1") << "v0.a=" << v0.a.c_str(); //这里能通过
+    for (size_t i = 0; i < 1; i++) {
+        v.push_back({"x", "x", "x"});
+    }
+    EXPECT_TRUE(v[0].a == "1");
+    EXPECT_TRUE(v0.a == "1") << "v0.a=" << v0.a.c_str();
+}
