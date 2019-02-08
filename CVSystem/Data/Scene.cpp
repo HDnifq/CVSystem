@@ -11,6 +11,7 @@
 
 #include <codecvt>
 #include <locale>
+#include <boost/filesystem.hpp>
 
 namespace dxlib {
 namespace u3d {
@@ -96,24 +97,48 @@ void Scene::save(std::string filePath)
     out.close();
 }
 
+void Scene::load(std::string filePath)
+{
+    //只有这样才能把一个wchar_t(utf16)写入utf8文件
+    utility::ifstream_t in(filePath, std::ios::in | std::ios::binary);
+
+    //这里只能new一个，不能完美释放
+    const std::locale utf8_locale = std::locale(std::locale(), new std::codecvt_utf8<wchar_t>());
+    in.imbue(utf8_locale);
+
+    std::error_code errorCode;
+    web::json::value jv = web::json::value::parse(in, errorCode);
+    Scene::toObj(*this, &jv);
+}
+
+void Scene::addGameObj(const GameObj& go)
+{
+    vGameObj[go.name] = go;
+}
+
+void Scene::addLine(const Line& line)
+{
+    vLine[line.name] = line;
+}
+
 void Scene::toJson(void* jsonValue)
 {
     web::json::value& jv = *((web::json::value*)jsonValue);
 
     //对vGameObj中的每一项进行序列化
     std::vector<web::json::value> vObj;
-    for (size_t i = 0; i < vGameObj.size(); i++) {
+    for (auto& kvp : vGameObj) {
         web::json::value obj;
-        vGameObj[i].toJson(&obj);
+        kvp.second.toJson(&obj);
         vObj.push_back(obj);
     }
     jv[L"vGameObj"] = web::json::value::array(vObj);
 
     //对vLine中的每一项进行序列化
     std::vector<web::json::value> vJLine;
-    for (size_t i = 0; i < vLine.size(); i++) {
+    for (auto& kvp : vLine) {
         web::json::value obj;
-        vLine[i].toJson(&obj);
+        kvp.second.toJson(&obj);
         vJLine.push_back(obj);
     }
     jv[L"vLine"] = web::json::value::array(vJLine);
@@ -126,17 +151,35 @@ Scene Scene::toObj(void* jsonValue)
 
     web::json::array arr = jv[L"vGameObj"].as_array();
     for (size_t i = 0; i < arr.size(); i++) {
-        web::json::value jvGO = arr[i];
-        obj.vGameObj.push_back(GameObj::toObj(&jvGO));
+        web::json::value& jvGO = arr[i];
+        obj.addGameObj(GameObj::toObj(&jvGO));
     }
 
     arr = jv[L"vLine"].as_array();
     for (size_t i = 0; i < arr.size(); i++) {
-        web::json::value jvLine = arr[i];
-        obj.vLine.push_back(Line::toObj(&jvLine));
+        web::json::value& jvLine = arr[i];
+        obj.addLine(Line::toObj(&jvLine));
     }
 
     return obj;
 }
+
+void Scene::toObj(Scene& obj, void* jsonValue)
+{
+    web::json::value& jv = *((web::json::value*)jsonValue); //这应该是已经parse过的
+
+    web::json::array arr = jv[L"vGameObj"].as_array();
+    for (size_t i = 0; i < arr.size(); i++) {
+        web::json::value& jvGO = arr[i];
+        obj.addGameObj(GameObj::toObj(&jvGO));
+    }
+
+    arr = jv[L"vLine"].as_array();
+    for (size_t i = 0; i < arr.size(); i++) {
+        web::json::value& jvLine = arr[i];
+        obj.addLine(Line::toObj(&jvLine));
+    }
+}
+
 } // namespace u3d
 } // namespace dxlib

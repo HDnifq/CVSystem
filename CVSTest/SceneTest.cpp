@@ -41,14 +41,24 @@ TEST(Scene, json)
     out.flush();
     out.close();
 
-    web::json::value obj2;
-    obj2.parse(str);
+    web::json::value obj2 = web::json::value::parse(str);
+    utility::string_t str2 = obj2.serialize();
 
     EXPECT_TRUE(obj[L"key1"].is_boolean());
     EXPECT_TRUE(obj[L"key1"].as_bool() == false);
     EXPECT_TRUE(obj[L"key2"].is_integer());
     EXPECT_TRUE(obj[L"key2"].as_integer() == 44);
     EXPECT_TRUE(abs(obj[L"key3"].as_number().to_double() - 43.6) < 1e-4);
+}
+
+TEST(Scene, json2)
+{
+    web::json::value obj = web::json::value::parse(_XPLATSTR("{ \"a\" : 10 }"));
+    utility::string_t str = obj.serialize();
+
+    obj[_XPLATSTR("a")] = web::json::value(12);
+    obj[_XPLATSTR("b")] = web::json::value(13);
+    auto nullValue = obj[_XPLATSTR("c")];
 }
 
 TEST(Scene, GameObj)
@@ -63,8 +73,12 @@ TEST(Scene, GameObj)
     //序列化
     web::json::value json;
     obj.toJson(&json);
+    utility::string_t str = json.serialize();
+
+    web::json::value json2 = web::json::value::parse(str);
+    utility::string_t str2 = json2.serialize();
     //反序列化
-    GameObj obj2 = GameObj::toObj(&json);
+    GameObj obj2 = GameObj::toObj(&json2);
 
     EXPECT_TRUE(obj.name == obj2.name);
     EXPECT_TRUE(obj.type == obj2.type);
@@ -95,29 +109,44 @@ TEST(Scene, Scene)
 {
     Scene obj;
 
-    obj.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
-    obj.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
+    obj.addGameObj(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
+    obj.addGameObj(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
 
-    obj.vLine.push_back(Line(L"l1", 100, {1, 2, 3}, {4, 5, 6}));
+    obj.addLine(Line(L"l1", 100, {1, 2, 3}, {4, 5, 6}));
 
     //序列化
     web::json::value json;
     obj.toJson(&json);
+
+    utility::string_t str = json.serialize();
+
+    web::json::value json2 = web::json::value::parse(str);
+    utility::string_t str2 = json2.serialize();
     //反序列化
-    Scene obj2 = Scene::toObj(&json);
+    Scene obj2 = Scene::toObj(&json2);
 
     EXPECT_TRUE(obj.vGameObj.size() == obj2.vGameObj.size());
     EXPECT_TRUE(obj.vGameObj.size() == obj2.vGameObj.size());
 }
 
-TEST(Scene, save)
+TEST(Scene, save_load)
 {
     Scene scene;
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
+    scene.addGameObj(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
+    scene.addGameObj(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
+    scene.addGameObj(GameObj(_XPLATSTR("中文"), 2, {2, 2, 3}, {0, 0, 0, 1}));
 
-    scene.vGameObj.push_back(GameObj(_XPLATSTR("中文1"), 2, {2, 2, 3}, {0, 0, 0, 1}));
+    //添加一个重复项
+    scene.addGameObj(GameObj(_XPLATSTR("b"), 100, {1, 1, 1}, {0, 0, 0, 1}));
+    EXPECT_TRUE(scene.vGameObj.size() == 3); //应该为3项(有替换b项)
+
+    EXPECT_TRUE(scene.vGameObj[L"b"].type == 100); //应该为3项
 
     scene.save(FileHelper::getModuleDir() + "\\test1.json");
+
+    Scene scene2;
+    scene2.load(FileHelper::getModuleDir() + "\\test1.json");
+
+    EXPECT_TRUE(scene.vGameObj.size() == scene2.vGameObj.size());
 }

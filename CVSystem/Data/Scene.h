@@ -8,10 +8,12 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <map>
 
 //因为Eigen库里的v3的计算函数多一些，所以就使用它了
 namespace dxlib {
 namespace u3d {
+
 ///-------------------------------------------------------------------------------------------------
 /// <summary> 使用枚举定义物体的类型. </summary>
 ///
@@ -138,11 +140,11 @@ class Scene
     {
     }
 
-    /// <summary> 所有物体的列表. </summary>
-    std::vector<GameObj> vGameObj;
+    /// <summary> 根目录下所有物体的map,key是这个物体的名字,对外保存json的时候是数组. </summary>
+    std::map<std::wstring, GameObj> vGameObj;
 
-    /// <summary> 所有绘制线的列表. </summary>
-    std::vector<Line> vLine;
+    /// <summary> 所有绘制线的列表,对外保存json的时候是数组. </summary>
+    std::map<std::wstring, Line> vLine;
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 保存到文件. </summary>
@@ -153,11 +155,46 @@ class Scene
     ///-------------------------------------------------------------------------------------------------
     void save(std::string filePath);
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 从文件载入. </summary>
+    ///
+    /// <remarks> Surface, 2019/2/7. </remarks>
+    ///
+    /// <param name="filePath"> The file path to load. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void load(std::string filePath);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 添加一个GameObj物体,这里增加到map里面,
+    /// 也就是所有这个map里面的物体都是根目录里面的,认为根目录下的物体不能重名,如果重名则会覆盖.
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2019/2/7. </remarks>
+    ///
+    /// <param name="go"> The go. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void addGameObj(const GameObj& go);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 添加一个Line物体,这里增加到map里面,
+    /// 也就是所有这个map里面的物体都是根目录里面的,认为根目录下的物体不能重名,如果重名则会覆盖.
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2019/2/7. </remarks>
+    ///
+    /// <param name="line"> The go. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void addLine(const Line& line);
+
 #pragma region obj <->json
     void toJson(void* jsonValue);
     static Scene toObj(void* jsonValue);
+    static void toObj(Scene& obj, void* jsonValue);
 #pragma endregion
   private:
 };
+
 } // namespace u3d
 } // namespace dxlib
