@@ -166,6 +166,9 @@ typedef std::shared_ptr<Camera> pCamera;
 class StereoCamera
 {
   public:
+    /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
+    int scID;
+
     /// <summary> The camera l. </summary>
     pCamera camL;
 

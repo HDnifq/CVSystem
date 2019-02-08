@@ -14,6 +14,9 @@
 namespace dxlib {
 namespace u3d {
 
+class Line;
+class GameObj;
+
 ///-------------------------------------------------------------------------------------------------
 /// <summary> 使用枚举定义物体的类型. </summary>
 ///
@@ -70,8 +73,14 @@ class GameObj
     /// <summary> 上面提供的坐标系是否是本地坐标. </summary>
     bool isLocal = false;
 
+    /// <summary> 这个物体是否在u3d里默认是显示的. </summary>
+    bool isActive = true;
+
     /// <summary> 这个物体的子物体. </summary>
     std::vector<GameObj> children;
+
+    /// <summary> 这个物体下挂的线,线自身也是一个物体. </summary>
+    std::vector<Line> lines;
 
 #pragma region obj <->json
     void toJson(void* jsonValue);
@@ -143,9 +152,6 @@ class Scene
     /// <summary> 根目录下所有物体的map,key是这个物体的名字,对外保存json的时候是数组. </summary>
     std::map<std::wstring, GameObj> vGameObj;
 
-    /// <summary> 所有绘制线的列表,对外保存json的时候是数组. </summary>
-    std::map<std::wstring, Line> vLine;
-
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 保存到文件. </summary>
     ///
@@ -175,18 +181,6 @@ class Scene
     /// <param name="go"> The go. </param>
     ///-------------------------------------------------------------------------------------------------
     void addGameObj(const GameObj& go);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 添加一个Line物体,这里增加到map里面,
-    /// 也就是所有这个map里面的物体都是根目录里面的,认为根目录下的物体不能重名,如果重名则会覆盖.
-    /// </summary>
-    ///
-    /// <remarks> Surface, 2019/2/7. </remarks>
-    ///
-    /// <param name="line"> The go. </param>
-    ///-------------------------------------------------------------------------------------------------
-    void addLine(const Line& line);
 
 #pragma region obj <->json
     void toJson(void* jsonValue);

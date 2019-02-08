@@ -66,9 +66,12 @@ TEST(Scene, GameObj)
     GameObj obj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1});
     obj.localScale = {3, 4, 5};
     obj.isLocal = true;
+    obj.isActive = false;
     for (size_t i = 0; i < 3; i++) {
         obj.children.push_back(obj);
     }
+    Line l0(L"abc", 100, {1, 2, 3}, {4, 5, 6});
+    obj.lines.push_back(l0);
 
     //序列化
     web::json::value json;
@@ -86,7 +89,9 @@ TEST(Scene, GameObj)
     EXPECT_TRUE(obj.rotation == obj2.rotation);
     EXPECT_TRUE(obj.localScale == obj2.localScale);
     EXPECT_TRUE(obj.isLocal == obj2.isLocal);
+    EXPECT_TRUE(obj.isActive == obj2.isActive);
     EXPECT_TRUE(obj.children.size() == obj2.children.size());
+    EXPECT_TRUE(obj.lines.size() == obj2.lines.size());
 }
 
 TEST(Scene, Line)
@@ -111,8 +116,6 @@ TEST(Scene, Scene)
 
     obj.addGameObj(GameObj(_XPLATSTR("a"), 1, {1, 2, 3}, {0, 0, 0, 1}));
     obj.addGameObj(GameObj(_XPLATSTR("b"), 2, {2, 2, 3}, {0, 0, 0, 1}));
-
-    obj.addLine(Line(L"l1", 100, {1, 2, 3}, {4, 5, 6}));
 
     //序列化
     web::json::value json;

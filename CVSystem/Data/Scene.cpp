@@ -25,6 +25,7 @@ void GameObj::toJson(void* jsonValue)
     jv[L"rotation"] = web::json::value::array({rotation[0], rotation[1], rotation[2], rotation[3]});
     jv[L"localScale"] = web::json::value::array({localScale[0], localScale[1], localScale[2]});
     jv[L"isLocal"] = web::json::value::boolean(isLocal);
+    jv[L"isActive"] = web::json::value::boolean(isActive);
 
     if (children.size() > 0) {
         //对children中的每一项进行序列化
@@ -39,6 +40,20 @@ void GameObj::toJson(void* jsonValue)
     else {
         jv[L"children"] = web::json::value::array(); //否则就是一个空数组
     }
+
+    if (lines.size() > 0) {
+        //对lines中的每一项进行序列化
+        std::vector<web::json::value> vObj;
+        for (size_t i = 0; i < lines.size(); i++) {
+            web::json::value obj;
+            lines[i].toJson(&obj);
+            vObj.push_back(obj);
+        }
+        jv[L"lines"] = web::json::value::array(vObj);
+    }
+    else {
+        jv[L"lines"] = web::json::value::array(); //否则就是一个空数组
+    }
 }
 
 GameObj GameObj::toObj(void* jsonValue)
@@ -48,16 +63,25 @@ GameObj GameObj::toObj(void* jsonValue)
     obj.name = jv[L"name"].as_string();
     obj.type = jv[L"type"].as_integer();
     obj.isLocal = jv[L"isLocal"].as_bool();
+    obj.isActive = jv[L"isActive"].as_bool();
+
     web::json::array arr = jv[L"position"].as_array();
     obj.position = {arr[0].as_double(), arr[1].as_double(), arr[2].as_double()};
     arr = jv[L"rotation"].as_array();
     obj.rotation = {arr[0].as_double(), arr[1].as_double(), arr[2].as_double(), arr[3].as_double()};
     arr = jv[L"localScale"].as_array();
     obj.localScale = {arr[0].as_double(), arr[1].as_double(), arr[2].as_double()};
+
     arr = jv[L"children"].as_array();
     for (size_t i = 0; i < arr.size(); i++) {
         web::json::value child = arr[i];
         obj.children.push_back(GameObj::toObj(&child));
+    }
+
+    arr = jv[L"lines"].as_array();
+    for (size_t i = 0; i < arr.size(); i++) {
+        web::json::value child = arr[i];
+        obj.lines.push_back(Line::toObj(&child));
     }
     return obj;
 }
@@ -116,11 +140,6 @@ void Scene::addGameObj(const GameObj& go)
     vGameObj[go.name] = go;
 }
 
-void Scene::addLine(const Line& line)
-{
-    vLine[line.name] = line;
-}
-
 void Scene::toJson(void* jsonValue)
 {
     web::json::value& jv = *((web::json::value*)jsonValue);
@@ -133,15 +152,6 @@ void Scene::toJson(void* jsonValue)
         vObj.push_back(obj);
     }
     jv[L"vGameObj"] = web::json::value::array(vObj);
-
-    //对vLine中的每一项进行序列化
-    std::vector<web::json::value> vJLine;
-    for (auto& kvp : vLine) {
-        web::json::value obj;
-        kvp.second.toJson(&obj);
-        vJLine.push_back(obj);
-    }
-    jv[L"vLine"] = web::json::value::array(vJLine);
 }
 
 Scene Scene::toObj(void* jsonValue)
@@ -154,13 +164,6 @@ Scene Scene::toObj(void* jsonValue)
         web::json::value& jvGO = arr[i];
         obj.addGameObj(GameObj::toObj(&jvGO));
     }
-
-    arr = jv[L"vLine"].as_array();
-    for (size_t i = 0; i < arr.size(); i++) {
-        web::json::value& jvLine = arr[i];
-        obj.addLine(Line::toObj(&jvLine));
-    }
-
     return obj;
 }
 
@@ -172,12 +175,6 @@ void Scene::toObj(Scene& obj, void* jsonValue)
     for (size_t i = 0; i < arr.size(); i++) {
         web::json::value& jvGO = arr[i];
         obj.addGameObj(GameObj::toObj(&jvGO));
-    }
-
-    arr = jv[L"vLine"].as_array();
-    for (size_t i = 0; i < arr.size(); i++) {
-        web::json::value& jvLine = arr[i];
-        obj.addLine(Line::toObj(&jvLine));
     }
 }
 

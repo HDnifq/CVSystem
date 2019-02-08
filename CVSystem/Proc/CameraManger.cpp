@@ -18,6 +18,12 @@ void CameraManger::add(const pCamera& cp, bool isVirtualCamera)
     cp->isVirtualCamera = isVirtualCamera;
 }
 
+void CameraManger::add(pStereoCamera sc)
+{
+    this->vStereo.push_back(sc);
+    sc->scID = vStereo.size() - 1; //这个id就是vStereo里的index
+}
+
 void CameraManger::clear()
 {
     this->camMap.clear();
