@@ -123,6 +123,10 @@ void Scene::save(std::string filePath)
 
 void Scene::load(std::string filePath)
 {
+    //如果不是文件那么就直接返回
+    if (!boost::filesystem::is_regular_file(filePath)) {
+        return;
+    }
     //只有这样才能把一个wchar_t(utf16)写入utf8文件
     utility::ifstream_t in(filePath, std::ios::in | std::ios::binary);
 
@@ -133,6 +137,7 @@ void Scene::load(std::string filePath)
     std::error_code errorCode;
     web::json::value jv = web::json::value::parse(in, errorCode);
     Scene::toObj(*this, &jv);
+    in.close();
 }
 
 void Scene::addGameObj(const GameObj& go)
