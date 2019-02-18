@@ -250,6 +250,10 @@ void Draw::closeWin()
 
 void Draw::saveToMemory()
 {
+    //如果没有使能绘图那就不保存到内存了
+    if (!isEnableDraw) {
+        return;
+    }
     _m->dqDiagram.push_back(_m->diagram.clone()); //队列末尾添加这一帧结果,也就是末尾永远是当前帧
     while (_m->dqDiagram.size() > memSavelimit) { //只保存1200帧 / 512
         cv::Mat img = _m->dqDiagram.front();
