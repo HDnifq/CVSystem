@@ -50,7 +50,7 @@ class Draw
     ///
     /// <param name="width">  画布宽. </param>
     /// <param name="height"> 画布高. </param>
-    /// <param name="k">	  比例k值. </param>
+    /// <param name="k">      比例k值. </param>
     ///-------------------------------------------------------------------------------------------------
     Draw(int width, int height, float k);
 
