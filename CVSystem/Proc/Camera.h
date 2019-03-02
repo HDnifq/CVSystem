@@ -193,6 +193,12 @@ class StereoCamera
     /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camRT4x4. </summary>
     cv::Mat camRT4x4;
 
+    /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    std::array<double, 3> camPos;
+
+    /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    std::array<double, 4> camRotate;
+
     /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配. </summary>
     bool LYisAbove = true;
 };

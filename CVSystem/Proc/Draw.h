@@ -154,7 +154,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawPoint(cv::Point2f point1, cv::Scalar color = cv::Scalar(0, 0, 255));
+    cv::Mat drawPoint(cv::Point2f point, cv::Scalar color = cv::Scalar(0, 0, 255));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画十字线. </summary>
@@ -163,11 +163,11 @@ class Draw
     ///
     /// <param name="point1"> The first point. </param>
     /// <param name="color">  (Optional) The color. </param>
-    /// <param name="size">   (Optional) The size. </param>
+    /// <param name="size">   (Optional) 十字线的长度(5像素*size长). </param>
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawCross(cv::Point2f point1, cv::Scalar color = cv::Scalar(0, 0, 255), float size = 1);
+    cv::Mat drawCross(cv::Point2f point, cv::Scalar color = cv::Scalar(0, 0, 255), float size = 1);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> Draw text. </summary>

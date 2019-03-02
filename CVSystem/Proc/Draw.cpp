@@ -137,24 +137,24 @@ cv::Mat Draw::drawLine(cv::Point2f point1, cv::Point2f point2, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawPoint(cv::Point2f point1, cv::Scalar color)
+cv::Mat Draw::drawPoint(cv::Point2f point, cv::Scalar color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
     }
 
-    line(_m->diagram, point1 * k, point1 * k, color, 2); //画线
+    line(_m->diagram, point * k, point * k, color, 2); //画线
     return _m->diagram;
 }
 
-cv::Mat Draw::drawCross(cv::Point2f point1, cv::Scalar color, float size)
+cv::Mat Draw::drawCross(cv::Point2f point, cv::Scalar color, float size)
 {
     if (!isEnableDraw) {
         return _m->diagram;
     }
 
-    drawLine(point1 - cv::Point2f(5 * size, 0), point1 + cv::Point2f(5 * size, 0), color);
-    drawLine(point1 - cv::Point2f(0, 5 * size), point1 + cv::Point2f(0, 5 * size), color);
+    drawLine(point - cv::Point2f(5 * size, 0), point + cv::Point2f(5 * size, 0), color);
+    drawLine(point - cv::Point2f(0, 5 * size), point + cv::Point2f(0, 5 * size), color);
     return _m->diagram;
 }
 
