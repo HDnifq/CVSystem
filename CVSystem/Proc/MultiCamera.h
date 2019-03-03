@@ -211,10 +211,13 @@ class MultiCamera
     /// <summary> 是否对当前proc重新执行一次disable和enable. </summary>
     bool _isResetActiveProc = false;
 
+    /// <summary> 提供给BaseThread的bing执行事件. </summary>
     void init(std::shared_ptr<BaseThread>& tb);
 
+    /// <summary> 提供给BaseThread的bing执行事件. </summary>
     void workonce(std::shared_ptr<BaseThread>& tb);
 
+    /// <summary> 提供给BaseThread的bing执行事件. </summary>
     void release(std::shared_ptr<BaseThread>& tb);
 
     //计算fps的辅助

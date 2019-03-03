@@ -27,6 +27,7 @@ MultiCamera::~MultiCamera()
 
 MultiCamera* MultiCamera::m_pInstance = NULL;
 
+/// <summary> 提供给BaseThread的bing执行事件. </summary>
 void MultiCamera::init(std::shared_ptr<BaseThread>& tb)
 {
     LogI("MultiCamera.init():开始执行init委托!");
@@ -48,6 +49,7 @@ void MultiCamera::init(std::shared_ptr<BaseThread>& tb)
     LogI("MultiCamera.init():init委托结束!");
 }
 
+/// <summary> 提供给BaseThread的bing执行事件. </summary>
 void MultiCamera::release(std::shared_ptr<BaseThread>& tb)
 {
     LogI("MultiCamera.release():开始执行release委托!");
@@ -60,7 +62,7 @@ void MultiCamera::release(std::shared_ptr<BaseThread>& tb)
     LogI("MultiCamera.release():release委托执行完毕.");
 }
 
-//线程函数
+/// <summary> 提供给BaseThread的bing执行事件. </summary>
 void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
 {
     std::unique_lock<std::mutex> lck(mtx_mt);

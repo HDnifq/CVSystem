@@ -59,7 +59,12 @@ class BaseThread
 
   public:
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 构造:创建一个BaseThread对象,创建的同时启动. </summary>
+    /// <summary>
+    /// 构造:创建一个BaseThread对象,创建的同时启动.
+    /// this->_thread = BaseThread::creat(std::bind(&MultiCamera::init, this, std::placeholders::_1),
+    ///                                   std::bind(&MultiCamera::workonce, this, std::placeholders::_1),
+    ///                                   std::bind(&MultiCamera::release, this, std::placeholders::_1));
+    /// </summary>
     ///
     /// <remarks> Dx, 2019/1/15. </remarks>
     ///
