@@ -91,6 +91,11 @@ class CameraThread
 
     ~CameraThread();
 
+    /// <summary> 准备支持使用采图线程处理数据. </summary>
+    typedef std::function<void(CameraThread*, pCameraImage)> FunProc;
+
+    FunProc _proc = nullptr;
+
     /// <summary> 相机参数. </summary>
     std::vector<pCamera> vCameras;
 

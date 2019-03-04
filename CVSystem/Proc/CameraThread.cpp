@@ -119,11 +119,17 @@ void CameraThread::dowork()
                     LogW("CameraThread.dowork():异常 %s", e.what());
                 }
             }
-
             cimg->costTime = (float)(clock() - cimg->startTime) / CLOCKS_PER_SEC; //计算一个采图消耗时间
-            queueData->frameQueue.enqueue(cimg);
 
-            limitQueue(this->queueMaxLen);
+            //有处理委托就直接进行就处理
+            if (_proc != nullptr) {
+                _proc(this, cimg);
+            }
+            else { //否则丢进队列
+                queueData->frameQueue.enqueue(cimg);
+                limitQueue(this->queueMaxLen);
+            }
+
             updateFPS();
 
             //如果有定义需要一个通知外面处理线程采图ok的话
