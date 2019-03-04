@@ -101,6 +101,8 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
         pCameraImage cimg;
         if (cameraThread->try_dequeue(cimg)) {
             //如果能提取出图片来
+            cimg->procStartTime = clock();//标记处理开始时间
+
             LogD("MultiCamera.workonce():提取%d个相机图像 fnum = %d , costTime=%2f", cimg->vImage.size(), cimg->fnum, cimg->costTime);
             fps = fpsCalc.update(++frameCount);
             if (frameCount != cimg->fnum) {
@@ -119,6 +121,8 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
 
             //干脆用这个线程来驱动检查事件
             Event::GetInst()->checkMemEvent();
+
+            cimg->procEndTime = clock();//标记处理结束时间
         }
         else {
             break;

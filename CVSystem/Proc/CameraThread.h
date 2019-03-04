@@ -23,7 +23,19 @@ struct ImageItem
     cv::Mat image;
 
     /// <summary> 对应相机. </summary>
-    Camera* camera;
+    Camera* camera = nullptr;
+
+    /// <summary> 这一帧的采集开始时间戳. </summary>
+    clock_t grabStartTime = 0;
+
+    /// <summary> 这一帧的采集结束时间戳. </summary>
+    clock_t grabEndTime = 0;
+
+    /// <summary> 采图的消耗时间. </summary>
+    float costTime()
+    {
+        return (float)(grabEndTime - grabStartTime) / CLOCKS_PER_SEC * 1000;
+    }
 };
 
 ///-------------------------------------------------------------------------------------------------
@@ -40,11 +52,26 @@ class CameraImage
     /// <summary> 这一帧里这一组相机的原始图像(但是index并不是camIndex). </summary>
     std::vector<ImageItem> vImage;
 
-    /// <summary> 这一帧的采集时间戳. </summary>
-    clock_t startTime = 0;
+    /// <summary> 这一帧的采集开始时间戳. </summary>
+    clock_t grabStartTime = 0;
+
+    /// <summary> 这一帧的采集结束时间戳. </summary>
+    clock_t grabEndTime = 0;
 
     /// <summary> 这一帧的采集消耗时间. </summary>
     float costTime = 0;
+
+    /// <summary> 这一帧的开始处理的时间戳. </summary>
+    clock_t procStartTime = 0;
+
+    /// <summary> 这一帧的结束处理的时间戳. </summary>
+    clock_t procEndTime = 0;
+
+    /// <summary> 等待处理的消耗时间 ms. </summary>
+    float waitProcTime()
+    {
+        return (float)(procStartTime - grabEndTime) / CLOCKS_PER_SEC * 1000;
+    }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

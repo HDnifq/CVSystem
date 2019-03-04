@@ -95,7 +95,7 @@ void CameraThread::dowork()
             //采图：一个结构体包含4个相机的图
             pCameraImage cimg(new CameraImage());
             cimg->fnum = fnumber;
-            cimg->startTime = clock();
+            cimg->grabStartTime = clock();
             cimg->vImage.resize(vCameras.size()); //先直接创建算了
             //这个线程对所有相机采图
             bool isHavaImg = false;
@@ -107,8 +107,10 @@ void CameraThread::dowork()
                         LogE("CameraThread.dowork():cam %d 相机没有打开！", camIndex);
                         continue;
                     }
+                    cimg->vImage[camIndex].grabStartTime = clock();
                     if (vCameras[camIndex]->capture->read(cimg->vImage[camIndex].image)) {
                         isHavaImg = true;
+                        cimg->vImage[camIndex].grabEndTime = clock();
                         LogD("CameraThread.dowork():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
                     }
                     else {
@@ -119,7 +121,8 @@ void CameraThread::dowork()
                     LogW("CameraThread.dowork():异常 %s", e.what());
                 }
             }
-            cimg->costTime = (float)(clock() - cimg->startTime) / CLOCKS_PER_SEC; //计算一个采图消耗时间
+            cimg->grabEndTime = clock();
+            cimg->costTime = (float)(clock() - cimg->grabStartTime) / CLOCKS_PER_SEC * 1000; //计算一个采图消耗时间
 
             //有处理委托就直接进行就处理
             if (_proc != nullptr) {
