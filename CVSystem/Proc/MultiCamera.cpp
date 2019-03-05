@@ -70,35 +70,38 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
         }
 
         LogD("MultiCamera.workonce():在队列里提取图片！");
-        //提取图片组帧
-        pCameraImage cimg;
-        if (_cameraGrab.grab(cimg)) {
-            //如果采图成功了
-            cimg->procStartTime = clock(); //标记处理开始时间
 
-            fps = _fpsCalc.update(++frameCount);
+        if (_isGrab.load()) {
+            //提取图片组帧
+            pCameraImage cimg;
+            if (_cameraGrab.grab(cimg)) {
+                //如果采图成功了
+                cimg->procStartTime = clock(); //标记处理开始时间
 
-            if (frameCount != cimg->fnum) {
-                LogD("MultiCamera.workonce():有丢失帧，处理速度跟不上采图速度，frameCount=%d", frameCount);
-                frameCount = cimg->fnum; //还是让两个帧号保持一致
-            }
+                fps = _fpsCalc.update(++frameCount);
 
-            //选一个proc进行图像的处理
-            if (activeProcIndex < vProc.size()) {
-                LogD("MultiCamera.workonce():执行proc %d！", activeProcIndex);
-                int ckey = vProc[activeProcIndex]->process(cimg);
-                if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                    Event::GetInst()->cvKey.exchange(ckey);
+                if (frameCount != cimg->fnum) {
+                    LogD("MultiCamera.workonce():有丢失帧，处理速度跟不上采图速度，frameCount=%d", frameCount);
+                    frameCount = cimg->fnum; //还是让两个帧号保持一致
                 }
-            }
 
-            //干脆用这个线程来驱动检查事件
-            Event::GetInst()->checkMemEvent();
-            cimg->procEndTime = clock(); //标记处理结束时间
-        }
-        else {
-            LogE("MultiCamera.workonce():采图失败了！");
-            break;
+                //选一个proc进行图像的处理
+                if (activeProcIndex < vProc.size()) {
+                    LogD("MultiCamera.workonce():执行proc %d！", activeProcIndex);
+                    int ckey = vProc[activeProcIndex]->process(cimg);
+                    if (ckey != -1) { //如果有按键按下那么修改最近的按键值
+                        Event::GetInst()->cvKey.exchange(ckey);
+                    }
+                }
+
+                //干脆用这个线程来驱动检查事件
+                Event::GetInst()->checkMemEvent();
+                cimg->procEndTime = clock(); //标记处理结束时间
+            }
+            else {
+                LogE("MultiCamera.workonce():采图失败了！");
+                break;
+            }
         }
     }
 }
@@ -133,7 +136,7 @@ bool MultiCamera::openCamera(uint activeIndex)
         return true;
     }
     else {
-          LogE("MultiCamera.openCamera():cameraGrab相机打开失败,关闭相机!");
+        LogE("MultiCamera.openCamera():cameraGrab相机打开失败,关闭相机!");
         _cameraGrab.close(); //打开失败就关闭线程
         _isRun = false;
         _isOpening = false;

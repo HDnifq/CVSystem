@@ -73,6 +73,12 @@ class CameraImage
         return (float)(procStartTime - grabEndTime) / CLOCKS_PER_SEC * 1000;
     }
 
+    /// <summary> 处理消耗的时间 ms. </summary>
+    float procCostTime()
+    {
+        return (float)(procEndTime - procStartTime) / CLOCKS_PER_SEC * 1000;
+    }
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     /// vImage并不是一个以camIndex为序号的数据结构，所以用这个函数来查找一个ImageItem.
