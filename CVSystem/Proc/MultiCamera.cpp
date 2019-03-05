@@ -130,6 +130,7 @@ bool MultiCamera::openCamera(uint activeIndex)
                                           std::bind(&MultiCamera::workonce, this, std::placeholders::_1),
                                           std::bind(&MultiCamera::release, this, std::placeholders::_1));
 
+        this->_thread->setPriorityHigh();
         _isRun.exchange(true);
         _isOpening.exchange(false);
 

@@ -21,6 +21,8 @@
 
 #define USE_BTGC 1
 
+#include <windows.h>
+
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -154,6 +156,46 @@ class BaseThread
                 }
             }
         }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置线程优先级.
+    ///           进程高优先级:HIGH_PRIORITY_CLASS
+    ///           参考:https://docs.microsoft.com/zh-cn/windows/desktop/api/processthreadsapi/nf-processthreadsapi-setpriorityclass
+    ///           线程高优先级:THREAD_PRIORITY_HIGHEST
+    ///           参考:https://docs.microsoft.com/zh-cn/windows/desktop/api/processthreadsapi/nf-processthreadsapi-setthreadpriority
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2019/3/6. </remarks>
+    ///
+    /// <param name="processPriority"> 进程优先级. </param>
+    /// <param name="threadPriority">  线程优先级. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setPriority(DWORD processPriority, int threadPriority)
+    {
+        DWORD dwError;
+        if (!SetPriorityClass(GetCurrentProcess(), processPriority)) {
+            dwError = GetLastError();
+            LogE("BaseThread.setPriority():进程优先级设置失败%d", dwError);
+        }
+
+        if (_thread == nullptr) {
+            LogE("BaseThread.setPriority():_thread=NULL,未设置线程优先级!");
+        }
+        if (!SetThreadPriority(_thread->native_handle(), threadPriority)) {
+            dwError = GetLastError();
+            LogE("BaseThread.setPriority():进程优先级设置失败%d", dwError);
+        }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置线程成高优先级. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/6. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    void setPriorityHigh()
+    {
+        setPriority(HIGH_PRIORITY_CLASS, THREAD_PRIORITY_HIGHEST);
     }
 
     ///-------------------------------------------------------------------------------------------------
