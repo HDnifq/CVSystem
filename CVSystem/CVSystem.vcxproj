@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Proc\MultiCamera.h" />
+    <ClInclude Include="Proc\CameraGrab.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ALGO.hpp" />
     <ClInclude Include="Common\BaseThread.h" />
@@ -160,6 +162,7 @@
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\concurrentqueue.h" />
     <ClInclude Include="Common\CoolTime.hpp" />
+    <ClInclude Include="Proc\CameraImage.h" />
     <ClInclude Include="Proc\Draw.h" />
     <ClInclude Include="Common\FileHelper.h" />
     <ClInclude Include="Common\FPSCalc.hpp" />
@@ -182,12 +185,15 @@
     <ClInclude Include="Proc\CamImageProc.hpp" />
     <ClInclude Include="Proc\DevicesHelper.h" />
     <ClInclude Include="Common\Event.h" />
-    <ClInclude Include="Proc\MultiCamera.h" />
+    <ClInclude Include="Proc\FrameProc.h" />
+    <ClInclude Include="Proc\MultiCameraMT.h" />
     <ClInclude Include="Proc\SimpleModule.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Proc\MultiCamera.cpp" />
+    <ClCompile Include="Proc\CameraGrab.cpp" />
     <ClCompile Include="Common\BaseThread.cpp" />
     <ClCompile Include="Common\Common.cpp" />
     <ClCompile Include="Proc\Draw.cpp" />
@@ -201,7 +207,7 @@
     <ClCompile Include="Proc\CameraThread.cpp" />
     <ClCompile Include="Proc\DevicesHelper.cpp" />
     <ClCompile Include="Common\Event.cpp" />
-    <ClCompile Include="Proc\MultiCamera.cpp" />
+    <ClCompile Include="Proc\MultiCameraMT.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -1,32 +1,40 @@
 ﻿#pragma once
 
+#include "../Common/FPSCalc.hpp"
+#include "CameraThread.h"
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
 #include "../dlog/dlog.h"
 #include "../Common/BaseThread.h"
-#include "../Common/FPSCalc.hpp"
 #include "FrameProc.h"
-#include "CameraGrab.h"
 
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 使用单线程来采图加处理的MultiCameraMT. </summary>
+/// <summary> 多摄像机，它使用一个线程进行所有图像的处理工作. </summary>
 ///
-/// <remarks> Dx, 2019/3/5. </remarks>
+/// <remarks> Surface, 2018/11/16. </remarks>
 ///-------------------------------------------------------------------------------------------------
-class MultiCamera
+class MultiCameraMT
 {
   public:
-    MultiCamera();
-    ~MultiCamera();
-    static MultiCamera* GetInst()
+    MultiCameraMT(); // 1000 / 1000
+
+    ~MultiCameraMT();
+
+    static MultiCameraMT* GetInst()
     {
         if (m_pInstance == NULL)
-            m_pInstance = new MultiCamera();
+            m_pInstance = new MultiCameraMT();
         return m_pInstance;
     }
+
+    ///// <summary> 是否进入睡眠模式，在睡眠模式下不取图，不处理. </summary> //由于处理线程受采图线程供图处理，所以这里睡眠不在这里可以控制
+    //bool isSleep = false;
+
+    ///// <summary> 是否进入深度睡眠模式，在深度睡眠模式下关闭摄像机. </summary>
+    //bool isDeepSleep = false;
 
     /// <summary> 帧处理计数. </summary>
     uint frameCount = 0;
@@ -34,11 +42,48 @@ class MultiCamera
     /// <summary> 处理的fps. </summary>
     float fps = 0;
 
+    /// <summary> 多个相机处理器的处理对象,每一个相机开一个VideoProcessor. </summary>
+    CameraThread* cameraThread = nullptr;
+
     /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
     std::vector<pFrameProc> vProc;
 
     /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
     uint activeProcIndex = 0;
+
+    ///// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
+    //MultiCameraKeyEvent procKeyEvent = nullptr;
+
+    ///// <summary> 当前待处理的key值，如果无按键那么为-1. (换成Event单例)</summary>
+    //std::atomic_int key = -1;
+
+    /// <summary> 是否显示窗口. </summary>
+    bool isShowWin = false;
+
+    /// <summary> 锁小线程们的锁. </summary>
+    std::mutex mtx_ct;
+
+    /// <summary> 给小线程们的通知. </summary>
+    std::condition_variable cv_ct;
+
+    /// <summary> 全局互斥锁. </summary>
+    std::mutex mtx_mt;
+
+    /// <summary> 其他人向自己的通知. </summary>
+    std::condition_variable cv_mt;
+
+    /// <summary> openCamera函数的设置. </summary>
+    enum OpenCameraType
+    {
+        /// <summary> 如果打开相机成功就启动一个计算线程. </summary>
+        StartCalcThread,
+
+        /// <summary> 不启动计算线程，时候自己运行run()函数. </summary>
+        NotStartCalcThread,
+
+        /// <summary> 不管打开相机是否成功都强制启动一个计算线程. </summary>
+        ForceStartCalcThread,
+    };
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
@@ -55,7 +100,7 @@ class MultiCamera
     ///
     /// <returns> 打开成功返回ture. </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool openCamera(uint activeIndex = 0);
+    bool openCamera(uint activeIndex = 0, OpenCameraType openType = OpenCameraType::StartCalcThread);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 关闭所有相机. </summary>
@@ -94,16 +139,13 @@ class MultiCamera
     void setActiveProc(uint index);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置当前是否采图，主要是为了在不需要采图的手减少开销. </summary>
+    /// <summary> 设置当前是否采图，主要是控制它的成员CameraThread. </summary>
     ///
     /// <remarks> Dx, 2018/11/20. </remarks>
     ///
     /// <param name="isGrab"> 如果是真就是采图. </param>
     ///-------------------------------------------------------------------------------------------------
-    void setIsGrab(bool isGrab)
-    {
-        _isGrab = isGrab;
-    }
+    void setIsGrab(bool isGrab);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 是否当前正在正常工作. </summary>
@@ -118,13 +160,7 @@ class MultiCamera
     }
 
   private:
-    static MultiCamera* m_pInstance;
-
-    /// <summary> 相机采图类. </summary>
-    CameraGrab _cameraGrab;
-
-    /// <summary> 综合分析线程. </summary>
-    pBaseThread _thread = nullptr;
+    static MultiCameraMT* m_pInstance;
 
     /// <summary> 是否停止. </summary>
     std::atomic_bool _isRun = false;
@@ -135,8 +171,8 @@ class MultiCamera
     /// <summary> 是否正在停止. </summary>
     std::atomic_bool _isStopping = false;
 
-    /// <summary> 是否采图. </summary>
-    std::atomic_bool _isGrab = true;
+    /// <summary> 综合分析线程. </summary>
+    pBaseThread _thread = nullptr;
 
     /// <summary> 设置的下一个激活index. </summary>
     uint _nextActiveProcIndex = 0;
@@ -156,5 +192,4 @@ class MultiCamera
     //计算fps的辅助
     FPSCalc _fpsCalc;
 };
-
 } // namespace dxlib

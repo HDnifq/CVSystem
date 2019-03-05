@@ -122,16 +122,9 @@ void CameraThread::dowork()
                 }
             }
             cimg->grabEndTime = clock();
-            cimg->costTime = (float)(clock() - cimg->grabStartTime) / CLOCKS_PER_SEC * 1000; //计算一个采图消耗时间
 
-            //有处理委托就直接进行就处理
-            if (_proc != nullptr) {
-                _proc(this, cimg);
-            }
-            else { //否则丢进队列
-                queueData->frameQueue.enqueue(cimg);
-                limitQueue(this->queueMaxLen);
-            }
+            queueData->frameQueue.enqueue(cimg);
+            limitQueue(this->queueMaxLen);
 
             updateFPS();
 

@@ -33,14 +33,14 @@ class SimpleModule
         CameraManger::GetInst()->add(pCamera(new Camera(0, camName, cv::Size(1280, 720), 16)));
 
         //加入proc
-        MultiCamera::GetInst()->vProc.clear();
-        MultiCamera::GetInst()->vProc.push_back(pFrameProc(new CamImageProc()));
+        MultiCameraMT::GetInst()->vProc.clear();
+        MultiCameraMT::GetInst()->vProc.push_back(pFrameProc(new CamImageProc()));
     }
 
     void start()
     {
         LogI("SimpleModule.start():打开相机！");
-        MultiCamera::GetInst()->openCamera(0); //打开相机
+        MultiCameraMT::GetInst()->openCamera(0); //打开相机
     }
 
   private:
