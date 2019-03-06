@@ -4,6 +4,7 @@
 
 using namespace dxlib;
 
+//没有相机会失败
 TEST(DevicesHelper, listDevices)
 {
     int devCount = DevicesHelper::GetInst()->listDevices();
