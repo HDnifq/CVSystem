@@ -11,10 +11,13 @@ class TestProc : public FrameProc
     TestProc() {}
     ~TestProc() {}
 
+    int count = 0;
+
     int process(pCameraImage camImage) override
     {
         cv::Mat image = camImage->vImage[0].image;
         EXPECT_FALSE(image.empty()); //确实能采图
+        count++;                     //采图的计数加1
 
         int key = -1;
         key = cv::waitKey(1); //一定要加waitKey无法显示图片
@@ -66,10 +69,15 @@ TEST(MultiCamera, open)
 
     MultiCamera::GetInst()->addProc(new TestProc());
 
-    for (size_t i = 0; i < 2; i++) {
+    for (size_t i = 0; i < 2; i++) {          //测试两次
         MultiCamera::GetInst()->openCamera(); //打开相机
         EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
         std::this_thread::sleep_for(std::chrono::milliseconds(500)); //工作500秒
+
+        //测一下TestProc里是不是处理了图像帧
+        TestProc* testfp = (TestProc*)MultiCamera::GetInst()->vProc[0].get();
+        EXPECT_TRUE(testfp->count > 0);
+
         EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
         MultiCamera::GetInst()->close();
     }
