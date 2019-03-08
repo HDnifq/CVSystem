@@ -38,6 +38,9 @@ class Camera
     /// <summary> 相机的分辨率size. </summary>
     cv::Size size;
 
+    /// <summary> 相机的参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置. </summary>
+    cv::Size paramSize;
+
     /// <summary> 相机的内参数矩阵. </summary>
     cv::Mat camMatrix;
 

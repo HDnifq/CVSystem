@@ -68,6 +68,8 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     _setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
     devNameA = ws2s(aDevName);
+
+    paramSize = aSize;
 }
 
 bool Camera::openCamera()
