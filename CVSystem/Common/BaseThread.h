@@ -21,6 +21,9 @@
 
 #define USE_BTGC 1
 
+#pragma warning(push)
+#pragma warning(disable : 4477) //忽视掉线程id的强转警告
+
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -124,6 +127,7 @@ class BaseThread
         if (_thread->joinable()) {
             _thread->join();
         }
+
         //由于doWork()函数持有了自身的引用，那么这个函数只有当工作线程执行完线程函数之后(当有其他人持有之后还会更后)才会进入
         LogI("BaseThread.~BaseThread():线程释放完毕id=%d! ", _thread->get_id());
     }
@@ -320,3 +324,5 @@ class BaseThread
 };
 typedef std::shared_ptr<BaseThread> pBaseThread;
 } // namespace dxlib
+
+#pragma warning(pop)
