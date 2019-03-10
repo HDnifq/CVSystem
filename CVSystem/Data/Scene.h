@@ -41,13 +41,11 @@ class GameObj
     GameObj(std::wstring name = L"unnamed",
             int type = ObjType::Empty,
             std::array<double, 3> position = {0, 0, 0},
-            std::array<double, 4> rotation = {0, 0, 0, 1}) : name(name),
-                                                             type(type),
-                                                             position(position),
-                                                             rotation(rotation) {}
+            std::array<double, 4> rotation = {0, 0, 0, 1})
+        : name(name), type(type), position(position), rotation(rotation) {}
 
-    GameObj(std::wstring name, int type, double* position, double* rotation) : name(name),
-                                                                               type(type)
+    GameObj(std::wstring name, int type, double* position, double* rotation)
+        : name(name), type(type)
     {
         this->position = {position[0], position[1], position[2]};
         this->rotation = {rotation[0], rotation[1], rotation[2], rotation[3]};
@@ -98,8 +96,7 @@ class Line
   public:
     Line() {}
 
-    Line(std::wstring name, int type = 0) : name(name),
-                                            type(type) {}
+    Line(std::wstring name, int type = 0) : name(name), type(type) {}
 
     Line(std::wstring name, int type, std::array<double, 3> position0, std::array<double, 3> position1) : name(name),
                                                                                                           type(type),

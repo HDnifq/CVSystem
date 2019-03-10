@@ -54,6 +54,7 @@
     <ClCompile Include="DrawTest.cpp" />
     <ClCompile Include="EventbusTest.cpp" />
     <ClCompile Include="FileHelperTest.cpp" />
+    <ClCompile Include="JsonTest.cpp" />
     <ClCompile Include="MultiCameraTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
