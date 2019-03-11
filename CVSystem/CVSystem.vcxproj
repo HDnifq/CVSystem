@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DTO\JsonHelper.h" />
+    <ClInclude Include="DTO\Serialize.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
     <ClInclude Include="Proc\CameraGrab.h" />
     <ClInclude Include="Common.h" />
@@ -193,7 +194,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DTO\JsonHelper.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />
     <ClCompile Include="Proc\CameraGrab.cpp" />
     <ClCompile Include="Common\BaseThread.cpp" />

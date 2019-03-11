@@ -1,23 +1,186 @@
 ﻿#pragma once
 
-#include <opencv2/opencv.hpp>
-
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h" // for stringify JSON
+#include "rapidjson/filewritestream.h"
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/encodings.h"
+
+namespace rapidjson {
+
+//使用UTF-16的doc
+typedef GenericDocument<UTF16<>> DocumentW;
+typedef GenericValue<UTF16<>> ValueW;
+typedef GenericStringStream<UTF16<>> StringStreamW;
+typedef GenericStringBuffer<UTF16<>> StringBufferW;
+
+} // namespace rapidjson
 
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 转换到Json的公共方法.
-///           使用Json::o2j(xxx).serialize()可以直接转到string.</summary>
+/// <summary> 转换到Json的公共方法..</summary>
 ///
 /// <remarks> Dx, 2019/1/23. </remarks>
 ///-------------------------------------------------------------------------------------------------
 class JsonHelper
 {
   public:
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 保存json到文件.这个没有进行转码的处理.如果不定义下面的内容,那么就是GBK编码.
+    /// #pragma execution_character_set("utf-8")
+    /// 如果定义了那么就就会转码成utf-8的文件.
+    /// </summary>
+    ///
+    /// <remarks> Dx, 2019/1/23. </remarks>
+    ///
+    /// <param name="filePath"> [in] 文件路径. </param>
+    /// <param name="doc">      The document. </param>
+    ///-------------------------------------------------------------------------------------------------
+    static void save(const std::string& filePath, const rapidjson::Document& doc)
+    {
+        FILE* fp;
+        fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
+        char writeBuffer[256];
+        rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+        rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+        doc.Accept(writer);
+        fclose(fp);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 输入的是utf16的doc,但是保存成utf8的格式. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="filePath"> Full pathname of the file. </param>
+    /// <param name="doc">      The document. </param>
+    /// <param name="putBOM">   (Optional) True to put bom. </param>
+    ///-------------------------------------------------------------------------------------------------
+    static void save(const std::string& filePath, const rapidjson::DocumentW& doc, bool putBOM = false)
+    {
+        using namespace rapidjson;
+        FILE* fp;
+        char buf[256];
+        fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
+        FileWriteStream ws(fp, buf, sizeof(buf));
+        typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
+        EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
+        rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
+
+        doc.Accept(writer);
+        fclose(fp);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 从文件读取json. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="filePath"> Full pathname of the file. </param>
+    /// <param name="doc">      [in,out] The document. </param>
+    ///-------------------------------------------------------------------------------------------------
+    static void read(const std::string& filePath, rapidjson::Document& doc)
+    {
+        FILE* fp;
+        fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
+        char readBuffer[256];
+        rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+        doc.ParseStream(is);
+        fclose(fp);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 转换doc到string. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/11. </remarks>
+    ///
+    /// <param name="doc"> The document. </param>
+    ///
+    /// <returns> Doc as a std::string. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::string toStr(const rapidjson::Document& doc)
+    {
+        using namespace rapidjson;
+        rapidjson::StringBuffer sb;
+        rapidjson::PrettyWriter<StringBuffer> writer(sb);
+        doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        return std::string(sb.GetString());
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 转换doc到string. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="doc"> The document. </param>
+    ///
+    /// <returns> Doc as a std::wstring. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::wstring toStr(const rapidjson::DocumentW& doc)
+    {
+        using namespace rapidjson;
+        StringBufferW sb;
+        PrettyWriter<StringBufferW, UTF16<>, UTF16<>> writer(sb);
+        doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        return std::wstring(sb.GetString());
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> UTF8转换成UTF16. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="str"> The string. </param>
+    ///
+    /// <returns> A std::wstring. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::wstring utf8To16(const std::string str)
+    {
+        using namespace rapidjson;
+        StringStream source(str.c_str());
+        StringBufferW target;
+        bool hasError = false;
+        while (source.Peek() != '\0')
+            if (!Transcoder<UTF8<>, UTF16<>>::Transcode(source, target)) {
+                hasError = true;
+                break;
+            }
+        if (!hasError) {
+            return target.GetString();
+        }
+        return std::wstring();
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> UTF16转换成UTF8. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="str"> The string. </param>
+    ///
+    /// <returns> A std::string. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::string utf16To8(const std::wstring str)
+    {
+        using namespace rapidjson;
+        StringStreamW source(str.c_str());
+        StringBuffer target;
+        bool hasError = false;
+        while (source.Peek() != L'\0')
+            if (!Transcoder<UTF16<>, UTF8<>>::Transcode(source, target)) {
+                hasError = true;
+                break;
+            }
+        if (!hasError) {
+            return target.GetString();
+        }
+        return std::string();
+    }
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary> Creat empty object document. </summary>
     ///
@@ -33,88 +196,17 @@ class JsonHelper
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> obj -> json. </summary>
+    /// <summary> Creat empty object document. </summary>
     ///
     /// <remarks> Surface, 2019/3/11. </remarks>
     ///
-    /// <param name="doc">   [in,out] The document. </param>
-    /// <param name="value"> [in,out] The value. </param>
-    /// <param name="m">     A cv::Mat to process. </param>
+    /// <returns> A rapidjson::Document. </returns>
     ///-------------------------------------------------------------------------------------------------
-    static inline void o2j(rapidjson::Document& doc, rapidjson::Value& value, const cv::Mat& m)
+    static inline rapidjson::DocumentW creatEmptyObjectDocW()
     {
-        auto& allocator = doc.GetAllocator();
-        int channels = m.channels();
-        int cols = m.cols;
-        int rows = m.rows;
-
-        value.AddMember("type", m.type(), allocator);
-        value.AddMember("channels", m.channels(), allocator);
-        value.AddMember("cols", cols, allocator);
-        value.AddMember("rows", rows, allocator);
-
-        rapidjson::Value data(rapidjson::kArrayType);
-        if (m.type() == CV_32F) {
-            const float* p = m.ptr<float>();
-            for (size_t i = 0; i < cols * rows * channels; i++)
-                data.PushBack(p[i], allocator);
-        }
-        else if (m.type() == CV_64F) {
-            const double* p = m.ptr<double>();
-            for (size_t i = 0; i < cols * rows * channels; i++)
-                data.PushBack(p[i], allocator);
-        }
-        value.AddMember("data", data, allocator);
-    }
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> json -> obj. </summary>
-    ///
-    /// <remarks> Dx, 2019/3/11. </remarks>
-    ///
-    /// <param name="value"> The value. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
-    static inline cv::Mat j2o(const rapidjson::Value& value)
-    {
-        int type = value["type"].GetInt();
-        int channels = value["channels"].GetInt();
-        int cols = value["cols"].GetInt();
-        int rows = value["rows"].GetInt();
-        const auto& data = value["data"];
-
-        cv::Mat m;
-        if (type == CV_32F) {
-            m = cv::Mat(rows, cols, CV_32F);
-            float* _r = m.ptr<float>();
-            for (rapidjson::SizeType i = 0; i < data.Size(); i++) // 使用 SizeType 而不是 size_t
-                _r[i] = data[i].GetFloat();
-        }
-        else if (type == CV_64F) {
-            m = cv::Mat(rows, cols, CV_64F);
-            double* _r = m.ptr<double>();
-            for (rapidjson::SizeType i = 0; i < data.Size(); i++) // 使用 SizeType 而不是 size_t
-                _r[i] = data[i].GetDouble();
-        }
-        return m;
-    }
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Converts a doc to a string. </summary>
-    ///
-    /// <remarks> Surface, 2019/3/11. </remarks>
-    ///
-    /// <param name="doc"> [in] The document. </param>
-    ///
-    /// <returns> Doc as a std::string. </returns>
-    ///-------------------------------------------------------------------------------------------------
-    static inline std::string toStr(rapidjson::Document& doc)
-    {
-        rapidjson::StringBuffer sb;
-        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-        doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
-        return std::string(sb.GetString());
+        rapidjson::DocumentW document;
+        document.SetObject();
+        return document;
     }
 };
 } // namespace dxlib

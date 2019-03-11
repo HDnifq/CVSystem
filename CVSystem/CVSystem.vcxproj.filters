@@ -129,6 +129,9 @@
     <ClInclude Include="DTO\JsonHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DTO\Serialize.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -180,9 +183,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\MultiCamera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DTO\JsonHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
