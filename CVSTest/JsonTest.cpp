@@ -25,18 +25,18 @@ TEST(Json, cvMat_double)
          0, 0, 1, 0,
          0, 0, 0, 1);
 
-    auto doc = JsonHelper::creatEmptyObjectDoc();
+    auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
     Serialize::o2j(doc, doc, m);
 
     //保存到string
-    string text = JsonHelper::toStr(doc);
+    wstring text = JsonHelper::toStr(doc);
 
     //从string读取
-    StringStream s(text.c_str());
-    Document d;
+    StringStreamW s(text.c_str());
+    DocumentW d;
     d.ParseStream(s);
-    Value v = d.GetObject();
+    ValueW v = d.GetObject();
 
     //反序列化到Mat
     cv::Mat m2 = Serialize::j2o(v);
@@ -62,18 +62,18 @@ TEST(Json, cvMat_float)
          0, 0, 1, 0,
          0, 0, 0, 1);
 
-    auto doc = JsonHelper::creatEmptyObjectDoc();
+    auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
     Serialize::o2j(doc, doc, m);
 
     //保存到string
-    string text = JsonHelper::toStr(doc);
+    wstring text = JsonHelper::toStr(doc);
 
     //从string读取
-    StringStream s(text.c_str());
-    Document d;
+    StringStreamW s(text.c_str());
+    DocumentW d;
     d.ParseStream(s);
-    Value v = d.GetObject();
+    ValueW v = d.GetObject();
 
     //反序列化到Mat
     cv::Mat m2 = Serialize::j2o(v);
@@ -90,8 +90,114 @@ TEST(Json, cvMat_float)
     }
 }
 
+TEST(Json, cvMat_field)
+{
+    cv::Mat m, m2;
+    m = (cv::Mat_<float>(4, 4) << 1, 0, 0, 0,
+         0, -1, 0, 0,
+         0, 0, 1, 0,
+         0, 0, 0, 1);
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rt4x4", m);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+    Serialize::j2o(d2, L"rt4x4", m2);
+    //比较两个Mat
+    EXPECT_TRUE(m2.cols == m.cols);
+    EXPECT_TRUE(m2.rows == m.rows);
+    EXPECT_TRUE(m2.type() == m.type());
+    float* m_p = m.ptr<float>();
+    float* m2_p = m2.ptr<float>();
+
+    for (size_t i = 0; i < m.cols * m.rows; i++) {
+        EXPECT_TRUE(m_p[i] == m2_p[i]);
+    }
+}
+
+TEST(Json, arr)
+{
+    array<double, 4> arr = {1, 2, 3, 4};
+
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rotate", arr);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+    array<double, 4> arr2;
+
+    Serialize::j2o(d2, L"rotate", arr2);
+
+    for (size_t i = 0; i < arr.size(); i++) {
+        EXPECT_TRUE(arr[i] == arr2[i]);
+    }
+}
+
+TEST(Json, Vector3)
+{
+    Vector3 o1 = {1, 2, 3};
+    Vector3 o2;
+
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rotate", o1);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+
+    Serialize::j2o(d2, L"rotate", o2);
+
+    EXPECT_TRUE(o1.x == o2.x);
+    EXPECT_TRUE(o1.y == o2.y);
+    EXPECT_TRUE(o1.z == o2.z);
+}
+
+TEST(Json, Quaternion)
+{
+    Quaternion o1 = {1, 2, 3, 4};
+    Quaternion o2;
+
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rotate", o1);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+
+    Serialize::j2o(d2, L"rotate", o2);
+
+    EXPECT_TRUE(o1.x == o2.x);
+    EXPECT_TRUE(o1.y == o2.y);
+    EXPECT_TRUE(o1.z == o2.z);
+    EXPECT_TRUE(o1.w == o2.w);
+}
+
+#pragma region common
+
 //这个读写测试生成的文件内容是GBK的.如果定义了#pragma execution_character_set("utf-8"),那么文件内容是UTF-8
-// rapidjson是默认中文的
+// rapidjson是默认UTF8的
 TEST(Json, read_write)
 {
     auto doc = JsonHelper::creatEmptyObjectDoc();
@@ -220,3 +326,4 @@ TEST(Json, save_utf16_to_utf8)
 //
 //    doc["name"] = Value("hoge");
 //}
+#pragma endregion
