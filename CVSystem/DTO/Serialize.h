@@ -195,6 +195,130 @@ class Serialize
     }
 
 #pragma endregion
+
+#pragma region vector
+
+    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
+    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
+                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                           const std::vector<std::wstring>& obj)
+    {
+        using namespace rapidjson;
+        auto& allocator = doc.GetAllocator();
+        ValueW jv(kArrayType);
+        for (size_t i = 0; i < obj.size(); i++) {
+            ValueW item; //string的话必须这样搞一下然后拷贝,它这个库分两种思路,ref的和拷贝的
+            item.SetString(obj[i].c_str(), allocator);
+            jv.PushBack(item, allocator);
+        }
+        value.AddMember(fieldName, jv, allocator);
+    }
+
+    //obj -> json 整个对象是纯array
+    static inline rapidjson::DocumentW o2j(const std::vector<std::wstring>& obj)
+    {
+        rapidjson::DocumentW doc;
+        doc.SetArray();
+        auto& allocator = doc.GetAllocator();
+        for (size_t i = 0; i < obj.size(); i++) {
+            rapidjson::ValueW item;
+            item.SetString(obj[i].c_str(), allocator);
+            doc.PushBack(item, allocator);
+        }
+        return doc;
+    }
+
+    //obj -> json 整个对象是纯array
+    template <typename T>
+    static inline rapidjson::DocumentW o2j(const std::vector<T>& obj)
+    {
+        rapidjson::DocumentW doc;
+        doc.SetArray();
+        auto& allocator = doc.GetAllocator();
+        for (size_t i = 0; i < obj.size(); i++) {
+            rapidjson::ValueW item;
+            doc.PushBack(obj[i], allocator);
+        }
+        return doc;
+    }
+
+    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<std::wstring>& obj)
+    {
+        const auto& jv = value[fieldName];
+        obj.clear();
+        for (unsigned int i = 0; i < jv.Size(); i++) {
+            obj.push_back(jv[i].GetString());
+        }
+    }
+
+    //json -> obj
+    static inline void j2o(const rapidjson::ValueW& value, std::vector<std::wstring>& obj)
+    {
+        obj.clear();
+        for (unsigned int i = 0; i < value.Size(); i++) {
+            obj.push_back(value[i].GetString());
+        }
+    }
+
+    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<double>& obj)
+    {
+        const auto& jv = value[fieldName];
+        obj.clear();
+        for (unsigned int i = 0; i < jv.Size(); i++) {
+            obj.push_back(jv[i].GetDouble());
+        }
+    }
+
+    //json -> obj
+    static inline void j2o(const rapidjson::ValueW& value, std::vector<double>& obj)
+    {
+        obj.clear();
+        for (unsigned int i = 0; i < value.Size(); i++) {
+            obj.push_back(value[i].GetDouble());
+        }
+    }
+
+    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<float>& obj)
+    {
+        const auto& jv = value[fieldName];
+        obj.clear();
+        for (unsigned int i = 0; i < jv.Size(); i++) {
+            obj.push_back(jv[i].GetFloat());
+        }
+    }
+
+    //json -> obj
+    static inline void j2o(const rapidjson::ValueW& value, std::vector<float>& obj)
+    {
+        obj.clear();
+        for (unsigned int i = 0; i < value.Size(); i++) {
+            obj.push_back(value[i].GetFloat());
+        }
+    }
+
+    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<int>& obj)
+    {
+        const auto& jv = value[fieldName];
+        obj.clear();
+        for (unsigned int i = 0; i < jv.Size(); i++) {
+            obj.push_back(jv[i].GetInt());
+        }
+    }
+
+    //json -> obj
+    static inline void j2o(const rapidjson::ValueW& value, std::vector<int>& obj)
+    {
+        obj.clear();
+        for (unsigned int i = 0; i < value.Size(); i++) {
+            obj.push_back(value[i].GetInt());
+        }
+    }
+
+#pragma endregion
 };
 } // namespace dxjson
 } // namespace dxlib

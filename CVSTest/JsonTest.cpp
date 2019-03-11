@@ -194,6 +194,64 @@ TEST(Json, Quaternion)
     EXPECT_TRUE(o1.w == o2.w);
 }
 
+TEST(Json, v_wstring)
+{
+    vector<wstring> o1;
+    o1.push_back(L"1");
+    o1.push_back(L"2");
+    o1.push_back(L"2");
+    vector<wstring> o2;
+
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rotate", o1);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+
+    Serialize::j2o(d2, L"rotate", o2);
+
+    for (size_t i = 0; i < o1.size(); i++) {
+        EXPECT_TRUE(o1[i] == o2[i]);
+    }
+}
+
+TEST(Json, creatarraydoc)
+{
+    vector<wstring> vStr;
+    vStr.push_back(L"1");
+    vStr.push_back(L"2");
+    vStr.push_back(L"2");
+
+    auto doc = JsonHelper::creatArrayDocW(vStr);
+    //保存到string
+    wstring text = JsonHelper::toStr(doc);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+
+    vector<int> vi;
+    vi.push_back(4);
+    vi.push_back(5);
+    vi.push_back(6);
+
+    auto doc2 = JsonHelper::creatArrayDocW(vi);
+    text = JsonHelper::toStr(doc2);
+
+    //JsonHelper::save("read_write.json", doc); //这个文件是gbk的
+    //Document doc2;
+    //JsonHelper::read("read_write.json", doc2);
+    //EXPECT_TRUE(doc2["a"] == 1);
+    //EXPECT_TRUE(doc2["试试中文"] == 2);
+}
+
 #pragma region common
 
 //这个读写测试生成的文件内容是GBK的.如果定义了#pragma execution_character_set("utf-8"),那么文件内容是UTF-8

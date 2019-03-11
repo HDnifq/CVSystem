@@ -8,6 +8,8 @@
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/encodings.h"
 
+#include "vector"
+
 namespace rapidjson {
 
 //使用UTF-16的doc
@@ -105,8 +107,9 @@ class JsonHelper
     static inline std::string toStr(const rapidjson::Document& doc)
     {
         using namespace rapidjson;
-        rapidjson::StringBuffer sb;
-        rapidjson::PrettyWriter<StringBuffer> writer(sb);
+        StringBuffer sb;
+        //PrettyWriter<StringBuffer> writer(sb);
+        Writer<StringBuffer> writer(sb);
         doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
         return std::string(sb.GetString());
     }
@@ -124,7 +127,8 @@ class JsonHelper
     {
         using namespace rapidjson;
         StringBufferW sb;
-        PrettyWriter<StringBufferW, UTF16<>, UTF16<>> writer(sb);
+        //PrettyWriter<StringBufferW, UTF16<>, UTF16<>> writer(sb);
+        Writer<StringBufferW, UTF16<>, UTF16<>> writer(sb);
         doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
         return std::wstring(sb.GetString());
     }
@@ -196,6 +200,20 @@ class JsonHelper
     }
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> Creat empty array document. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/11. </remarks>
+    ///
+    /// <returns> A rapidjson::Document. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline rapidjson::Document creatEmptyArrayDoc()
+    {
+        rapidjson::Document document;
+        document.SetArray();
+        return document;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> Creat empty object document. </summary>
     ///
     /// <remarks> Surface, 2019/3/11. </remarks>
@@ -207,6 +225,68 @@ class JsonHelper
         rapidjson::DocumentW document;
         document.SetObject();
         return document;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Creat empty array document w.
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2019/3/11. </remarks>
+    ///
+    /// <returns> A rapidjson::DocumentW. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline rapidjson::DocumentW creatEmptyArrayDocW()
+    {
+        rapidjson::DocumentW document;
+        document.SetArray();
+        return document;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> Creat array document w. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/11. </remarks>
+    ///
+    /// <typeparam name="T"> Generic type parameter. </typeparam>
+    /// <param name="obj"> The object. </param>
+    ///
+    /// <returns> A rapidjson::DocumentW. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline rapidjson::DocumentW creatArrayDocW(const std::vector<std::wstring>& obj)
+    {
+        rapidjson::DocumentW doc;
+        doc.SetArray();
+        auto& allocator = doc.GetAllocator();
+        for (size_t i = 0; i < obj.size(); i++) {
+            rapidjson::ValueW item;
+            item.SetString(obj[i].c_str(), allocator);
+            doc.PushBack(item, allocator);
+        }
+        return doc;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> Creat array document w. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/11. </remarks>
+    ///
+    /// <typeparam name="T"> Generic type parameter. </typeparam>
+    /// <param name="obj"> The object. </param>
+    ///
+    /// <returns> A rapidjson::DocumentW. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    template <typename T>
+    static inline rapidjson::DocumentW creatArrayDocW(const std::vector<T>& obj)
+    {
+        rapidjson::DocumentW doc;
+        doc.SetArray();
+        auto& allocator = doc.GetAllocator();
+        for (size_t i = 0; i < obj.size(); i++) {
+            rapidjson::ValueW item;
+            doc.PushBack(obj[i], allocator);
+        }
+        return doc;
     }
 };
 } // namespace dxlib
