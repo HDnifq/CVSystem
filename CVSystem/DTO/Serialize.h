@@ -42,6 +42,15 @@ class Serialize
 #pragma region cvMat
 
     //obj -> json
+    static inline rapidjson::DocumentW o2j(const cv::Mat& m)
+    {
+        rapidjson::DocumentW doc;
+        doc.SetObject();
+        o2j(doc, doc, m);
+        return doc;
+    }
+
+    //obj -> json
     static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value, const cv::Mat& m)
     {
         auto& allocator = doc.GetAllocator();

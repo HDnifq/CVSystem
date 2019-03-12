@@ -228,6 +228,24 @@ class JsonHelper
     }
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> Creat object document w. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/12. </remarks>
+    ///
+    /// <param name="text"> The text. </param>
+    ///
+    /// <returns> A rapidjson::DocumentW. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline rapidjson::DocumentW creatDocW(const std::wstring& text)
+    {
+        rapidjson::DocumentW document;
+        //从string读取
+        rapidjson::StringStreamW s(text.c_str());
+        document.ParseStream(s);
+        return document;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary>
     /// Creat empty array document w.
     /// </summary>
