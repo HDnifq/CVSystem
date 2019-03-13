@@ -42,6 +42,13 @@ std::vector<cv::Rect>& Draw::vImageROI()
     return _m->vImageROI;
 }
 
+cv::Rect Draw::imageROI(int index)
+{
+    if (index < _m->vImageROI.size())
+        return _m->vImageROI[index];
+    return cv::Rect();
+}
+
 #pragma endregion
 
 Draw* Draw::m_pInstance = NULL;
@@ -88,12 +95,12 @@ float Draw::get_k()
     return k;
 }
 
-void Draw::set_k(cv::Size cameraSize)
+void Draw::set_k(const cv::Size& cameraSize)
 {
     k = 2.95f * 360 / cameraSize.height; //当摄像机画面是640x360的时候,合适的k值是2.95
 }
 
-void Draw::setImageROI(cv::Size size, int count)
+void Draw::setImageROI(const cv::Size& size, int count)
 {
     _m->vImageROI.clear();
     _m->vImageROI.push_back(cv::Rect(0, 1080 - 150 - size.height * 2, size.width, size.height)); //1号相机画在左上角
@@ -103,7 +110,7 @@ void Draw::setImageROI(cv::Size size, int count)
     _m->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height * 2, size.width, size.height)); //4号相机画在右上角
 }
 
-cv::Mat Draw::drawRectangle(cv::Rect2f rect, cv::Scalar color)
+cv::Mat& Draw::drawRectangle(const cv::Rect2f& rect, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -114,7 +121,7 @@ cv::Mat Draw::drawRectangle(cv::Rect2f rect, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawRectangle(cv::RotatedRect rect, cv::Scalar color)
+cv::Mat& Draw::drawRectangle(const cv::RotatedRect& rect, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -127,7 +134,7 @@ cv::Mat Draw::drawRectangle(cv::RotatedRect rect, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawLine(cv::Point2f point1, cv::Point2f point2, cv::Scalar color)
+cv::Mat& Draw::drawLine(const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -137,7 +144,7 @@ cv::Mat Draw::drawLine(cv::Point2f point1, cv::Point2f point2, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawPoint(cv::Point2f point, cv::Scalar color)
+cv::Mat& Draw::drawPoint(const cv::Point2f& point, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -147,7 +154,7 @@ cv::Mat Draw::drawPoint(cv::Point2f point, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawCross(cv::Point2f point, cv::Scalar color, float size)
+cv::Mat& Draw::drawCross(const cv::Point2f& point, const cv::Scalar& color, float size)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -158,7 +165,7 @@ cv::Mat Draw::drawCross(cv::Point2f point, cv::Scalar color, float size)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawText(const std::string text, const cv::Point& org, cv::Scalar color)
+cv::Mat& Draw::drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -188,7 +195,7 @@ cv::Mat Draw::drawText(const std::string text, const cv::Point& org, cv::Scalar 
     return _m->diagram;
 }
 
-cv::Mat Draw::drawTextLine(const std::string text, cv::Scalar color)
+cv::Mat& Draw::drawTextLine(const std::string& text, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -200,7 +207,7 @@ cv::Mat Draw::drawTextLine(const std::string text, cv::Scalar color)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawMat(cv::Mat& src, cv::Rect roi)
+cv::Mat& Draw::drawMat(const cv::Mat& src, const cv::Rect& roi)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -210,7 +217,7 @@ cv::Mat Draw::drawMat(cv::Mat& src, cv::Rect roi)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawMat(cv::Mat& src, cv::Rect roi_src, cv::Rect roi_dst)
+cv::Mat& Draw::drawMat(const cv::Mat& src, const cv::Rect& roi_src, const cv::Rect& roi_dst)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -220,7 +227,7 @@ cv::Mat Draw::drawMat(cv::Mat& src, cv::Rect roi_src, cv::Rect roi_dst)
     return _m->diagram;
 }
 
-cv::Mat Draw::drawMat(cv::Mat& src, int index)
+cv::Mat& Draw::drawMat(const cv::Mat& src, int index)
 {
     if (!isEnableDraw) {
         return _m->diagram;
@@ -230,7 +237,31 @@ cv::Mat Draw::drawMat(cv::Mat& src, int index)
     return _m->diagram;
 }
 
-void Draw::showWin(std::string winName, int x, int y) //2736
+cv::Mat& Draw::drawLineROI(int index, const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color)
+{
+    if (!isEnableDraw) {
+        return _m->diagram;
+    }
+
+    line(_m->diagram(_m->vImageROI[index]), point1, point2, color); //画线
+    return _m->diagram;
+}
+
+cv::Mat& Draw::drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color)
+{
+    if (!isEnableDraw) {
+        return _m->diagram;
+    }
+    int size = polygon.size();
+    for (size_t i = 0; i < size - 1; i++) {
+        line(_m->diagram(_m->vImageROI[index]), polygon[i], polygon[i + 1], color); //画线
+    }
+    if (size >= 2)
+        line(_m->diagram(_m->vImageROI[index]), polygon[size - 1], polygon[0], color); //画线
+    return _m->diagram;
+}
+
+void Draw::showWin(const std::string& winName, int x, int y) //2736
 {
     if (_m->winName != winName) {
         cv::namedWindow(winName, cv::WINDOW_AUTOSIZE); // Create a window for display.

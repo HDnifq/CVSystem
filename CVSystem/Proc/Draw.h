@@ -76,6 +76,9 @@ class Draw
     ///// <summary> 预设的用来画相机的图像的roi. </summary>
     std::vector<cv::Rect>& vImageROI();
 
+    ///// <summary> 获得roi. </summary>
+    cv::Rect imageROI(int index);
+
     /// <summary> 是否使能画图. </summary>
     bool isEnableDraw = true;
 
@@ -95,7 +98,7 @@ class Draw
     ///
     /// <param name="cameraSize"> Size of the camera. </param>
     ///-------------------------------------------------------------------------------------------------
-    void set_k(cv::Size cameraSize);
+    void set_k(const cv::Size& cameraSize);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置画图片用的roi. </summary>
@@ -105,7 +108,7 @@ class Draw
     /// <param name="size">  画面大小. </param>
     /// <param name="count"> 预备的数量. </param>
     ///-------------------------------------------------------------------------------------------------
-    void setImageROI(cv::Size size, int count = 4);
+    void setImageROI(const cv::Size& size, int count = 4);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个矩形. </summary>
@@ -117,7 +120,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawRectangle(cv::Rect2f rect, cv::Scalar color = cv::Scalar(0, 255, 0));
+    cv::Mat& drawRectangle(const cv::Rect2f& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个旋转矩形. </summary>
@@ -129,7 +132,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawRectangle(cv::RotatedRect rect, cv::Scalar color = cv::Scalar(0, 255, 0));
+    cv::Mat& drawRectangle(const cv::RotatedRect& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画线. </summary>
@@ -142,7 +145,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawLine(cv::Point2f point1, cv::Point2f point2, cv::Scalar color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawLine(const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个点. </summary>
@@ -154,7 +157,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawPoint(cv::Point2f point, cv::Scalar color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawPoint(const cv::Point2f& point, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画十字线. </summary>
@@ -167,7 +170,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawCross(cv::Point2f point, cv::Scalar color = cv::Scalar(0, 0, 255), float size = 1);
+    cv::Mat& drawCross(const cv::Point2f& point, const cv::Scalar& color = cv::Scalar(0, 0, 255), float size = 1);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> Draw text. </summary>
@@ -180,7 +183,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawText(const std::string text, const cv::Point& org, cv::Scalar color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 在图上另起一行画一行文本，通常使用这个函数. </summary>
@@ -192,7 +195,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawTextLine(const std::string text, cv::Scalar color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawTextLine(const std::string& text, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个图片. </summary>
@@ -204,7 +207,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawMat(cv::Mat& src, cv::Rect roi);
+    cv::Mat& drawMat(const cv::Mat& src, const cv::Rect& roi);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个图片，输入两个roi. </summary>
@@ -217,7 +220,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawMat(cv::Mat& src, cv::Rect roi_src, cv::Rect roi_dst);
+    cv::Mat& drawMat(const cv::Mat& src, const cv::Rect& roi_src, const cv::Rect& roi_dst);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个图片，输入一个目标区域的index就可以了. </summary>
@@ -229,7 +232,34 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat drawMat(cv::Mat& src, int index);
+    cv::Mat& drawMat(const cv::Mat& src, int index);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 对相机图像上画线. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/13. </remarks>
+    ///
+    /// <param name="index">  ROI的index,通常应该等于camIndex. </param>
+    /// <param name="point1"> The first point. </param>
+    /// <param name="point2"> The second point. </param>
+    /// <param name="color">  The color. </param>
+    ///
+    /// <returns> A cv::Mat. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Mat& drawLineROI(int index, const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 对相机图像上画多边形. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/13. </remarks>
+    ///
+    /// <param name="index">   Zero-based index of the. </param>
+    /// <param name="polygon"> [in,out] The polygon. </param>
+    /// <param name="color">   The color. </param>
+    ///
+    /// <returns> A reference to a cv::Mat. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Mat& drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 显示窗口. </summary>
@@ -240,7 +270,7 @@ class Draw
     /// <param name="x">       窗口位置x. </param>
     /// <param name="y">       窗口位置y. </param>
     ///-------------------------------------------------------------------------------------------------
-    void showWin(std::string winName, int x = 800, int y = 0);
+    void showWin(const std::string& winName, int x = 800, int y = 0);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 关闭窗口. </summary>
