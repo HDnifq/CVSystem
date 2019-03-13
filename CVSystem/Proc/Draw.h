@@ -183,7 +183,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat& drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.4);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 在图上另起一行画一行文本，通常使用这个函数. </summary>
@@ -195,7 +195,7 @@ class Draw
     ///
     /// <returns> A cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
-    cv::Mat& drawTextLine(const std::string& text, const cv::Scalar& color = cv::Scalar(0, 0, 255));
+    cv::Mat& drawTextLine(const std::string& text, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.5);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个图片. </summary>
@@ -260,6 +260,20 @@ class Draw
     /// <returns> A reference to a cv::Mat. </returns>
     ///-------------------------------------------------------------------------------------------------
     cv::Mat& drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 画文本. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/13. </remarks>
+    ///
+    /// <param name="index"> Zero-based index of the. </param>
+    /// <param name="text">  The text. </param>
+    /// <param name="org">   The organisation. </param>
+    /// <param name="color"> (Optional) The color. </param>
+    ///
+    /// <returns> A reference to a cv::Mat. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Mat& drawTextROI(int index, const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.3);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 显示窗口. </summary>

@@ -165,14 +165,14 @@ cv::Mat& Draw::drawCross(const cv::Point2f& point, const cv::Scalar& color, floa
     return _m->diagram;
 }
 
-cv::Mat& Draw::drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color)
+cv::Mat& Draw::drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color, double fontScale)
 {
     if (!isEnableDraw) {
         return _m->diagram;
     }
 
     if (text.size() < 230) { //自动换行的限制
-        putText(_m->diagram, text, org * k, cv::FONT_HERSHEY_SIMPLEX, 0.5, color, 1, 8);
+        putText(_m->diagram, text, org * k, cv::FONT_HERSHEY_SIMPLEX, fontScale, color, 1, 8);
         return _m->diagram;
     }
     std::vector<std::string> subStr;
@@ -189,20 +189,20 @@ cv::Mat& Draw::drawText(const std::string& text, const cv::Point& org, const cv:
     for (size_t i = 0; i < subStr.size(); i++) {
 #pragma warning(push)
 #pragma warning(suppress : 4267)
-        putText(_m->diagram, subStr[i], org * k + cv::Point(0, 29 * i), cv::FONT_HERSHEY_SIMPLEX, 0.5, color, 1, 8);
+        putText(_m->diagram, subStr[i], org * k + cv::Point(0, 18 * fontScale * i) * k, cv::FONT_HERSHEY_SIMPLEX, fontScale, color, 1, 8);
 #pragma warning(pop)
     }
     return _m->diagram;
 }
 
-cv::Mat& Draw::drawTextLine(const std::string& text, const cv::Scalar& color)
+cv::Mat& Draw::drawTextLine(const std::string& text, const cv::Scalar& color, double fontScale)
 {
     if (!isEnableDraw) {
         return _m->diagram;
     }
 
-    Draw::drawText(text, _m->point_line, color);
-    _m->point_line.y += (int)(5 / k * 3); //递增起始点记录
+    Draw::drawText(text, _m->point_line, color, fontScale);
+    _m->point_line.y += (int)(5 / k * 3 * fontScale / 0.5); //递增起始点记录
     _m->point_line.x = 0;
     return _m->diagram;
 }
@@ -252,12 +252,42 @@ cv::Mat& Draw::drawPolygonROI(int index, const std::vector<cv::Point>& polygon, 
     if (!isEnableDraw) {
         return _m->diagram;
     }
-    int size = polygon.size();
+    size_t size = polygon.size();
     for (size_t i = 0; i < size - 1; i++) {
         line(_m->diagram(_m->vImageROI[index]), polygon[i], polygon[i + 1], color); //画线
     }
     if (size >= 2)
         line(_m->diagram(_m->vImageROI[index]), polygon[size - 1], polygon[0], color); //画线
+    return _m->diagram;
+}
+
+cv::Mat& Draw::drawTextROI(int roiIndex, const std::string& text, const cv::Point& org, const cv::Scalar& color, double fontScale)
+{
+    if (!isEnableDraw) {
+        return _m->diagram;
+    }
+
+    if (text.size() < 230) { //自动换行的限制
+        putText(_m->diagram(_m->vImageROI[roiIndex]), text, org, cv::FONT_HERSHEY_SIMPLEX, fontScale, color, 1, 8);
+        return _m->diagram;
+    }
+    std::vector<std::string> subStr;
+    size_t index = 0;
+    while (index < text.length()) {
+        size_t len = 230;
+        if (index + len > text.length()) {
+            len = text.length() - index;
+        }
+        std::string sub = text.substr(index, len);
+        subStr.push_back(sub);
+        index += len;
+    }
+    for (size_t i = 0; i < subStr.size(); i++) {
+#pragma warning(push)
+#pragma warning(suppress : 4267)
+        putText(_m->diagram(_m->vImageROI[roiIndex]), subStr[i], org + cv::Point(0, 20 * i), cv::FONT_HERSHEY_SIMPLEX, fontScale, color, 1, 8);
+#pragma warning(pop)
+    }
     return _m->diagram;
 }
 

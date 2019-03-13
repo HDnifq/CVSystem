@@ -197,5 +197,49 @@ class ALGO
             m.end(),
             [val](const auto& itr) { return itr.second == val; });
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝1层vector. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/13. </remarks>
+    ///
+    /// <typeparam name="T"> Generic type parameter. </typeparam>
+    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <param name="vec_scr"> The vector 0. </param>
+    /// <param name="vec_dst"> The first vector. </param>
+    ///-------------------------------------------------------------------------------------------------
+    template <typename T, typename V>
+    static void copy(const std::vector<T>& vec_scr, std::vector<V>& vec_dst)
+    {
+        vec_dst.clear();
+        vec_dst.reserve(vec_scr.size());
+        for (int i = 0; i < vec_scr.size(); i++) {
+            vec_dst.push_back({vec_scr[i]});
+        }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/13. </remarks>
+    ///
+    /// <typeparam name="T"> Generic type parameter. </typeparam>
+    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <param name="vec_scr"> The vector screen. </param>
+    /// <param name="vec_dst"> [in,out] The vector
+    ///                        destination. </param>
+    ///-------------------------------------------------------------------------------------------------
+    template <typename T, typename V>
+    static void copy_2vec(const std::vector<std::vector<T>>& vec_scr, std::vector<std::vector<V>>& vec_dst)
+    {
+        vec_dst.resize(vec_scr.size());
+        for (size_t i = 0; i < vec_scr.size(); i++) {
+            vec_dst[i].clear();
+            vec_dst[i].reserve(vec_scr[i].size());
+            for (int j = 0; j < vec_scr[i].size(); j++) {
+                vec_dst[i].push_back({vec_scr[i].at(j)});
+            }
+        }
+    }
 };
 } // namespace dxlib
