@@ -62,7 +62,14 @@ class Draw
     ~Draw();
 
     /// <summary> 单例. </summary>
-    static Draw* GetInst();
+    static Draw* GetInst()
+    {
+        if (m_pInstance == nullptr) { //判断是否第一次调用
+            //这里注意当前相机的分辨率
+            m_pInstance = new Draw(1920, 1080, 2.95f); //当摄像机画面是640x360的时候,合适的k值是2.95
+        }
+        return m_pInstance;
+    }
 
     ///// <summary> 保存文件路径. </summary>
     std::string& filePath();

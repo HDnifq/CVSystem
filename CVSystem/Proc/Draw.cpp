@@ -81,15 +81,6 @@ Draw::~Draw()
     delete _m;
 }
 
-Draw* Draw::GetInst()
-{
-    if (m_pInstance == NULL) { //判断是否第一次调用
-        //这里注意当前相机的分辨率
-        m_pInstance = new Draw(1920, 1080, 2.95f); //当摄像机画面是640x360的时候,合适的k值是2.95
-    }
-    return m_pInstance;
-}
-
 float Draw::get_k()
 {
     return k;
