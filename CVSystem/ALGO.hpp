@@ -221,7 +221,7 @@ class ALGO
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector. </summary>
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector,拷贝的单位是T和V. </summary>
     ///
     /// <remarks> Dx, 2019/3/13. </remarks>
     ///
@@ -239,6 +239,28 @@ class ALGO
             vec_dst[i].reserve(vec_src[i].size());
             for (int j = 0; j < vec_src[i].size(); j++) {
                 vec_dst[i].push_back({vec_src[i].at(j)});
+            }
+        }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector,拷贝的单位是T和V. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/15. </remarks>
+    ///
+    /// <typeparam name="T"> Generic type parameter. </typeparam>
+    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <param name="vec_src"> The vector source. </param>
+    /// <param name="vec_dst"> [out] The vector. </param>
+    ///-------------------------------------------------------------------------------------------------
+    template <typename T, typename V>
+    static void add_2vec(const std::vector<std::vector<T>>& vec_src, std::vector<std::vector<V>>& vec_dst)
+    {
+        vec_dst.resize(vec_src.size());
+        for (size_t i = 0; i < vec_src.size(); i++) {
+            auto& item = vec_dst[i];
+            for (int j = 0; j < vec_src[i].size(); j++) {
+                item.push_back({vec_src[i].at(j)});
             }
         }
     }
