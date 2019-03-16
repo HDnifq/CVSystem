@@ -77,6 +77,24 @@ TEST(ALGO, findMap)
     EXPECT_TRUE(itr->first == 1);
 }
 
+TEST(ALGO, copy1)
+{
+    vector<int> a = {1, 2, 3, 4};
+    vector<int> b;
+
+    ALGO::clone(a, b);
+    //EXPECT_TRUE(b.size() == 4);
+}
+
+TEST(ALGO, copy2)
+{
+    vector<vector<int>> a = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}};
+    vector<vector<int>> b;
+
+    ALGO::clone(a, b);
+    EXPECT_TRUE(b.size() == 4);
+}
+
 class TestClass
 {
   public:

@@ -128,8 +128,8 @@ class ALGO
     ///
     /// <remarks> Surface, 2019/2/4. </remarks>
     ///
-    /// <typeparam name="K"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <typeparam name="K"> map的key类型. </typeparam>
+    /// <typeparam name="V"> map的value类型. </typeparam>
     /// <param name="m">    map. </param>
     /// <param name="keys"> [out] 所有key. </param>
     ///-------------------------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ class ALGO
     ///
     /// <remarks> Surface, 2019/2/4. </remarks>
     ///
-    /// <typeparam name="K"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <typeparam name="K"> map的key类型. </typeparam>
+    /// <typeparam name="V"> map的value类型. </typeparam>
     /// <param name="m">     map. </param>
     /// <param name="keys"> [out] 所有value. </param>
     ///-------------------------------------------------------------------------------------------------
@@ -160,8 +160,8 @@ class ALGO
     ///
     /// <remarks> Dx, 2019/2/5. </remarks>
     ///
-    /// <typeparam name="K"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <typeparam name="K"> map的key类型. </typeparam>
+    /// <typeparam name="V"> map的value类型. </typeparam>
     /// <param name="m">   map. </param>
     /// <param name="key"> The key. </param>
     ///-------------------------------------------------------------------------------------------------
@@ -182,8 +182,8 @@ class ALGO
     ///
     /// <remarks> Dx, 2019/2/5. </remarks>
     ///
-    /// <typeparam name="K"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <typeparam name="K"> map的key类型. </typeparam>
+    /// <typeparam name="V"> map的value类型. </typeparam>
     /// <param name="m">   map. </param>
     /// <param name="val"> The value. </param>
     ///
@@ -199,69 +199,58 @@ class ALGO
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝1层vector.
-    /// </summary>
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝(添加). </summary>
     ///
-    /// <remarks> Dx, 2019/3/13. </remarks>
+    /// <remarks> Surface, 2019/3/16. </remarks>
     ///
-    /// <typeparam name="T"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
-    /// <param name="vec_src"> The vector source. </param>
-    /// <param name="vec_dst"> [out] The vector destination. </param>
+    /// <typeparam name="T"> 拷贝源的类型. </typeparam>
+    /// <typeparam name="V"> 拷贝目标的类型. </typeparam>
+    /// <param name="src"> 源. </param>
+    /// <param name="dst"> [out] 目标结果. </param>
     ///-------------------------------------------------------------------------------------------------
     template <typename T, typename V>
-    static void copy(const std::vector<T>& vec_src, std::vector<V>& vec_dst)
+    static void clone(const std::vector<std::vector<T>>& src, std::vector<std::vector<V>>& dst)
     {
-        vec_dst.clear();
-        vec_dst.reserve(vec_src.size());
-        for (int i = 0; i < vec_src.size(); i++) {
-            vec_dst.push_back({vec_src[i]});
+        for (size_t i = 0; i < src.size(); i++) {
+            dst.push_back(clone<T, V>(src[i]));
         }
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector,拷贝的单位是T和V. </summary>
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝(添加). </summary>
     ///
     /// <remarks> Dx, 2019/3/13. </remarks>
     ///
-    /// <typeparam name="T"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
-    /// <param name="vec_src"> The vector source. </param>
-    /// <param name="vec_dst"> [out] The vector destination. </param>
+    /// <typeparam name="T"> 拷贝源的类型. </typeparam>
+    /// <typeparam name="V"> 拷贝目标的类型. </typeparam>
+    /// <param name="src"> 输入的数据源. </param>
+    ///
+    /// <returns> 拷贝结果. </returns>
     ///-------------------------------------------------------------------------------------------------
     template <typename T, typename V>
-    static void copy_2vec(const std::vector<std::vector<T>>& vec_src, std::vector<std::vector<V>>& vec_dst)
+    static std::vector<V> clone(const std::vector<T>& src)
     {
-        vec_dst.resize(vec_src.size());
-        for (size_t i = 0; i < vec_src.size(); i++) {
-            vec_dst[i].clear();
-            vec_dst[i].reserve(vec_src[i].size());
-            for (int j = 0; j < vec_src[i].size(); j++) {
-                vec_dst[i].push_back({vec_src[i].at(j)});
-            }
+        std::vector<V> dst;
+        for (size_t i = 0; i < src.size(); i++) {
+            dst.push_back({src[i]});
         }
+        return dst;
     }
-
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝,拷贝2层vector,拷贝的单位是T和V. </summary>
+    /// <summary> 如果V类型可以从T类型构造,那么就可以执行这样的拷贝(添加). </summary>
     ///
-    /// <remarks> Dx, 2019/3/15. </remarks>
+    /// <remarks> Dx, 2019/3/13. </remarks>
     ///
-    /// <typeparam name="T"> Generic type parameter. </typeparam>
-    /// <typeparam name="V"> Generic type parameter. </typeparam>
-    /// <param name="vec_src"> The vector source. </param>
-    /// <param name="vec_dst"> [out] The vector. </param>
+    /// <typeparam name="T"> 拷贝源的类型. </typeparam>
+    /// <typeparam name="V"> 拷贝目标的类型. </typeparam>
+    /// <param name="src"> 输入的数据源. </param>
+    /// <param name="dst"> [out] 拷贝结果. </param>
     ///-------------------------------------------------------------------------------------------------
     template <typename T, typename V>
-    static void add_2vec(const std::vector<std::vector<T>>& vec_src, std::vector<std::vector<V>>& vec_dst)
+    static void clone(const std::vector<T>& src, std::vector<V>& dst)
     {
-        vec_dst.resize(vec_src.size());
-        for (size_t i = 0; i < vec_src.size(); i++) {
-            auto& item = vec_dst[i];
-            for (int j = 0; j < vec_src[i].size(); j++) {
-                item.push_back({vec_src[i].at(j)});
-            }
+        for (size_t i = 0; i < src.size(); i++) {
+            dst.push_back({src[i]});
         }
     }
 };
