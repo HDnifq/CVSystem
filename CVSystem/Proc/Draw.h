@@ -71,19 +71,19 @@ class Draw
         return m_pInstance;
     }
 
-    ///// <summary> 保存文件路径. </summary>
+    /// <summary> 保存文件路径. </summary>
     std::string& filePath();
 
-    ///// <summary> 当前图片. </summary>
+    /// <summary> 当前图片. </summary>
     cv::Mat& diagram();
 
     /// <summary> 内存保存图像上限. </summary>
     int memSavelimit = 4;
 
-    ///// <summary> 预设的用来画相机的图像的roi. </summary>
+    /// <summary> 预设的用来画相机的图像的roi. </summary>
     std::vector<cv::Rect>& vImageROI();
 
-    ///// <summary> 获得roi. </summary>
+    /// <summary> 获得roi. </summary>
     cv::Rect imageROI(int index);
 
     /// <summary> 是否使能画图. </summary>

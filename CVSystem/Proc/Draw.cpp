@@ -7,7 +7,6 @@ namespace dxlib {
 
 struct Draw::Fields
 {
-
     /// <summary>要开启的窗口名字. </summary>
     std::string winName;
 
