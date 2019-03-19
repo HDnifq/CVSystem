@@ -100,7 +100,7 @@ void MultiCameraMT::workonce(std::shared_ptr<BaseThread>& tb)
         pCameraImage cimg;
         if (cameraThread->try_dequeue(cimg)) {
             //如果能提取出图片来
-            cimg->procStartTime = clock();//标记处理开始时间
+            cimg->procStartTime = clock(); //标记处理开始时间
 
             fps = _fpsCalc.update(++frameCount);
             if (frameCount != cimg->fnum) {
@@ -111,7 +111,8 @@ void MultiCameraMT::workonce(std::shared_ptr<BaseThread>& tb)
             //选一个proc进行图像的处理
             if (activeProcIndex < vProc.size()) {
                 LogD("MultiCameraMT.workonce():执行proc %d！", activeProcIndex);
-                int ckey = vProc[activeProcIndex]->process(cimg);
+                int ckey = -1;
+                vProc[activeProcIndex]->process(cimg, ckey);
                 if (ckey != -1) { //如果有按键按下那么修改最近的按键值
                     Event::GetInst()->cvKey.exchange(ckey);
                 }
@@ -120,7 +121,7 @@ void MultiCameraMT::workonce(std::shared_ptr<BaseThread>& tb)
             //干脆用这个线程来驱动检查事件
             Event::GetInst()->checkMemEvent();
 
-            cimg->procEndTime = clock();//标记处理结束时间
+            cimg->procEndTime = clock(); //标记处理结束时间
         }
         else {
             break;

@@ -88,7 +88,8 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
                 //选一个proc进行图像的处理
                 if (activeProcIndex < vProc.size()) {
                     LogD("MultiCamera.workonce():执行proc %d！", activeProcIndex);
-                    int ckey = vProc[activeProcIndex]->process(cimg);
+                    int ckey = -1;
+                    vProc[activeProcIndex]->process(cimg, ckey);
                     if (ckey != -1) { //如果有按键按下那么修改最近的按键值
                         Event::GetInst()->cvKey.exchange(ckey);
                     }

@@ -29,7 +29,7 @@ class CamImageProc : public FrameProc
     ///
     /// <remarks> Xian Dai, 2018/10/18. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    int process(pCameraImage camImage) override
+    void process(pCameraImage camImage, int& key) override
     {
         //显示所有校正过的相机图像
         for (auto& item : camImage->vImage) {
@@ -44,13 +44,10 @@ class CamImageProc : public FrameProc
             cv::imshow("CamImage" + std::to_string(item.camera->camIndex), out);
         }
 
-        int key = -1;
         key = cv::waitKey(1); //一定要加waitKey无法显示图片
-
         if (key == 'r') {
             isRemap = !isRemap;
         }
-        return key;
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -73,6 +70,18 @@ class CamImageProc : public FrameProc
     void onDisable() override
     {
         cv::destroyAllWindows();
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 返回自己的标示名. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/19. </remarks>
+    ///
+    /// <returns> 标示名. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    const char* name() override
+    {
+        return "CamImageProc";
     }
 
   private:
