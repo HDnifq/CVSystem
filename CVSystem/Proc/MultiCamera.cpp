@@ -32,8 +32,8 @@ void MultiCamera::release(std::shared_ptr<BaseThread>& tb)
 {
     LogI("MultiCamera.release():开始执行release委托!");
 
-    if (vProc.size() > activeProcIndex) //防止用户没有加入proc的情况，还是应该判断一下
-        vProc[activeProcIndex]->onDisable();
+    if (vProc.size() > _activeProcIndex) //防止用户没有加入proc的情况，还是应该判断一下
+        vProc[_activeProcIndex]->onDisable();
 
     //执行一次关闭
     close(false);
@@ -51,21 +51,21 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
         }
 
         //重设激活的proc
-        if (_nextActiveProcIndex != activeProcIndex) { //如果变化了(这里或许需要原子操作)‘
-            LogD("MultiCamera.workonce():执行设置activeProcIndex");
-            if (vProc.size() > activeProcIndex)
-                vProc[activeProcIndex]->onDisable();
-            activeProcIndex = _nextActiveProcIndex;
-            if (vProc.size() > activeProcIndex)
-                vProc[activeProcIndex]->onEnable();
+        if (_nextActiveProcIndex != _activeProcIndex) { //如果变化了(这里或许需要原子操作)‘
+            LogD("MultiCamera.workonce():执行设置_activeProcIndex");
+            if (vProc.size() > _activeProcIndex)
+                vProc[_activeProcIndex]->onDisable();
+            _activeProcIndex = _nextActiveProcIndex;
+            if (vProc.size() > _activeProcIndex)
+                vProc[_activeProcIndex]->onEnable();
         }
         //重启当前的proc
         if (_isResetActiveProc) {
             _isResetActiveProc = false;
             LogD("MultiCamera.workonce():执行重启当前的proc");
-            if (vProc.size() > activeProcIndex) {
-                vProc[activeProcIndex]->onDisable();
-                vProc[activeProcIndex]->onEnable();
+            if (vProc.size() > _activeProcIndex) {
+                vProc[_activeProcIndex]->onDisable();
+                vProc[_activeProcIndex]->onEnable();
             }
         }
 
@@ -86,10 +86,10 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
                 }
 
                 //选一个proc进行图像的处理
-                if (activeProcIndex < vProc.size()) {
-                    LogD("MultiCamera.workonce():执行proc %d！", activeProcIndex);
+                if (_activeProcIndex < vProc.size()) {
+                    LogD("MultiCamera.workonce():执行%d号proc ！", _activeProcIndex);
                     int ckey = -1;
-                    vProc[activeProcIndex]->process(cimg, ckey);
+                    vProc[_activeProcIndex]->process(cimg, ckey);
                     if (ckey != -1) { //如果有按键按下那么修改最近的按键值
                         Event::GetInst()->cvKey.exchange(ckey);
                     }
@@ -201,7 +201,7 @@ void MultiCamera::setActiveProc(uint index)
 {
     //这个函数现在做了修改不再由外部线程去执行enable和disable
     if (index < vProc.size()) {
-        if (index == activeProcIndex) { //如果相等就是重置
+        if (index == _activeProcIndex) { //如果相等就是重置
             _isResetActiveProc = true;
         }
         else { //如果不相等就是重设一个active的proc
@@ -209,12 +209,4 @@ void MultiCamera::setActiveProc(uint index)
         }
     }
 }
-
-//void MultiCamera::setIsGrab(bool isGrab)
-//{
-//    if (this->cameraThread != nullptr) { //如果不为空
-//        cameraThread->isGrab = isGrab;
-//    }
-//}
-
 } // namespace dxlib

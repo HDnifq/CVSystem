@@ -13,15 +13,13 @@ class TestProc : public FrameProc
 
     int count = 0;
 
-    int process(pCameraImage camImage) override
+    void process(pCameraImage camImage, int& key) override
     {
         cv::Mat image = camImage->vImage[0].image;
         EXPECT_FALSE(image.empty()); //确实能采图
         count++;                     //采图的计数加1
 
-        int key = -1;
         key = cv::waitKey(1); //一定要加waitKey无法显示图片
-        return key;
     }
     void onEnable() override
     {
@@ -38,12 +36,11 @@ class TestProcRelease : public FrameProc
     TestProcRelease() {}
     ~TestProcRelease() {}
 
-    int process(pCameraImage camImage) override
+    void process(pCameraImage camImage, int& key) override
     {
         LogI("TestProcRelease.process():开始执行！");
         MultiCamera::GetInst()->close();
         LogI("TestProcRelease.process():执行完毕！");
-        return -1;
     }
     void onEnable() override
     {

@@ -49,7 +49,7 @@ class MultiCameraMT
     std::vector<pFrameProc> vProc;
 
     /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
-    uint activeProcIndex = 0;
+    uint _activeProcIndex = 0;
 
     ///// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
     //MultiCameraKeyEvent procKeyEvent = nullptr;

@@ -37,9 +37,6 @@ class MultiCamera
     /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
     std::vector<pFrameProc> vProc;
 
-    /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
-    uint activeProcIndex = 0;
-
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     /// 打开相机会启动线程函数,目前一般尝试创建一个线程来计算,
@@ -94,15 +91,41 @@ class MultiCamera
     void setActiveProc(uint index);
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前激活的Proc的index. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 当前激活的Proc的index. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    uint activeProcIndex()
+    {
+        return _activeProcIndex;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置当前是否采图，主要是为了在不需要采图的手减少开销. </summary>
     ///
-    /// <remarks> Dx, 2018/11/20. </remarks>
+    /// <remarks>
+    /// 如果不采图那么处理线程就会一直不停的休眠 Dx, 2018/11/20.
+    /// </remarks>
     ///
     /// <param name="isGrab"> 如果是真就是采图. </param>
     ///-------------------------------------------------------------------------------------------------
     void setIsGrab(bool isGrab)
     {
         _isGrab = isGrab;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前的抓图状态,如果不采图那么处理线程就会一直不停的休眠. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 如果是真就是采图. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool isGrab()
+    {
+        return _isGrab.load();
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -117,8 +140,26 @@ class MultiCamera
         return _isRun.load();
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前执行的proc的名字. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 前执行的proc的名字. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    const char* activeProcName()
+    {
+        if (vProc.size() > _activeProcIndex)
+            return vProc[_activeProcIndex]->name();
+        else
+            return nullptr;
+    }
+
   private:
     static MultiCamera* m_pInstance;
+
+    /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
+    uint _activeProcIndex = 0;
 
     /// <summary> 相机采图类. </summary>
     CameraGrab _cameraGrab;
