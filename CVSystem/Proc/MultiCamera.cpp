@@ -105,6 +105,8 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
             }
         }
         else {
+            //姑且也检查一下事件
+            Event::GetInst()->checkMemEvent();
             //如果不抓图那么就睡眠
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
         }
