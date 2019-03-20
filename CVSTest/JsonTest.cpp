@@ -268,7 +268,7 @@ TEST(Json, read_write)
     JsonHelper::read("read_write.json", doc2);
     EXPECT_TRUE(doc2["a"] == 1);
     EXPECT_TRUE(doc2["试试中文"] == 2);
-    //remove("read_write.json");
+    remove("read_write.json");
 }
 
 TEST(Json, encodings)
@@ -329,6 +329,7 @@ TEST(Json, save_utf16_to_utf8)
     doc.AddMember(L"再试试", 3, doc.GetAllocator());
 
     JsonHelper::save("tmp.txt", doc, false);
+    remove("tmp.txt");
 }
 
 //这个库的api封装的很难用,作者没有做进一步封装,例子也很少

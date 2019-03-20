@@ -15,23 +15,37 @@
 #define DLOG_WARNING 1
 #define DLOG_ERROR 2
 
+#define DLOG_INIT_RELATIVE_APPDATA 0
+#define DLOG_INIT_RELATIVE_MODULE 1
+
 ///-------------------------------------------------------------------------------------------------
 /// <summary>
-/// 模块初始化,日志文件夹路径可以使用绝对目录也可以使用相对目录,
+/// 模块初始化,日志文件夹路径可以使用绝对目录也可以使用相对目录(第三个参数进行相对位置的设置),
 /// 如果使用相对目录,那么程序会将它理解为相对模块目录,路径例如 char* logDir = "\\log",char* program = "dlog".
 /// isForceInit如果为false，那么就可以不强制初始化模块，理论上整个程序都共用一个日志.
+/// 如果之前未被初始化返回0,如果成功复用那么就返回1,如果强制重设成功那么返回2,
+/// 如果强制重设但是失败还是复用了那么返回3.
 /// </summary>
 ///
-/// <remarks> Dx, 2018/4/22. </remarks>
+/// <remarks>
+/// DLOG_INIT_RELATIVE_APPDATA: 相对于AppData文件夹.
+/// DLOG_INIT_RELATIVE_MODULE: 相对于dll文件自身文件夹.
+/// Dx, 2018/4/22.
+/// </remarks>
 ///
 /// <param name="logDir">      [in]日志文件夹路径名（相对模块目录）. </param>
 /// <param name="program">     [in]程序名. </param>
+/// <param name="dir_relatvie">(Optional)相对路径的相对文件夹位置. </param>
 /// <param name="isForceInit"> (Optional) 如果为false，那么就可以不强制初始化模块，理论上整个程序都共用一个日志. </param>
 ///
-/// <returns> 如果之前未被初始化返回0,否则返回1,如果已经初始化，不用再初始化那么就返回2. </returns>
+/// <returns>
+/// 如果之前未被初始化返回0,如果成功复用那么就返回1,如果强制重设成功那么返回2,
+/// 如果强制重设但是失败还是复用了那么返回3.
+/// </returns>
 ///-------------------------------------------------------------------------------------------------
 extern "C" DLOG_EXPORT int __stdcall dlog_init(const char* logDir = "log",
                                                const char* program = "dlog",
+                                               int dir_relatvie = DLOG_INIT_RELATIVE_MODULE,
                                                bool isForceInit = false);
 
 ///-------------------------------------------------------------------------------------------------
@@ -42,15 +56,6 @@ extern "C" DLOG_EXPORT int __stdcall dlog_init(const char* logDir = "log",
 /// <returns> An int. </returns>
 ///-------------------------------------------------------------------------------------------------
 extern "C" DLOG_EXPORT int __stdcall dlog_close();
-
-///-------------------------------------------------------------------------------------------------
-/// <summary> 得到当前设置的日志目录. </summary>
-///
-/// <remarks> Dx, 2018/4/22. </remarks>
-///
-/// <param name="result"> [out] If non-null, the result. </param>
-///-------------------------------------------------------------------------------------------------
-extern "C" DLOG_EXPORT void __stdcall dlog_get_log_dir(char* result);
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary> 设置整个log使能. </summary>
@@ -71,7 +76,7 @@ extern "C" DLOG_EXPORT void __stdcall dlog_enable(bool enable);
 extern "C" DLOG_EXPORT void __stdcall dlog_console_log_enable(bool enable);
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 设置Dlog的常规日志（非内存日志）门限,大于等于该优先级的日志都会工作. </summary>
+/// <summary> 设置Dlog的常规日志（非内存日志）门限,大于等于该优先级的日志都会写入. </summary>
 ///
 /// <remarks> Dx, 2018/11/15. </remarks>
 ///
@@ -81,7 +86,7 @@ extern "C" DLOG_EXPORT void __stdcall dlog_set_usual_thr(int usualThr);
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary>
-/// 得到Dlog的常规日志（非内存日志）门限,大于等于该优先级的日志都会工作.
+/// 得到Dlog的常规日志（非内存日志）门限,大于等于该优先级的日志都会写入.
 /// </summary>
 ///
 /// <remarks> Dx, 2018/11/15. </remarks>
@@ -91,7 +96,7 @@ extern "C" DLOG_EXPORT void __stdcall dlog_set_usual_thr(int usualThr);
 extern "C" DLOG_EXPORT int __stdcall dlog_get_usual_thr();
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 设置Dlog的内存日志门限,大于等于该优先级的日志都会工作. </summary>
+/// <summary> 设置Dlog的内存日志门限,大于等于该优先级的日志都会写入. </summary>
 ///
 /// <remarks> Dx, 2018/11/15. </remarks>
 ///
@@ -100,7 +105,7 @@ extern "C" DLOG_EXPORT int __stdcall dlog_get_usual_thr();
 extern "C" DLOG_EXPORT void __stdcall dlog_set_memory_thr(int memoryThr);
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 得到Dlog的内存日志门限,大于等于该优先级的日志都会工作. </summary>
+/// <summary> 得到Dlog的内存日志门限,大于等于该优先级的日志都会写入. </summary>
 ///
 /// <remarks> Dx, 2018/11/15. </remarks>
 ///
@@ -121,7 +126,7 @@ extern "C" DLOG_EXPORT int __stdcall dlog_get_memory_thr();
 extern "C" DLOG_EXPORT void __stdcall dlog_set_console_thr(int LogSeverity);
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 得到Dlog的控制台日志门限,大于等于该优先级的日志都会工作. </summary>
+/// <summary> 得到Dlog的控制台日志门限,大于等于该优先级的日志都会写入. </summary>
 ///
 /// <remarks> Dx, 2018/11/15. </remarks>
 ///
@@ -217,5 +222,53 @@ extern "C" DLOG_EXPORT void __stdcall dlog_memory_log_enable(bool enable);
 extern "C" DLOG_EXPORT int __stdcall dlog_get_memlog(char* buff, int offset, int count);
 
 #pragma endregion
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 得到appdata的路径,目录末尾不带斜杠"C:\\Users\\dx\\AppData\\Roaming". </summary>
+///
+/// <remarks> Dx, 2019/3/19. </remarks>
+///
+/// <param name="buff">   [in] 拷贝字符的buff. </param>
+/// <param name="length"> buff大小. </param>
+///
+/// <returns> 实际的字符串长度. </returns>
+///-------------------------------------------------------------------------------------------------
+extern "C" DLOG_EXPORT int __stdcall dlog_get_appdata_dir(char* buff, int size);
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 得到模块的路径,目录末尾不带斜杠. </summary>
+///
+/// <remarks> Dx, 2019/3/19. </remarks>
+///
+/// <param name="buff">   [in] 拷贝字符的buff. </param>
+/// <param name="length"> buff大小. </param>
+///
+/// <returns> 实际的字符串长度. </returns>
+///-------------------------------------------------------------------------------------------------
+extern "C" DLOG_EXPORT int __stdcall dlog_get_module_dir(char* buff, int size);
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 得到日志文件夹的路径. </summary>
+///
+/// <remarks> Dx, 2019/3/19. </remarks>
+///
+/// <param name="buff">   [in] 拷贝字符的buff. </param>
+/// <param name="length"> buff大小. </param>
+///
+/// <returns> 实际的字符串长度. </returns>
+///-------------------------------------------------------------------------------------------------
+extern "C" DLOG_EXPORT int __stdcall dlog_get_log_dir(char* buff, int size);
+
+///-------------------------------------------------------------------------------------------------
+/// <summary> 得到日志文件的路径. </summary>
+///
+/// <remarks> Dx, 2019/3/19. </remarks>
+///
+/// <param name="buff">   [in] 拷贝字符的buff. </param>
+/// <param name="length"> buff大小. </param>
+///
+/// <returns> 实际的字符串长度. </returns>
+///-------------------------------------------------------------------------------------------------
+extern "C" DLOG_EXPORT int __stdcall dlog_get_log_file_path(char* buff, int size);
 
 #endif // !_DLOG_H_
