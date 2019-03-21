@@ -12,9 +12,4 @@
 #include "./Common/FPSCalc.hpp"
 #include "./Common/Event.h"
 
-#ifdef CVSYSTEM_USE_JSON
-#include "./DTO/JsonHelper.h"
-#include "./DTO/Serialize.h"
-#endif // USE_JSON
-
 #endif

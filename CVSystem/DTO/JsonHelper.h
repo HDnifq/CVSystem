@@ -104,13 +104,18 @@ class JsonHelper
     ///
     /// <returns> Doc as a std::string. </returns>
     ///-------------------------------------------------------------------------------------------------
-    static inline std::string toStr(const rapidjson::Document& doc)
+    static inline std::string toStr(const rapidjson::Document& doc, bool isPretty = false)
     {
         using namespace rapidjson;
         StringBuffer sb;
-        //PrettyWriter<StringBuffer> writer(sb);
-        Writer<StringBuffer> writer(sb);
-        doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        if (isPretty) {
+            PrettyWriter<StringBuffer> writer(sb);
+            doc.Accept(writer);
+        }
+        else {
+            Writer<StringBuffer> writer(sb);
+            doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        }
         return std::string(sb.GetString());
     }
 
@@ -123,13 +128,18 @@ class JsonHelper
     ///
     /// <returns> Doc as a std::wstring. </returns>
     ///-------------------------------------------------------------------------------------------------
-    static inline std::wstring toStr(const rapidjson::DocumentW& doc)
+    static inline std::wstring toStr(const rapidjson::DocumentW& doc, bool isPretty = false)
     {
         using namespace rapidjson;
         StringBufferW sb;
-        //PrettyWriter<StringBufferW, UTF16<>, UTF16<>> writer(sb);
-        Writer<StringBufferW, UTF16<>, UTF16<>> writer(sb);
-        doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        if (isPretty) {
+            PrettyWriter<StringBufferW, UTF16<>, UTF16<>> writer(sb);
+            doc.Accept(writer);
+        }
+        else {
+            Writer<StringBufferW, UTF16<>, UTF16<>> writer(sb);
+            doc.Accept(writer); // Accept() traverses the DOM and generates Handler events.
+        }
         return std::wstring(sb.GetString());
     }
 

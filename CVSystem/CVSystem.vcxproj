@@ -153,8 +153,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />
     <ClInclude Include="DTO\Serialize.h" />
+    <ClInclude Include="Json.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
     <ClInclude Include="Proc\CameraGrab.h" />
     <ClInclude Include="Common.h" />
@@ -170,7 +172,6 @@
     <ClInclude Include="Common\FPSCalc.hpp" />
     <ClInclude Include="cvsdef.h" />
     <ClInclude Include="CVSystem.h" />
-    <ClInclude Include="Data\Debug.h" />
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="dlog\dlog.h" />
     <ClInclude Include="eventbus\AsyncEventBus.h" />
@@ -201,7 +202,6 @@
     <ClCompile Include="Proc\Draw.cpp" />
     <ClCompile Include="Common\FileHelper.cpp" />
     <ClCompile Include="CVSystem.cpp" />
-    <ClCompile Include="Data\Debug.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="eventbus\AsyncEventBus.cpp" />
     <ClCompile Include="Proc\Camera.cpp" />

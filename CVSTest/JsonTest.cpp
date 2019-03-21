@@ -12,7 +12,8 @@
 #include "rapidjson/encodings.h"
 
 using namespace dxlib;
-using namespace dxlib::dxjson;
+using namespace dxlib::dto;
+using namespace dxlib::json;
 using namespace std;
 using namespace rapidjson;
 
@@ -130,7 +131,31 @@ TEST(Json, arr)
     Serialize::o2j(doc, doc, L"rotate", arr);
 
     //保存到string
-    wstring text = JsonHelper::toStr(doc);
+    wstring text = JsonHelper::toStr(doc, false);
+
+    //从string读取
+    StringStreamW s(text.c_str());
+    DocumentW d2;
+    d2.ParseStream(s);
+    array<double, 4> arr2;
+
+    Serialize::j2o(d2, L"rotate", arr2);
+
+    for (size_t i = 0; i < arr.size(); i++) {
+        EXPECT_TRUE(arr[i] == arr2[i]);
+    }
+}
+
+TEST(Json, arr_pretty)
+{
+    array<double, 4> arr = {1, 2, 3, 4};
+
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+    //序列化到doc
+    Serialize::o2j(doc, doc, L"rotate", arr);
+
+    //保存到string
+    wstring text = JsonHelper::toStr(doc, true);
 
     //从string读取
     StringStreamW s(text.c_str());

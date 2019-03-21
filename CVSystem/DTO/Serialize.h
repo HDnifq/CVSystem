@@ -1,35 +1,11 @@
 ﻿#pragma once
-#include "JsonHelper.h"
-
+#include "DTOType.h"
 #include <opencv2/opencv.hpp>
 
+#include "JsonHelper.h"
+
 namespace dxlib {
-namespace dxjson {
-
-///-------------------------------------------------------------------------------------------------
-/// <summary> A vector 3. </summary>
-///
-/// <remarks> Xian Dai, 2018/1/23. </remarks>
-///-------------------------------------------------------------------------------------------------
-struct Vector3
-{
-    float x;
-    float y;
-    float z;
-};
-
-///-------------------------------------------------------------------------------------------------
-/// <summary> A quaternion. </summary>
-///
-/// <remarks> Xian Dai, 2018/1/23. </remarks>
-///-------------------------------------------------------------------------------------------------
-struct Quaternion
-{
-    float x;
-    float y;
-    float z;
-    float w;
-};
+namespace json {
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary> A serialize,这里面的方法在使用上,通常是某个对象的一个成员字段. </summary>
@@ -154,7 +130,7 @@ class Serialize
     //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
     static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
                            const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const Vector3& obj)
+                           const dxlib::dto::Vector3& obj)
     {
         using namespace rapidjson;
         auto& allocator = doc.GetAllocator();
@@ -166,7 +142,7 @@ class Serialize
     }
 
     //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, Vector3& obj)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, dxlib::dto::Vector3& obj)
     {
         const auto& jv = value[fieldName];
         obj.x = jv[L"x"].GetFloat();
@@ -181,7 +157,7 @@ class Serialize
     //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
     static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
                            const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const Quaternion& obj)
+                           const dxlib::dto::Quaternion& obj)
     {
         using namespace rapidjson;
         auto& allocator = doc.GetAllocator();
@@ -194,7 +170,7 @@ class Serialize
     }
 
     //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, Quaternion& obj)
+    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, dxlib::dto::Quaternion& obj)
     {
         const auto& jv = value[fieldName];
         obj.x = jv[L"x"].GetFloat();
@@ -329,5 +305,5 @@ class Serialize
 
 #pragma endregion
 };
-} // namespace dxjson
+} // namespace json
 } // namespace dxlib
