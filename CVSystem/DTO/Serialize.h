@@ -8,36 +8,46 @@ namespace dxlib {
 namespace json {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> A serialize,这里面的方法在使用上,通常是某个对象的一个成员字段. </summary>
+/// <summary> 使用rapidjson扩展的一些固定序列化/反序列化方法. </summary>
 ///
-/// <remarks> Dx, 2019/3/11. </remarks>
+/// <remarks> 使用示例:
+///           //1. 添加一个成员
+///           Serialize::AddMember(value, L"name", object, doc.GetAllocator());
+///
+///           //2. 从一个value得到一个对象
+///           GetObj(value, obj);
+///
+///           //3. 直接去得到一个对象作为返回值
+///           cv::Mat m = GetCvMat(value);
+///
+///           //4. 直接序列化到doc
+///           auto doc = ObjectDoc(m);
+///
+///           //5. 反序列化到Mat
+///           cv::Mat m2 = Serialize::GetCvMat(v);
+///
+///           Dx, 2019/3/11. </remarks>
 ///-------------------------------------------------------------------------------------------------
 class Serialize
 {
   public:
 #pragma region cvMat
 
-    //obj -> json
-    static inline rapidjson::DocumentW o2j(const cv::Mat& m)
+    //->json 整个对象是一个object
+    static inline rapidjson::DocumentW ObjectDoc(const cv::Mat& m)
     {
         rapidjson::DocumentW doc;
         doc.SetObject();
-        o2j(doc, doc, m);
-        return doc;
-    }
-
-    //obj -> json
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value, const cv::Mat& m)
-    {
         auto& allocator = doc.GetAllocator();
+
         int channels = m.channels();
         int cols = m.cols;
         int rows = m.rows;
 
-        value.AddMember(L"type", m.type(), allocator);
-        value.AddMember(L"channels", m.channels(), allocator);
-        value.AddMember(L"cols", cols, allocator);
-        value.AddMember(L"rows", rows, allocator);
+        doc.AddMember(L"type", m.type(), allocator);
+        doc.AddMember(L"channels", m.channels(), allocator);
+        doc.AddMember(L"cols", cols, allocator);
+        doc.AddMember(L"rows", rows, allocator);
 
         rapidjson::ValueW data(rapidjson::kArrayType);
         if (m.type() == CV_32F) {
@@ -50,11 +60,42 @@ class Serialize
             for (size_t i = 0; i < cols * rows * channels; i++)
                 data.PushBack(p[i], allocator);
         }
-        value.AddMember(L"data", data, allocator);
+        doc.AddMember(L"data", data, allocator);
+        return doc;
     }
 
-    //json -> obj
-    static inline cv::Mat j2o(const rapidjson::ValueW& value)
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const cv::Mat& m, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        using namespace rapidjson;
+        ValueW jv(kObjectType);
+
+        int channels = m.channels();
+        int cols = m.cols;
+        int rows = m.rows;
+
+        jv.AddMember(L"type", m.type(), allocator);
+        jv.AddMember(L"channels", m.channels(), allocator);
+        jv.AddMember(L"cols", cols, allocator);
+        jv.AddMember(L"rows", rows, allocator);
+
+        rapidjson::ValueW data(rapidjson::kArrayType);
+        if (m.type() == CV_32F) {
+            const float* p = m.ptr<float>();
+            for (size_t i = 0; i < cols * rows * channels; i++)
+                data.PushBack(p[i], allocator);
+        }
+        else if (m.type() == CV_64F) {
+            const double* p = m.ptr<double>();
+            for (size_t i = 0; i < cols * rows * channels; i++)
+                data.PushBack(p[i], allocator);
+        }
+        jv.AddMember(L"data", data, allocator);
+        value.AddMember(fieldName, jv, allocator);
+    }
+
+    //->obj 带返回值的直接GetObj
+    static inline cv::Mat GetCvMat(const rapidjson::ValueW& value)
     {
         int type = value[L"type"].GetInt();
         int channels = value[L"channels"].GetInt();
@@ -77,49 +118,66 @@ class Serialize
         }
         return m;
     }
-    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
-                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const cv::Mat& m)
-    {
-        using namespace rapidjson;
-        auto& allocator = doc.GetAllocator();
-        ValueW jv(kObjectType);
-        o2j(doc, jv, m);
-        value.AddMember(fieldName, jv, allocator);
-    }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, cv::Mat& m)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, cv::Mat& m)
     {
-        m = j2o(value[fieldName]);
+        int type = value[L"type"].GetInt();
+        int channels = value[L"channels"].GetInt();
+        int cols = value[L"cols"].GetInt();
+        int rows = value[L"rows"].GetInt();
+        const auto& data = value[L"data"];
+
+        if (type == CV_32F) {
+            m = cv::Mat(rows, cols, CV_32F);
+            float* _r = m.ptr<float>();
+            for (rapidjson::SizeType i = 0; i < data.Size(); i++) // 使用 SizeType 而不是 size_t
+                _r[i] = data[i].GetFloat();
+        }
+        else if (type == CV_64F) {
+            m = cv::Mat(rows, cols, CV_64F);
+            double* _r = m.ptr<double>();
+            for (rapidjson::SizeType i = 0; i < data.Size(); i++) // 使用 SizeType 而不是 size_t
+                _r[i] = data[i].GetDouble();
+        }
     }
 
 #pragma endregion
 
 #pragma region std_array
 
-    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
     template <size_t _Size>
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
-                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const std::array<double, _Size>& arr)
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const std::array<double, _Size>& arr, rapidjson::MemoryPoolAllocator<>& allocator)
     {
         using namespace rapidjson;
-        auto& allocator = doc.GetAllocator();
         ValueW data(kArrayType);
         for (size_t i = 0; i < arr.size(); i++)
             data.PushBack(arr[i], allocator);
         value.AddMember(fieldName, data, allocator);
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
+    //->json 整个对象是纯array
     template <size_t _Size>
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::array<double, _Size>& obj)
+    static inline rapidjson::DocumentW ArrayDoc(const std::array<double, _Size>& arr)
     {
-        const auto& data = value[fieldName];
-        for (unsigned int i = 0; i < data.Size(); i++) {
-            obj[i] = data[i].GetDouble();
+        rapidjson::DocumentW doc;
+        doc.SetArray();
+        auto& allocator = doc.GetAllocator();
+        for (size_t i = 0; i < arr.size(); i++)
+            doc.PushBack(arr[i], allocator);
+        return doc;
+    }
+
+    //->obj 不带返回值的,参数作为结果的GetObj
+    template <size_t _Size>
+    static inline void GetObj(const rapidjson::ValueW& value, std::array<double, _Size>& obj)
+    {
+        if (!value.IsArray()) //它应该是一个array
+            return;
+        for (unsigned int i = 0; i < value.Size(); i++) {
+            obj[i] = value[i].GetDouble();
         }
     }
 
@@ -127,13 +185,11 @@ class Serialize
 
 #pragma region Vector3
 
-    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
-                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const dxlib::dto::Vector3& obj)
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const dxlib::dto::Vector3& obj, rapidjson::MemoryPoolAllocator<>& allocator)
     {
         using namespace rapidjson;
-        auto& allocator = doc.GetAllocator();
         ValueW jv(kObjectType);
         jv.AddMember(L"x", obj.x, allocator);
         jv.AddMember(L"y", obj.y, allocator);
@@ -141,26 +197,33 @@ class Serialize
         value.AddMember(fieldName, jv, allocator);
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, dxlib::dto::Vector3& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, dxlib::dto::Vector3& obj)
     {
-        const auto& jv = value[fieldName];
-        obj.x = jv[L"x"].GetFloat();
-        obj.y = jv[L"y"].GetFloat();
-        obj.z = jv[L"z"].GetFloat();
+        obj.x = value[L"x"].GetFloat();
+        obj.y = value[L"y"].GetFloat();
+        obj.z = value[L"z"].GetFloat();
+    }
+
+    //->obj 带返回值的直接GetObj
+    static inline dxlib::dto::Vector3 GetDtoVector3(const rapidjson::ValueW& value)
+    {
+        dxlib::dto::Vector3 obj;
+        obj.x = value[L"x"].GetFloat();
+        obj.y = value[L"y"].GetFloat();
+        obj.z = value[L"z"].GetFloat();
+        return obj;
     }
 
 #pragma endregion
 
 #pragma region Quaternion
 
-    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
-                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const dxlib::dto::Quaternion& obj)
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const dxlib::dto::Quaternion& obj, rapidjson::MemoryPoolAllocator<>& allocator)
     {
         using namespace rapidjson;
-        auto& allocator = doc.GetAllocator();
         ValueW jv(kObjectType);
         jv.AddMember(L"x", obj.x, allocator);
         jv.AddMember(L"y", obj.y, allocator);
@@ -169,27 +232,35 @@ class Serialize
         value.AddMember(fieldName, jv, allocator);
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, dxlib::dto::Quaternion& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, dxlib::dto::Quaternion& obj)
     {
-        const auto& jv = value[fieldName];
-        obj.x = jv[L"x"].GetFloat();
-        obj.y = jv[L"y"].GetFloat();
-        obj.z = jv[L"z"].GetFloat();
-        obj.w = jv[L"w"].GetFloat();
+        obj.x = value[L"x"].GetFloat();
+        obj.y = value[L"y"].GetFloat();
+        obj.z = value[L"z"].GetFloat();
+        obj.w = value[L"w"].GetFloat();
+    }
+
+    //->obj 带返回值的直接GetObj
+    static inline dxlib::dto::Quaternion GetDtoQuaternion(const rapidjson::ValueW& value)
+    {
+        dxlib::dto::Quaternion obj;
+        obj.x = value[L"x"].GetFloat();
+        obj.y = value[L"y"].GetFloat();
+        obj.z = value[L"z"].GetFloat();
+        obj.w = value[L"w"].GetFloat();
+        return obj;
     }
 
 #pragma endregion
 
 #pragma region vector
 
-    //obj -> json 成员字段(整个doc,整个对象,字段名,要设置值的字段)
-    static inline void o2j(rapidjson::DocumentW& doc, rapidjson::ValueW& value,
-                           const rapidjson::GenericStringRef<wchar_t>& fieldName,
-                           const std::vector<std::wstring>& obj)
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const std::vector<std::wstring>& obj, rapidjson::MemoryPoolAllocator<>& allocator)
     {
         using namespace rapidjson;
-        auto& allocator = doc.GetAllocator();
         ValueW jv(kArrayType);
         for (size_t i = 0; i < obj.size(); i++) {
             ValueW item; //string的话必须这样搞一下然后拷贝,它这个库分两种思路,ref的和拷贝的
@@ -199,8 +270,8 @@ class Serialize
         value.AddMember(fieldName, jv, allocator);
     }
 
-    //obj -> json 整个对象是纯array
-    static inline rapidjson::DocumentW o2j(const std::vector<std::wstring>& obj)
+    //->json 整个对象是纯array
+    static inline rapidjson::DocumentW ArrayDoc(const std::vector<std::wstring>& obj)
     {
         rapidjson::DocumentW doc;
         doc.SetArray();
@@ -215,7 +286,7 @@ class Serialize
 
     //obj -> json 整个对象是纯array
     template <typename T>
-    static inline rapidjson::DocumentW o2j(const std::vector<T>& obj)
+    static inline rapidjson::DocumentW ArrayDoc(const std::vector<T>& obj)
     {
         rapidjson::DocumentW doc;
         doc.SetArray();
@@ -227,18 +298,8 @@ class Serialize
         return doc;
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<std::wstring>& obj)
-    {
-        const auto& jv = value[fieldName];
-        obj.clear();
-        for (unsigned int i = 0; i < jv.Size(); i++) {
-            obj.push_back(jv[i].GetString());
-        }
-    }
-
-    //json -> obj
-    static inline void j2o(const rapidjson::ValueW& value, std::vector<std::wstring>& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, std::vector<std::wstring>& obj)
     {
         obj.clear();
         for (unsigned int i = 0; i < value.Size(); i++) {
@@ -246,18 +307,8 @@ class Serialize
         }
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<double>& obj)
-    {
-        const auto& jv = value[fieldName];
-        obj.clear();
-        for (unsigned int i = 0; i < jv.Size(); i++) {
-            obj.push_back(jv[i].GetDouble());
-        }
-    }
-
-    //json -> obj
-    static inline void j2o(const rapidjson::ValueW& value, std::vector<double>& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, std::vector<double>& obj)
     {
         obj.clear();
         for (unsigned int i = 0; i < value.Size(); i++) {
@@ -265,18 +316,8 @@ class Serialize
         }
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<float>& obj)
-    {
-        const auto& jv = value[fieldName];
-        obj.clear();
-        for (unsigned int i = 0; i < jv.Size(); i++) {
-            obj.push_back(jv[i].GetFloat());
-        }
-    }
-
-    //json -> obj
-    static inline void j2o(const rapidjson::ValueW& value, std::vector<float>& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, std::vector<float>& obj)
     {
         obj.clear();
         for (unsigned int i = 0; i < value.Size(); i++) {
@@ -284,23 +325,37 @@ class Serialize
         }
     }
 
-    //json -> obj 成员字段(整个对象,字段名,要设置值的字段)
-    static inline void j2o(const rapidjson::ValueW& value, const wchar_t* fieldName, std::vector<int>& obj)
-    {
-        const auto& jv = value[fieldName];
-        obj.clear();
-        for (unsigned int i = 0; i < jv.Size(); i++) {
-            obj.push_back(jv[i].GetInt());
-        }
-    }
-
-    //json -> obj
-    static inline void j2o(const rapidjson::ValueW& value, std::vector<int>& obj)
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, std::vector<int>& obj)
     {
         obj.clear();
         for (unsigned int i = 0; i < value.Size(); i++) {
             obj.push_back(value[i].GetInt());
         }
+    }
+
+#pragma endregion
+
+#pragma region string
+
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& name, const std::wstring& str, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        using namespace rapidjson;
+        ValueW valStr;
+        valStr.SetString(str.c_str(), allocator); //有val的方式是拷贝一次string的方式 ,
+        value.AddMember(name, valStr, allocator);
+
+        //不拷贝的方式是使用StringRef
+        // bid.AddMember("adm", rapidjson::StringRef(html_snippet.c_str(),html_snippet.size()), allocator);
+    }
+
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& name, const std::string& str, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        using namespace rapidjson;
+        std::wstring wstr = JsonHelper::utf8To16(str);
+        ValueW valStr;
+        valStr.SetString(wstr.c_str(), allocator);
+        value.AddMember(name, valStr, allocator);
     }
 
 #pragma endregion

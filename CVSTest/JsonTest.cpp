@@ -26,9 +26,8 @@ TEST(Json, cvMat_double)
          0, 0, 1, 0,
          0, 0, 0, 1);
 
-    auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, m);
+    auto doc = Serialize::ObjectDoc(m);
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -40,7 +39,7 @@ TEST(Json, cvMat_double)
     ValueW v = d.GetObject();
 
     //反序列化到Mat
-    cv::Mat m2 = Serialize::j2o(v);
+    cv::Mat m2 = Serialize::GetCvMat(v);
 
     //比较两个Mat
     EXPECT_TRUE(m2.cols == m.cols);
@@ -63,9 +62,8 @@ TEST(Json, cvMat_float)
          0, 0, 1, 0,
          0, 0, 0, 1);
 
-    auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, m);
+    auto doc = Serialize::ObjectDoc(m);
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -77,7 +75,7 @@ TEST(Json, cvMat_float)
     ValueW v = d.GetObject();
 
     //反序列化到Mat
-    cv::Mat m2 = Serialize::j2o(v);
+    cv::Mat m2 = Serialize::GetCvMat(v);
 
     //比较两个Mat
     EXPECT_TRUE(m2.cols == m.cols);
@@ -100,7 +98,7 @@ TEST(Json, cvMat_field)
          0, 0, 0, 1);
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rt4x4", m);
+    Serialize::AddMember(doc, L"rt4x4", m, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -109,7 +107,7 @@ TEST(Json, cvMat_field)
     StringStreamW s(text.c_str());
     DocumentW d2;
     d2.ParseStream(s);
-    Serialize::j2o(d2, L"rt4x4", m2);
+    m2 = Serialize::GetCvMat(d2[L"rt4x4"]);
     //比较两个Mat
     EXPECT_TRUE(m2.cols == m.cols);
     EXPECT_TRUE(m2.rows == m.rows);
@@ -128,7 +126,7 @@ TEST(Json, arr)
 
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rotate", arr);
+    Serialize::AddMember(doc, L"rotate", arr, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc, false);
@@ -139,7 +137,7 @@ TEST(Json, arr)
     d2.ParseStream(s);
     array<double, 4> arr2;
 
-    Serialize::j2o(d2, L"rotate", arr2);
+    Serialize::GetObj(d2[L"rotate"], arr2);
 
     for (size_t i = 0; i < arr.size(); i++) {
         EXPECT_TRUE(arr[i] == arr2[i]);
@@ -152,7 +150,7 @@ TEST(Json, arr_pretty)
 
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rotate", arr);
+    Serialize::AddMember(doc, L"rotate", arr, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc, true);
@@ -163,7 +161,7 @@ TEST(Json, arr_pretty)
     d2.ParseStream(s);
     array<double, 4> arr2;
 
-    Serialize::j2o(d2, L"rotate", arr2);
+    Serialize::GetObj(d2[L"rotate"], arr2);
 
     for (size_t i = 0; i < arr.size(); i++) {
         EXPECT_TRUE(arr[i] == arr2[i]);
@@ -177,7 +175,7 @@ TEST(Json, Vector3)
 
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rotate", o1);
+    Serialize::AddMember(doc, L"rotate", o1, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -187,7 +185,7 @@ TEST(Json, Vector3)
     DocumentW d2;
     d2.ParseStream(s);
 
-    Serialize::j2o(d2, L"rotate", o2);
+    Serialize::GetObj(d2[L"rotate"], o2);
 
     EXPECT_TRUE(o1.x == o2.x);
     EXPECT_TRUE(o1.y == o2.y);
@@ -201,7 +199,7 @@ TEST(Json, Quaternion)
 
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rotate", o1);
+    Serialize::AddMember(doc, L"rotate", o1, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -211,7 +209,7 @@ TEST(Json, Quaternion)
     DocumentW d2;
     d2.ParseStream(s);
 
-    Serialize::j2o(d2, L"rotate", o2);
+    Serialize::GetObj(d2[L"rotate"], o2);
 
     EXPECT_TRUE(o1.x == o2.x);
     EXPECT_TRUE(o1.y == o2.y);
@@ -229,7 +227,7 @@ TEST(Json, v_wstring)
 
     auto doc = JsonHelper::creatEmptyObjectDocW();
     //序列化到doc
-    Serialize::o2j(doc, doc, L"rotate", o1);
+    Serialize::AddMember(doc, L"rotate", o1, doc.GetAllocator());
 
     //保存到string
     wstring text = JsonHelper::toStr(doc);
@@ -239,7 +237,7 @@ TEST(Json, v_wstring)
     DocumentW d2;
     d2.ParseStream(s);
 
-    Serialize::j2o(d2, L"rotate", o2);
+    Serialize::GetObj(d2[L"rotate"], o2);
 
     for (size_t i = 0; i < o1.size(); i++) {
         EXPECT_TRUE(o1[i] == o2[i]);

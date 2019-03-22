@@ -153,7 +153,7 @@ class MultiCamera
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 当前执行的proc的名字. </summary>
+    /// <summary> 当前执行的proc的名字,如果没有proc就返回null. </summary>
     ///
     /// <remarks> Surface, 2019/3/20. </remarks>
     ///
