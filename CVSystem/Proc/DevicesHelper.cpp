@@ -39,12 +39,10 @@ DevicesHelper* DevicesHelper::m_pInstance = NULL;
 
 DevicesHelper::DevicesHelper()
 {
-    devList = new std::map<int, std::wstring>();
 }
 
 DevicesHelper::~DevicesHelper()
 {
-    delete devList;
 }
 
 bool DevicesHelper::comInit()
@@ -88,11 +86,12 @@ bool DevicesHelper::comUnInit()
 int DevicesHelper::getIndexWithName(std::wstring name)
 {
 
-    for (int i = 0; i < devList->size(); i++) {
-        if (devList->at(i) == name) {
+    for (int i = 0; i < devList.size(); i++) {
+        if (devList.at(i) == name) {
             return i;
         }
     }
+    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", ws2s(name), devList.size());
     return -1;
 }
 
@@ -195,7 +194,7 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devList)
 
 int DevicesHelper::listDevices()
 {
-    this->devList->clear();
-    return listDevices(*devList);
+    this->devList.clear();
+    return listDevices(devList);
 }
 } // namespace dxlib

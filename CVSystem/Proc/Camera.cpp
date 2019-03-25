@@ -88,6 +88,10 @@ bool Camera::openCamera()
 
     //列出设备
     DevicesHelper::GetInst()->listDevices();
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
+        LogE("Camera.openCamera():listDevices相机个数为0,直接返回!");
+        return false;
+    }
     devID = DevicesHelper::GetInst()->getIndexWithName(devName); //记录devID
     if (devID != -1) {                                           //如果打开失败会返回-1
 
@@ -125,7 +129,11 @@ bool Camera::openCamera()
         return true;
     }
     else {
-        LogE("Camera.openCamera():列出摄像头失败，相机数为0!");
+        LogE("Camera.openCamera():未找到该名称的相机%s!", this->devNameA);
+        for (auto& kvp : DevicesHelper::GetInst()->devList) {
+            LogE("Camera.openCamera():当前相机有:%s", ws2s(kvp.second).c_str());
+        }
+
         return false;
     }
 }

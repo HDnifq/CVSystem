@@ -56,10 +56,10 @@ TEST(MultiCamera, open)
 {
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
-    if (DevicesHelper::GetInst()->devList->size() == 0) {
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
     CameraManger::GetInst()->camMap[0]->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
@@ -106,10 +106,10 @@ TEST(MultiCamera, release)
 
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
-    if (DevicesHelper::GetInst()->devList->size() == 0) {
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
     CameraManger::GetInst()->camMap[0]->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);

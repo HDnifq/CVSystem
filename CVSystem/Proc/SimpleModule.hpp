@@ -26,10 +26,10 @@ class SimpleModule
 
         //得到第一个相机名,然后添加
         DevicesHelper::GetInst()->listDevices();
-        if (DevicesHelper::GetInst()->devList->size() == 0) {
+        if (DevicesHelper::GetInst()->devList.size() == 0) {
             return;
         }
-        std::wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+        std::wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
         CameraManger::GetInst()->add(pCamera(new Camera(0, camName, cv::Size(1280, 720), 16)));
 
         //加入proc

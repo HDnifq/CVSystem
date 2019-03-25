@@ -156,6 +156,7 @@
     <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />
     <ClInclude Include="DTO\Serialize.h" />
+    <ClInclude Include="DTO\sht.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
     <ClInclude Include="Proc\CameraGrab.h" />

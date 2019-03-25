@@ -11,6 +11,8 @@
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include "rapidjson/encodings.h"
 
+#include "../CVSystem/DTO/sht.h"
+
 using namespace dxlib;
 using namespace dxlib::dto;
 using namespace dxlib::json;
@@ -353,6 +355,23 @@ TEST(Json, save_utf16_to_utf8)
 
     JsonHelper::save("tmp.txt", doc, false);
     remove("tmp.txt");
+}
+
+TEST(Json, sht)
+{
+    sht obj;
+    obj.md5_value = "dxsht123";
+    obj.index1 = {1, 2, 3, 4, 5};
+    obj.index2 = {1, 2};
+    auto json = obj.toJson();
+
+    sht obj2;
+    obj2.readJson(json);
+
+    EXPECT_TRUE(obj.md5_value == obj2.md5_value);
+
+    EXPECT_TRUE(obj.index1.size() == obj2.index1.size());
+    EXPECT_TRUE(obj.index2.size() == obj2.index2.size());
 }
 
 //这个库的api封装的很难用,作者没有做进一步封装,例子也很少

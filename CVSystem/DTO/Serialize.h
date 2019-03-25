@@ -270,6 +270,18 @@ class Serialize
         value.AddMember(fieldName, jv, allocator);
     }
 
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const std::vector<int>& obj, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        using namespace rapidjson;
+        ValueW jv(kArrayType);
+        for (size_t i = 0; i < obj.size(); i++) {
+            jv.PushBack(obj[i], allocator);
+        }
+        value.AddMember(fieldName, jv, allocator);
+    }
+
     //->json 整个对象是纯array
     static inline rapidjson::DocumentW ArrayDoc(const std::vector<std::wstring>& obj)
     {

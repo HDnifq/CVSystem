@@ -238,7 +238,7 @@ class JsonHelper
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> Creat object document w. </summary>
+    /// <summary> 从json读取并创建Doc. </summary>
     ///
     /// <remarks> Dx, 2019/3/12. </remarks>
     ///
@@ -247,6 +247,24 @@ class JsonHelper
     /// <returns> A rapidjson::DocumentW. </returns>
     ///-------------------------------------------------------------------------------------------------
     static inline rapidjson::DocumentW creatDocW(const std::wstring& text)
+    {
+        rapidjson::DocumentW document;
+        //从string读取
+        rapidjson::StringStreamW s(text.c_str());
+        document.ParseStream(s);
+        return document;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 从json读取并创建Doc. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/12. </remarks>
+    ///
+    /// <param name="text"> The text. </param>
+    ///
+    /// <returns> A rapidjson::DocumentW. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline rapidjson::DocumentW readJson(const std::wstring& text)
     {
         rapidjson::DocumentW document;
         //从string读取

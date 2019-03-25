@@ -12,10 +12,10 @@ TEST(CameraThread, new_delte)
 {
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
-    if (DevicesHelper::GetInst()->devList->size() == 0) {
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     for (size_t i = 0; i < 2; i++) {
         pCamera cp(new Camera(0, camName));
@@ -37,10 +37,10 @@ TEST(CameraThread, OpenClose)
 {
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
-    if (DevicesHelper::GetInst()->devList->size() == 0) {
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList->begin()->second;
+    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     for (size_t i = 0; i < 2; i++) {
         pCamera cp(new Camera(0, camName));
@@ -69,11 +69,11 @@ TEST(CameraThread, OpenClose2)
 {
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
-    if (DevicesHelper::GetInst()->devList->size() < 2) {
+    if (DevicesHelper::GetInst()->devList.size() < 2) {
         return;
     }
-    wstring camName0 = DevicesHelper::GetInst()->devList->begin()->second;
-    wstring camName1 = (++DevicesHelper::GetInst()->devList->begin())->second;
+    wstring camName0 = DevicesHelper::GetInst()->devList.begin()->second;
+    wstring camName1 = (++DevicesHelper::GetInst()->devList.begin())->second;
 
     for (size_t i = 0; i < 2; i++) {
         pCamera cp(new Camera(0, camName0));

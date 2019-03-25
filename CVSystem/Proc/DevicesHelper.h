@@ -44,7 +44,7 @@ class DevicesHelper
     }
 
     /// <summary> 一个设备名的列表. </summary>
-    std::map<int, std::wstring>* devList;
+    std::map<int, std::wstring> devList;
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 初始化com，如果调用过了摄像头的open函数，那么就不需要了. </summary>
