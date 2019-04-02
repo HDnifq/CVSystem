@@ -123,3 +123,21 @@ TEST(ALGO, vectorReserveTest)
     EXPECT_TRUE(v[0].a == "1");
     EXPECT_TRUE(v0.a == "1") << "v0.a=" << v0.a.c_str();
 }
+
+TEST(ALGO, vecAppend)
+{
+    int buf[1024];
+    for (size_t i = 0; i < 1024; i++) {
+        buf[i] = i;
+    }
+    std::vector<int> vec;
+    for (size_t i = 0; i < 512; i++) {
+        ALGO::append(vec, buf, 1024);
+    }
+    EXPECT_TRUE(vec.size() == 1024 * 512);
+    for (size_t i = 0; i < 512; i++) {
+        for (size_t j = 0; j < 1024; j++) {
+            ASSERT_TRUE(vec[i * 1024 + j] == j);
+        }
+    }
+}

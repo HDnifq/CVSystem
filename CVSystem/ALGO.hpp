@@ -253,5 +253,25 @@ class ALGO
             dst.push_back({src[i]});
         }
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 将一段数组内容添加到vector容器的末尾. </summary>
+    ///
+    /// <remarks> Surface, 2019/4/2. </remarks>
+    ///
+    /// <param name="vec">      [in,out] vector容器. </param>
+    /// <param name="buf">      数组. </param>
+    /// <param name="buf_size"> 拷贝长度. </param>
+    ///-------------------------------------------------------------------------------------------------
+    template <typename T>
+    static void append(std::vector<T>& vec, const T* buf, size_t buf_size)
+    {
+        size_t size = vec.size();
+        if (vec.capacity() < size + buf_size) {
+            vec.reserve((vec.capacity() + buf_size) * 2); //扩容到一个安全容量
+        }
+        vec.resize(size + buf_size);
+        memcpy_s(&vec[size], buf_size * sizeof(T), buf, buf_size * sizeof(T)); //拷贝数组到末尾
+    }
 };
 } // namespace dxlib
