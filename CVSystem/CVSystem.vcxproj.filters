@@ -24,16 +24,10 @@
     <ClInclude Include="Common\blockingconcurrentqueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Common.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Common\concurrentqueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Common\CoolTime.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\FileHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Common\FPSCalc.hpp">
@@ -138,15 +132,15 @@
     <ClInclude Include="DTO\sht.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Common\FileHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\StringHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\Common.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\FileHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\Camera.cpp">
@@ -186,6 +180,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\MultiCamera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\FileHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\StringHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

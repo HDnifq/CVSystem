@@ -6,7 +6,7 @@
 #include "./eventbus/EventBus.h"
 #include "./eventbus/EventCollector.h"
 
-#include "./Common/Common.h"
+#include "./Common/StringHelper.h"
 #include "./Common/CoolTime.hpp"
 #include "./Common/FileHelper.h"
 #include "./Common/FPSCalc.hpp"

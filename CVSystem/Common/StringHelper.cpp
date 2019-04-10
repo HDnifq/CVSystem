@@ -1,8 +1,8 @@
 ﻿#include <string>
 #include <locale.h>
-#include "Common.h"
+#include "StringHelper.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 //#define BOOST_DATE_TIME_SOURCE  //这个定义不知道有什么用
 
 ////这个脚本可能会报错 语言->符合模式 "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
@@ -13,7 +13,9 @@
 //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
 //devNameA = converter.to_bytes(aDevName);
 
-std::string ws2s(const std::wstring& ws)
+namespace dxlib {
+
+std::string StringHelper::ws2s(const std::wstring& ws)
 {
     std::string curLocale = setlocale(LC_ALL, "chs");
 
@@ -41,7 +43,7 @@ std::string ws2s(const std::wstring& ws)
 ///
 /// <returns> A wstring. </returns>
 ///-------------------------------------------------------------------------------------------------
-std::wstring s2ws(const std::string& s)
+std::wstring StringHelper::s2ws(const std::string& s)
 {
     std::string curLocale = setlocale(LC_ALL, "chs");
 
@@ -69,7 +71,7 @@ std::wstring s2ws(const std::string& s)
 ///
 /// <returns> 十六进制字符串. </returns>
 ///-------------------------------------------------------------------------------------------------
-std::string byte2str(const void* data, int length)
+std::string StringHelper::byte2str(const void* data, int length)
 {
     unsigned char* pChar = (unsigned char*)data;
     std::string msg;
@@ -84,21 +86,24 @@ std::string byte2str(const void* data, int length)
 ///-------------------------------------------------------------------------------------------------
 /// <summary> 得到当前时间戳. </summary>
 ///
-/// <remarks> Dx, 2018/12/14. </remarks>
+/// <remarks> 剔除了这个函数,因为这个函数会导致引用一个boost库的依赖,在静态链接里比较麻烦
+///           Dx, 2018/12/14. </remarks>
 ///
 /// <returns> The time. </returns>
 ///-------------------------------------------------------------------------------------------------
-std::string secTimeStr()
-{
-    std::string strTime = boost::posix_time::to_iso_string(
-        boost::posix_time::second_clock::local_time());
+//std::string StringHelper::secTimeStr()
+//{
+//    std::string strTime = boost::posix_time::to_iso_string(
+//        boost::posix_time::second_clock::local_time());
+//
+//    // 这时候strTime里存放时间的格式是YYYYMMDDTHHMMSS，日期和时间用大写字母T隔开了
+//
+//    size_t pos = strTime.find('T');
+//    strTime.replace(pos, 1, std::string("-"));
+//    //strTime.replace(pos + 3, 0, std::string(":")); //这个冒号加上不能用作文件名了
+//    //strTime.replace(pos + 6, 0, std::string(":"));
+//
+//    return strTime;
+//}
 
-    // 这时候strTime里存放时间的格式是YYYYMMDDTHHMMSS，日期和时间用大写字母T隔开了
-
-    size_t pos = strTime.find('T');
-    strTime.replace(pos, 1, std::string("-"));
-    //strTime.replace(pos + 3, 0, std::string(":")); //这个冒号加上不能用作文件名了
-    //strTime.replace(pos + 6, 0, std::string(":"));
-
-    return strTime;
-}
+} // namespace dxlib

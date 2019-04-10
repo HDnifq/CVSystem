@@ -4,7 +4,7 @@
 #include "iostream"
 #include <map>
 #include <windows.h>
-#include "../Common/Common.h"
+#include "../Common/StringHelper.h"
 #include "../Common/CoolTime.hpp"
 #include "CameraManger.h"
 #include "../Common/Event.h"

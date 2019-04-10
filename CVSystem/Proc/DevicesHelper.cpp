@@ -30,7 +30,7 @@
 #include <map>
 #include <iostream>
 
-#include "../Common/Common.h"
+#include "../Common/StringHelper.h"
 #include "../dlog/dlog.h"
 
 namespace dxlib {
@@ -91,7 +91,7 @@ int DevicesHelper::getIndexWithName(std::wstring name)
             return i;
         }
     }
-    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", ws2s(name), devList.size());
+    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", StringHelper::ws2s(name), devList.size());
     return -1;
 }
 
@@ -102,7 +102,7 @@ std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstrin
     for (int i = 0; i < length; i++) {
         int index = getIndexWithName(name[i]);
         if (index < 0) {
-            LogW("DevicesHelper.getDevListWithNames() :未能找到摄像机 %s!", ws2s(name[i]));
+            LogW("DevicesHelper.getDevListWithNames() :未能找到摄像机 %s!", StringHelper::ws2s(name[i]));
         }
         else {
             openDevList[index] = name[i];

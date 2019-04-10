@@ -4,7 +4,7 @@
 #include <io.h>
 #include <windows.h>
 #include <ShlObj.h> //SHGetSpecialFolderPath
-#include "Common.h"
+#include "StringHelper.h"
 
 #include <boost/filesystem.hpp>
 
@@ -36,7 +36,7 @@ bool FileHelper::dirExists(const std::string& dirName_in)
 
 bool FileHelper::dirExists(const std::wstring& dirName_in)
 {
-    int ftyp = _access(ws2s(dirName_in).c_str(), 0);
+    int ftyp = _access(StringHelper::ws2s(dirName_in).c_str(), 0);
 
     if (0 == ftyp)
         return true; // this is a directory!
@@ -71,7 +71,7 @@ std::string FileHelper::getModuleDir()
 
 void FileHelper::isExistsAndCreat(std::wstring dirPath)
 {
-    std::string sDir = ws2s(dirPath);
+    std::string sDir = StringHelper::ws2s(dirPath);
     if (!dirExists(sDir)) { //如果文件夹路径不存在
         std::string cmd = std::string("mkdir \"") + sDir + std::string("\"");
         system(cmd.c_str()); //创建文件夹

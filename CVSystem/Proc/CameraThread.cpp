@@ -2,10 +2,10 @@
 #include <Chrono>
 #include <boost/timer.hpp>
 #include <memory>
-#include "../Common/Common.h"
-#include "DevicesHelper.h"
+#include "../Common/StringHelper.h"
 #include "../Common/concurrentqueue.h"
 #include "../Common/blockingconcurrentqueue.h"
+#include "DevicesHelper.h"
 
 namespace dxlib {
 

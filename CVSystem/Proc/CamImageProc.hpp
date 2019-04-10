@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "../Proc/MultiCamera.h"
-#include "../Common/Common.h"
+#include "../Common/StringHelper.h"
 #include "../Common/FileHelper.h"
 #include "CameraManger.h"
 

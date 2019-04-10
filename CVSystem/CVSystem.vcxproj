@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Common\FileHelper.h" />
     <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />
     <ClInclude Include="DTO\Serialize.h" />
@@ -164,12 +165,11 @@
     <ClInclude Include="ALGO.hpp" />
     <ClInclude Include="Common\BaseThread.h" />
     <ClInclude Include="Common\blockingconcurrentqueue.h" />
-    <ClInclude Include="Common\Common.h" />
+    <ClInclude Include="Common\StringHelper.h" />
     <ClInclude Include="Common\concurrentqueue.h" />
     <ClInclude Include="Common\CoolTime.hpp" />
     <ClInclude Include="Proc\CameraImage.h" />
     <ClInclude Include="Proc\Draw.h" />
-    <ClInclude Include="Common\FileHelper.h" />
     <ClInclude Include="Common\FPSCalc.hpp" />
     <ClInclude Include="cvsdef.h" />
     <ClInclude Include="CVSystem.h" />
@@ -196,12 +196,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Common\FileHelper.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />
     <ClCompile Include="Proc\CameraGrab.cpp" />
     <ClCompile Include="Common\BaseThread.cpp" />
-    <ClCompile Include="Common\Common.cpp" />
+    <ClCompile Include="Common\StringHelper.cpp" />
     <ClCompile Include="Proc\Draw.cpp" />
-    <ClCompile Include="Common\FileHelper.cpp" />
     <ClCompile Include="CVSystem.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="eventbus\AsyncEventBus.cpp" />

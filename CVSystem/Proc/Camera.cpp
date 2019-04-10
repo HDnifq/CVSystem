@@ -1,6 +1,6 @@
 ﻿#include "Camera.h"
 #include "../dlog/dlog.h"
-#include "../Common/Common.h"
+#include "../Common/StringHelper.h"
 #include "DevicesHelper.h"
 #include <Chrono>
 #include <Thread>
@@ -67,7 +67,7 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     _setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
     _setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
-    devNameA = ws2s(aDevName);
+    devNameA = StringHelper::ws2s(aDevName);
 
     paramSize = aSize;
 }
@@ -131,7 +131,7 @@ bool Camera::openCamera()
     else {
         LogE("Camera.openCamera():未找到该名称的相机%s!", this->devNameA);
         for (auto& kvp : DevicesHelper::GetInst()->devList) {
-            LogE("Camera.openCamera():当前相机有:%s", ws2s(kvp.second).c_str());
+            LogE("Camera.openCamera():当前相机有:%s", StringHelper::ws2s(kvp.second).c_str());
         }
 
         return false;

@@ -374,23 +374,6 @@ TEST(Json, sht)
     EXPECT_TRUE(obj.index2.size() == obj2.index2.size());
 }
 
-TEST(Json, stringappend)
-{
-    const char* cs = "213312312";
-
-    std::string s;
-    s.append(cs, 100);//这个函数居然会瞎扩容
-
-    std::wstring s2;
-    s2.append(L"12345");
-
-    std::vector<char> v1;
-    v1.reserve(v1.size() + 8888);
-
-    v1.reserve(1024);
-    EXPECT_TRUE(s.size() == 5);
-}
-
 //这个库的api封装的很难用,作者没有做进一步封装,例子也很少
 
 //TEST(Json, encodings2)
