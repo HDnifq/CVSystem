@@ -1,11 +1,13 @@
 ﻿#pragma once
-#ifndef _DXLIB_COMMON_H_
-#define _DXLIB_COMMON_H_
-
 #include <string>
 
 namespace dxlib {
 
+///-------------------------------------------------------------------------------------------------
+/// <summary> 字符串辅助类. </summary>
+///
+/// <remarks> Dx, 2019/4/10. </remarks>
+///-------------------------------------------------------------------------------------------------
 class StringHelper
 {
   public:
@@ -45,5 +47,3 @@ class StringHelper
 };
 
 } // namespace dxlib
-
-#endif // !_DXLIB_COMMON_H_

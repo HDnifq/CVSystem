@@ -85,7 +85,7 @@ class ALGO
     /// <remarks> Surface, 2019/2/4. </remarks>
     ///
     /// <typeparam name="T"> Generic type parameter. </typeparam>
-    /// <param name="vec">    The vector. </param>
+    /// <param name="vec">    待选的整个数组. </param>
     /// <param name="indexs"> 使用这一组index来选择. </param>
     ///
     /// <returns> 选择出的几项组成的新数组; </returns>
@@ -95,8 +95,8 @@ class ALGO
     {
         std::vector<T> result;
         for (size_t i = 0; i < indexs.size(); i++) {
-            //如果indexs里有错误的index，那么就直接崩溃算了
-            result.push_back(vec[indexs[i]]);
+            if (indexs[i] < vec.size() && indexs[i] > 0)
+                result.push_back(vec[indexs[i]]);
         }
         return result;
     }
@@ -106,9 +106,10 @@ class ALGO
     ///
     /// <remarks> Surface, 2019/2/4. </remarks>
     ///
-    /// <typeparam name="T"> Generic type parameter. </typeparam>
-    /// <param name="vec">    The vector. </param>
-    /// <param name="indexs"> 使用这一组index来选择. </param>
+    /// <typeparam name="K"> Generic type parameter. </typeparam>
+    /// <typeparam name="V"> Generic type parameter. </typeparam>
+    /// <param name="m">    待选的整个map. </param>
+    /// <param name="keys"> 使用这一组index来选择. </param>
     ///
     /// <returns> 选择出的几项组成的新数组; </returns>
     ///-------------------------------------------------------------------------------------------------
@@ -117,8 +118,10 @@ class ALGO
     {
         std::vector<V> result; //本来有一个pushback了拷贝了一次,后面不差再拷贝一次了,直接返回算了= =
         for (size_t i = 0; i < keys.size(); i++) {
-            //如果keys里有错误的index，那么就直接崩溃算了
-            result.push_back(m.at(keys[i]));
+            //如果map里存在这个key值.
+            if (m.find(keys[i]) != m.end()) {
+                result.push_back(m.at(keys[i]));
+            }
         }
         return result;
     }
