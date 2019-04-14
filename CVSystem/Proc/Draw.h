@@ -37,10 +37,10 @@ class Draw
     //std::deque<cv::Mat> dqDiagram;
 
     //隐藏成员字段
-    struct Draw_impl;
+    struct Impl;
 
     /// <summary> 数据成员. </summary>
-    Draw_impl* _impl = nullptr;
+    Impl* _impl = nullptr;
 
   public:
     ///-------------------------------------------------------------------------------------------------

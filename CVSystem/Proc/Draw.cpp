@@ -4,7 +4,7 @@ namespace dxlib {
 
 #pragma region 私有字段
 
-struct Draw::Draw_impl
+struct Draw::Impl
 {
     /// <summary>要开启的窗口名字. </summary>
     std::string winName;
@@ -46,7 +46,7 @@ Draw* Draw::m_pInstance = NULL;
 Draw::Draw(int width, int height, float k)
 {
     //构造成员
-    _impl = new Draw_impl();
+    _impl = new Impl();
 
     _impl->diagram = cv::Mat(height, width, CV_8UC3, cv::Scalar(0, 0, 0)); //黑色背景
     this->k = k;
