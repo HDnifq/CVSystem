@@ -1,4 +1,6 @@
 ﻿#include "Draw.h"
+#include "boost/filesystem.hpp"
+#include "../dlog/dlog.h"
 
 namespace dxlib {
 
@@ -304,6 +306,24 @@ void Draw::saveToMemory()
 
 void Draw::saveMemImgToFile(const std::string& dirPath)
 {
+    if (boost::filesystem::exists(dirPath)) {
+        if (!boost::filesystem::is_directory(dirPath)) {
+            LogE("Draw.saveMemImgToFile():保存图片路径存在,但不是文件夹! %s", dirPath.c_str());
+            return;
+        }
+    }
+    else {
+        LogI("Draw.saveMemImgToFile():保存图片路径不存在,尝试创建文件夹! %s", dirPath.c_str());
+        try {
+            boost::filesystem::create_directories(dirPath);
+        }
+        catch (const std::exception& ex) {
+            LogE("异常:%s", ex.what());
+            LogE("Draw.saveMemImgToFile():创建保存图片文件夹失败,函数返回!");
+            return;
+        }
+    }
+
     while (_impl->dqDiagram.size() > 0) {
         cv::Mat img = _impl->dqDiagram.front();
         _impl->dqDiagram.pop_front();
