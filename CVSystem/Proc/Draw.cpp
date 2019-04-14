@@ -1,5 +1,4 @@
 ﻿#include "Draw.h"
-#include "../Common/FileHelper.h"
 
 namespace dxlib {
 
@@ -16,20 +15,12 @@ struct Draw::Draw_impl
     /// <summary> 一个图片队列. </summary>
     std::deque<cv::Mat> dqDiagram;
 
-    /// <summary> 保存文件路径. </summary>
-    std::string filePath;
-
     /// <summary> 当前图片. </summary>
     cv::Mat diagram;
 
     /// <summary> 预设的用来画相机的图像的roi. </summary>
     std::vector<cv::Rect> vImageROI;
 };
-
-std::string& Draw::filePath()
-{
-    return _impl->filePath;
-}
 
 cv::Mat& Draw::diagram()
 {
@@ -63,14 +54,7 @@ Draw::Draw(int width, int height, float k)
     this->height = height;
     _impl->winName.clear();
 
-    _impl->filePath = FileHelper::getModuleDir().append("\\images");
-    FileHelper::isExistsAndCreat(_impl->filePath);
-    _impl->filePath = _impl->filePath.append("\\debug");
-    FileHelper::isExistsAndCreat(_impl->filePath);
-    _impl->filePath = _impl->filePath.append("\\dImg");
-
     nameCount = 0;
-
     setImageROI(cv::Size(640, 360));
     clear();
 }
@@ -311,20 +295,20 @@ void Draw::saveToMemory()
         return;
     }
     _impl->dqDiagram.push_back(_impl->diagram.clone()); //队列末尾添加这一帧结果,也就是末尾永远是当前帧
-    while (_impl->dqDiagram.size() > memSavelimit) { //只保存1200帧 / 512
+    while (_impl->dqDiagram.size() > memSavelimit) {    //只保存1200帧 / 512
         cv::Mat img = _impl->dqDiagram.front();
         _impl->dqDiagram.pop_front();
         img.release(); //释放这个图片
     }
 }
 
-void Draw::saveMemImgToFile()
+void Draw::saveMemImgToFile(const std::string& dirPath)
 {
     while (_impl->dqDiagram.size() > 0) {
         cv::Mat img = _impl->dqDiagram.front();
         _impl->dqDiagram.pop_front();
         char fileName[128];
-        sprintf_s(fileName, 128, "%s%02d.png", _impl->filePath.c_str(), nameCount);
+        sprintf_s(fileName, 128, "%s%02d.png", dirPath.c_str(), nameCount);
         cv::imwrite(fileName, img);
         nameCount++;
     }

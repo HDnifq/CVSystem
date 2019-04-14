@@ -153,7 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Common\FileHelper.h" />
     <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />
     <ClInclude Include="DTO\Serialize.h" />
@@ -196,7 +195,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\FileHelper.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />
     <ClCompile Include="Proc\CameraGrab.cpp" />
     <ClCompile Include="Common\BaseThread.cpp" />

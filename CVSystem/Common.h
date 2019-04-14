@@ -8,7 +8,6 @@
 
 #include "./Common/StringHelper.h"
 #include "./Common/CoolTime.hpp"
-#include "./Common/FileHelper.h"
 #include "./Common/FPSCalc.hpp"
 #include "./Common/Event.h"
 

@@ -71,9 +71,6 @@ class Draw
         return m_pInstance;
     }
 
-    /// <summary> 保存文件路径. </summary>
-    std::string& filePath();
-
     /// <summary> 当前图片. </summary>
     cv::Mat& diagram();
 
@@ -308,13 +305,13 @@ class Draw
     void saveToMemory();
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 保存内存图片到文件.
-    /// </summary>
+    /// <summary> 保存内存图片到文件夹. </summary>
     ///
     /// <remarks> Dx, 2018/11/26. </remarks>
+    ///
+    /// <param name="dirPath"> 要保存的文件夹路径. </param>
     ///-------------------------------------------------------------------------------------------------
-    void saveMemImgToFile();
+    void saveMemImgToFile(const std::string& dirPath);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

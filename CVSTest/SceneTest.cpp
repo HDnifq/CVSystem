@@ -28,8 +28,7 @@ TEST(Scene, json)
 
     utility::string_t str = obj.serialize();
 
-    std::string md = FileHelper::getModuleDir();
-    std::string filePath = md + "\\test0.json";
+    std::string filePath = "test0.json";
 
     //只有这样才能把一个wchar_t(utf16)写入utf8文件
     utility::ofstream_t out(filePath, std::ios::out | std::ios::binary);
@@ -146,10 +145,10 @@ TEST(Scene, save_load)
 
     EXPECT_TRUE(scene.vGameObj[L"b"].type == 100); //应该为3项
 
-    scene.save(FileHelper::getModuleDir() + "\\test1.json");
+    scene.save("test1.json");
 
     Scene scene2;
-    scene2.load(FileHelper::getModuleDir() + "\\test1.json");
+    scene2.load("test1.json");
 
     EXPECT_TRUE(scene.vGameObj.size() == scene2.vGameObj.size());
 }
