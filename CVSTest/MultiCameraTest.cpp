@@ -102,7 +102,7 @@ TEST(MultiCamera, AddVirtualCamera)
 //测试MultiCamera的release是否正常，加入的proc是 TestProcRelease
 TEST(MultiCamera, release)
 {
-    dlog_set_usual_thr(DLOG_Debug);
+    dlog_set_file_thr(dlog_level::debug);
 
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
@@ -130,5 +130,5 @@ TEST(MultiCamera, release)
     MultiCamera::GetInst()->vProc.clear();
     CameraManger::GetInst()->clear();
     BaseThread::GC();
-    dlog_set_usual_thr(DLOG_INFO);
+    dlog_set_file_thr(dlog_level::info);
 }

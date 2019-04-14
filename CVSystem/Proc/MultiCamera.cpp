@@ -88,7 +88,7 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
                 //选一个proc进行图像的处理
                 if (_activeProcIndex < vProc.size()) {
                     LogD("MultiCamera.workonce():执行%d号proc ！", _activeProcIndex);
-                    int ckey = -1;
+                    int ckey = -1; //让proc去自己想检测keydown就keydown
                     vProc[_activeProcIndex]->process(cimg, ckey);
                     if (ckey != -1) { //如果有按键按下那么修改最近的按键值
                         Event::GetInst()->cvKey.exchange(ckey);
@@ -107,6 +107,17 @@ void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
         else {
             //姑且也检查一下事件
             Event::GetInst()->checkMemEvent();
+
+            //选一个proc进行图像的处理
+            if (_activeProcIndex < vProc.size()) {
+                LogD("MultiCamera.workonce():执行%d号proc ！", _activeProcIndex);
+                int ckey = -1; //让proc去自己想检测keydown就keydown
+                vProc[_activeProcIndex]->onLightSleep(ckey);
+                if (ckey != -1) { //如果有按键按下那么修改最近的按键值
+                    Event::GetInst()->cvKey.exchange(ckey);
+                }
+            }
+
             //如果不抓图那么就睡眠
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
         }
