@@ -28,7 +28,7 @@ BaseThread::BTGC::~BTGC()
 void BaseThread::BTGC::add(std::shared_ptr<BaseThread>& bt)
 {
     bool success = data->gcQueue.enqueue(bt);
-    //LogD("BTGC.add():添加线程到垃圾队列id! success=%d", success);
+    LogD("BTGC.add():添加线程到垃圾队列id! success=%d", success);
 }
 
 void BaseThread::BTGC::clear()

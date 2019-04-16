@@ -91,7 +91,7 @@ int DevicesHelper::getIndexWithName(std::wstring name)
             return i;
         }
     }
-    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", StringHelper::ws2s(name), devList.size());
+    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", StringHelper::ws2s(name).c_str(), devList.size());
     return -1;
 }
 
@@ -102,7 +102,7 @@ std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstrin
     for (int i = 0; i < length; i++) {
         int index = getIndexWithName(name[i]);
         if (index < 0) {
-            LogW("DevicesHelper.getDevListWithNames() :未能找到摄像机 %s!", StringHelper::ws2s(name[i]));
+            LogW("DevicesHelper.getDevListWithNames() :未能找到摄像机 %s!", StringHelper::ws2s(name[i]).c_str());
         }
         else {
             openDevList[index] = name[i];
@@ -111,9 +111,9 @@ std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstrin
     return openDevList;
 }
 
-int DevicesHelper::listDevices(std::map<int, std::wstring>& devList)
+int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
-    devList.clear();
+    devListout.clear();
     //COM Library Intialization
     comInit();
 
@@ -167,7 +167,7 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devList)
 
                     //if (!silent) {}//DebugPrintOut("SETUP: %i) %s\n", deviceCounter, deviceNames[deviceCounter]);
                 }
-                devList[deviceCounter] = varName.bstrVal;
+                devListout[deviceCounter] = varName.bstrVal;
                 pPropBag->Release();
                 pPropBag = NULL;
 

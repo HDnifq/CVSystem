@@ -4,6 +4,7 @@
 #include <Chrono>
 #include <thread>
 
+#include "../dlog/dlog.h"
 #ifdef DLOG_EXPORT
 #include "../dlog/dlog.h"
 #else
@@ -286,6 +287,7 @@ class BaseThread
     ///-------------------------------------------------------------------------------------------------
     void doWork(std::shared_ptr<BaseThread> bt, FunInit init, FunWorkOnce workOnce, FunRelease release)
     {
+        LogI("BaseThread.doWork():线程启动...");
         bt->_self = bt; //记录一个自身的持有
 
         //哎，没办法，这里赋值一下再，后面就自求多福吧
@@ -295,20 +297,41 @@ class BaseThread
         //这个的后面都使用成员对象，方便响应stop的时候置为了null
 
         //执行一次初始化 Init
-        if (bt->_isRun.load() && _init != nullptr)
-            _init(bt);
+        if (bt->_isRun.load() && init != nullptr) {
+            LogI("BaseThread.doWork():线程执行init委托...");
+            try {
+                init(bt);
+            }
+            catch (const std::exception& e) {
+                LogE("BaseThread.doWork():线程执行init委托异常:%s", e.what());
+            }
+        }
 
         //不停的执行执行委托工作 WorkOnce
+        LogI("BaseThread.doWork():线程开始执行workOnce委托...");
         while (_isRun.load()) {
-            if (_workOnce != nullptr)
-                _workOnce(bt);
+            if (workOnce != nullptr) {
+                try {
+                    workOnce(bt);
+                }
+                catch (const std::exception& e) {
+                    LogE("BaseThread.doWork():线程执行workOnce委托异常:%s", e.what());
+                }
+            }
             else
                 break; //连工作委托都没有那么就直接退出吧
         }
 
-        if (!_isReleaseProc.load() && _release != nullptr) {
+        //执行一次release
+        if (!_isReleaseProc.load() && release != nullptr) {
             _isReleaseProc = true;
-            _release(bt);
+            try {
+                LogI("BaseThread.doWork():线程执行release委托...");
+                release(bt);
+            }
+            catch (const std::exception& e) {
+                LogE("BaseThread.doWork():线程执行release委托异常:%s", e.what());
+            }
         }
 
         //归还自身引用持有

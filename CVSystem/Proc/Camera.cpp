@@ -129,7 +129,7 @@ bool Camera::openCamera()
         return true;
     }
     else {
-        LogE("Camera.openCamera():未找到该名称的相机%s!", this->devNameA);
+        LogE("Camera.openCamera():未找到该名称的相机%s!", this->devNameA.c_str());
         for (auto& kvp : DevicesHelper::GetInst()->devList) {
             LogE("Camera.openCamera():当前相机有:%s", StringHelper::ws2s(kvp.second).c_str());
         }

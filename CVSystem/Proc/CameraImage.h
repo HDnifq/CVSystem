@@ -44,7 +44,7 @@ class CameraImage
 {
   public:
     /// <summary> 相机帧序号. </summary>
-    int fnum = 0;
+    unsigned int fnum = 0;
 
     /// <summary> 这一帧里这一组相机的原始图像(但是index并不是camIndex). </summary>
     std::vector<ImageItem> vImage;
