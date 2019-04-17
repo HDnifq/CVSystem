@@ -39,6 +39,7 @@ DevicesHelper* DevicesHelper::m_pInstance = NULL;
 
 DevicesHelper::DevicesHelper()
 {
+    memset(deviceNames, 0, 20 * 255);
 }
 
 DevicesHelper::~DevicesHelper()

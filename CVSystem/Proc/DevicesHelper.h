@@ -20,7 +20,7 @@ class DevicesHelper
     int comInitCount = 0;
 
     /// <summary> 设备名. </summary>
-    char deviceNames[20][255] = {{0}};
+    char deviceNames[20][255];
 
   public:
     /// <summary> 构造. </summary>
