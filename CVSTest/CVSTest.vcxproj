@@ -35,8 +35,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;../lib/_64/MT;../lib/_64/MD;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;..\lib\dlog\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;..\lib\rapidjson\include;..\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
@@ -159,7 +159,7 @@ xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\op
       <AdditionalDependencies>../x64/Release/CVSystem.lib;opencv_aruco341.lib;opencv_bgsegm341.lib;opencv_bioinspired341.lib;opencv_calib3d341.lib;opencv_ccalib341.lib;opencv_core341.lib;opencv_datasets341.lib;opencv_dnn341.lib;opencv_dpm341.lib;opencv_face341.lib;opencv_features2d341.lib;opencv_flann341.lib;opencv_fuzzy341.lib;opencv_highgui341.lib;opencv_imgcodecs341.lib;opencv_imgproc341.lib;opencv_line_descriptor341.lib;opencv_ml341.lib;opencv_objdetect341.lib;opencv_optflow341.lib;opencv_phase_unwrapping341.lib;opencv_photo341.lib;opencv_plot341.lib;opencv_reg341.lib;opencv_rgbd341.lib;opencv_saliency341.lib;opencv_shape341.lib;opencv_stereo341.lib;opencv_stitching341.lib;opencv_structured_light341.lib;opencv_superres341.lib;opencv_surface_matching341.lib;opencv_text341.lib;opencv_tracking341.lib;opencv_video341.lib;opencv_videoio341.lib;opencv_videostab341.lib;opencv_xfeatures2d341.lib;opencv_ximgproc341.lib;opencv_xobjdetect341.lib;opencv_xphoto341.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)Lib/_64/MD" "$(TargetDir)" /Y /I /E
+      <Command>xcopy "$(SolutionDir)lib\dlog\x64" "$(TargetDir)" /Y /I /E
 xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_core341.dll" "$(TargetDir)" /Y /I /E
 xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_highgui341.dll" "$(TargetDir)" /Y /I /E
 xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_imgcodecs341.dll" "$(TargetDir)" /Y /I /E

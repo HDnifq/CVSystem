@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include "Camera.h"
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 

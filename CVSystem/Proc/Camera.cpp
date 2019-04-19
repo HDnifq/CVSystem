@@ -1,5 +1,5 @@
 ﻿#include "Camera.h"
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 #include "../Common/StringHelper.h"
 #include "DevicesHelper.h"
 #include <Chrono>

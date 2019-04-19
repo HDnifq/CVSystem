@@ -76,20 +76,20 @@ class JsonHelper
 #elif defined(__linux__)
         fopen(&fp, filePath.c_str(), "w");
 #endif
-        //char writeBuffer[256];
-        //FileWriteStream ws(fp, writeBuffer, sizeof(writeBuffer));
-        //typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
-        //EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
-        //rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
-        //doc.Accept(writer);
-
-        UTFType type = UTFType::kUTF8;
         char writeBuffer[256];
-        FileWriteStream bos(fp, writeBuffer, sizeof(writeBuffer));
-        typedef AutoUTFOutputStream<unsigned, FileWriteStream> OutputStream;
-        OutputStream eos(bos, type, putBOM);
-        Writer<OutputStream, UTF16<>, AutoUTF<unsigned>> writer;
+        FileWriteStream ws(fp, writeBuffer, sizeof(writeBuffer));
+        typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
+        EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
+        rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
         doc.Accept(writer);
+
+        //UTFType type = UTFType::kUTF8;
+        //char writeBuffer[256];
+        //FileWriteStream bos(fp, writeBuffer, sizeof(writeBuffer));
+        //typedef AutoUTFOutputStream<unsigned, FileWriteStream> OutputStream;
+        //OutputStream eos(bos, type, putBOM);
+        //Writer<OutputStream, UTF8<>, AutoUTF<unsigned>> writer;
+        //doc.Accept(writer);
 
         fclose(fp);
     }

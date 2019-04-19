@@ -4,9 +4,9 @@
 #include <Chrono>
 #include <thread>
 
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 #ifdef DLOG_EXPORT
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 #else
 #define LogD printf
 #define LogI printf

@@ -85,8 +85,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
-    <LibraryPath>../lib/_64/MT;../lib/_64/MD;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;..\lib\rapidjson\include;..\lib;$(IncludePath)</IncludePath>
+    <LibraryPath>..\lib\dlog\x64;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -175,7 +175,6 @@
     <ClInclude Include="cvsdef.h" />
     <ClInclude Include="CVSystem.h" />
     <ClInclude Include="Data\Scene.h" />
-    <ClInclude Include="dlog\dlog.h" />
     <ClInclude Include="eventbus\AsyncEventBus.h" />
     <ClInclude Include="eventbus\EventBus.h" />
     <ClInclude Include="eventbus\EventCollector.h" />

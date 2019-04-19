@@ -1,6 +1,6 @@
 ﻿#include "Draw.h"
 #include "boost/filesystem.hpp"
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 

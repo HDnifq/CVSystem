@@ -8,7 +8,7 @@
 #include <atomic>
 #include <condition_variable>
 
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 #include "CameraImage.h"
 
 namespace dxlib {

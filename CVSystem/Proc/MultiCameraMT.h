@@ -5,7 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 #include "../Common/BaseThread.h"
 #include "FrameProc.h"
 

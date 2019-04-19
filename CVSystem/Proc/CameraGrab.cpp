@@ -2,7 +2,7 @@
 #include <Chrono>
 #include <boost/timer.hpp>
 #include <memory>
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 

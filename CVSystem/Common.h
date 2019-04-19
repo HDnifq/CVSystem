@@ -2,7 +2,6 @@
 #ifndef _CVSYSTEM_COMMON_H_
 #define _CVSYSTEM_COMMON_H_
 
-#include "./dlog/dlog.h"
 #include "./eventbus/EventBus.h"
 #include "./eventbus/EventCollector.h"
 

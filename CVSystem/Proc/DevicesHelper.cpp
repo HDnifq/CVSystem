@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include "../Common/StringHelper.h"
-#include "../dlog/dlog.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 

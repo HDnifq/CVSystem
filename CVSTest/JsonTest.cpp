@@ -301,12 +301,14 @@ TEST(Json, read_writeW)
 
     doc.AddMember(L"a", 1, doc.GetAllocator());
     doc.AddMember(L"试试中文", 2, doc.GetAllocator());
+    doc.AddMember(L"黒木", 3, doc.GetAllocator());
 
     JsonHelper::save("read_write.json", doc); //这个文件是utf8的
     DocumentW doc2;
     JsonHelper::readFile("read_write.json", doc2);
     EXPECT_TRUE(doc2[L"a"] == 1);
     EXPECT_TRUE(doc2[L"试试中文"] == 2);
+    EXPECT_TRUE(doc2[L"黒木"] == 3);
     remove("read_write.json");
 }
 

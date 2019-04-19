@@ -33,9 +33,6 @@
     <ClInclude Include="Common\FPSCalc.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="dlog\dlog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Proc\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
