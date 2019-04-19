@@ -280,7 +280,6 @@ TEST(Json, creatarraydoc)
 #pragma region common
 
 //这个读写测试生成的文件内容是GBK的.如果定义了#pragma execution_character_set("utf-8"),那么文件内容是UTF-8
-// rapidjson是默认UTF8的
 TEST(Json, read_write)
 {
     auto doc = JsonHelper::creatEmptyObjectDoc();
@@ -290,9 +289,24 @@ TEST(Json, read_write)
 
     JsonHelper::save("read_write.json", doc); //这个文件是gbk的
     Document doc2;
-    JsonHelper::read("read_write.json", doc2);
+    JsonHelper::readFile("read_write.json", doc2);
     EXPECT_TRUE(doc2["a"] == 1);
     EXPECT_TRUE(doc2["试试中文"] == 2);
+    remove("read_write.json");
+}
+
+TEST(Json, read_writeW)
+{
+    auto doc = JsonHelper::creatEmptyObjectDocW();
+
+    doc.AddMember(L"a", 1, doc.GetAllocator());
+    doc.AddMember(L"试试中文", 2, doc.GetAllocator());
+
+    JsonHelper::save("read_write.json", doc); //这个文件是utf8的
+    DocumentW doc2;
+    JsonHelper::readFile("read_write.json", doc2);
+    EXPECT_TRUE(doc2[L"a"] == 1);
+    EXPECT_TRUE(doc2[L"试试中文"] == 2);
     remove("read_write.json");
 }
 

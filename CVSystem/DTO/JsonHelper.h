@@ -34,7 +34,7 @@ class JsonHelper
     /// <summary>
     /// 保存json到文件.这个没有进行转码的处理.如果不定义下面的内容,那么就是GBK编码.
     /// #pragma execution_character_set("utf-8")
-    /// 如果定义了那么就就会转码成utf-8的文件.
+    /// 如果定义了那么代码中的文本才会是utf-8的文件.因此不应该使用这个函数,程序中统一使用UTF-16进行处理.
     /// </summary>
     ///
     /// <remarks> Dx, 2019/1/23. </remarks>
@@ -45,7 +45,11 @@ class JsonHelper
     static void save(const std::string& filePath, const rapidjson::Document& doc)
     {
         FILE* fp;
+#if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
+#elif defined(__linux__)
+        fopen(&fp, filePath.c_str(), "w");
+#endif
         char writeBuffer[256];
         rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
         rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
@@ -66,32 +70,73 @@ class JsonHelper
     {
         using namespace rapidjson;
         FILE* fp;
-        char buf[256];
-        fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
-        FileWriteStream ws(fp, buf, sizeof(buf));
-        typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
-        EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
-        rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
 
+#if defined(_WIN32) || defined(_WIN64)
+        fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
+#elif defined(__linux__)
+        fopen(&fp, filePath.c_str(), "w");
+#endif
+        //char writeBuffer[256];
+        //FileWriteStream ws(fp, writeBuffer, sizeof(writeBuffer));
+        //typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
+        //EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
+        //rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
+        //doc.Accept(writer);
+
+        UTFType type = UTFType::kUTF8;
+        char writeBuffer[256];
+        FileWriteStream bos(fp, writeBuffer, sizeof(writeBuffer));
+        typedef AutoUTFOutputStream<unsigned, FileWriteStream> OutputStream;
+        OutputStream eos(bos, type, putBOM);
+        Writer<OutputStream, UTF16<>, AutoUTF<unsigned>> writer;
         doc.Accept(writer);
+
         fclose(fp);
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 从文件读取json. </summary>
+    /// <summary> 从文件(UTF-8)读取json. </summary>
     ///
     /// <remarks> Dx, 2019/3/11. </remarks>
     ///
     /// <param name="filePath"> Full pathname of the file. </param>
     /// <param name="doc">      [in,out] The document. </param>
     ///-------------------------------------------------------------------------------------------------
-    static void read(const std::string& filePath, rapidjson::Document& doc)
+    static void readFile(const std::string& filePath, rapidjson::Document& doc)
     {
         FILE* fp;
+#if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
+#elif defined(__linux__)
+        fopen(&fp, filePath.c_str(), "r");
+#endif
         char readBuffer[256];
         rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
         doc.ParseStream(is);
+        fclose(fp);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 从文件UTF读取json. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="filePath"> Full pathname of the file. </param>
+    /// <param name="doc">      [in,out] The document. </param>
+    ///-------------------------------------------------------------------------------------------------
+    static void readFile(const std::string& filePath, rapidjson::DocumentW& doc, bool isBOM = false)
+    {
+        using namespace rapidjson;
+        FILE* fp;
+#if defined(_WIN32) || defined(_WIN64)
+        fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
+#elif defined(__linux__)
+        fopen(&fp, filePath.c_str(), "r");
+#endif
+        char readBuffer[256];
+        FileReadStream bis(fp, readBuffer, sizeof(readBuffer));
+        AutoUTFInputStream<unsigned, FileReadStream> eis(bis);
+        doc.ParseStream<0, AutoUTF<unsigned>>(eis);
         fclose(fp);
     }
 
