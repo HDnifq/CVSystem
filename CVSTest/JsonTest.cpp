@@ -290,8 +290,8 @@ TEST(Json, read_write)
     JsonHelper::save("read_write.json", doc); //这个文件是gbk的
     Document doc2;
     JsonHelper::readFile("read_write.json", doc2);
-    EXPECT_TRUE(doc2["a"] == 1);
-    EXPECT_TRUE(doc2["试试中文"] == 2);
+    EXPECT_TRUE(doc2["a"] == 1) << doc2["a"].GetInt();
+    EXPECT_TRUE(doc2["试试中文"] == 2) << doc2["试试中文"].GetInt();
     remove("read_write.json");
 }
 

@@ -66,7 +66,7 @@ class JsonHelper
     /// <param name="doc">      The document. </param>
     /// <param name="putBOM">   (Optional) True to put bom. </param>
     ///-------------------------------------------------------------------------------------------------
-    static void save(const std::string& filePath, const rapidjson::DocumentW& doc, bool putBOM = false)
+    static void save(const std::string& filePath, const rapidjson::DocumentW& doc, bool putBOM = false, bool isPretty = true)
     {
         using namespace rapidjson;
         FILE* fp;
@@ -80,8 +80,14 @@ class JsonHelper
         FileWriteStream ws(fp, writeBuffer, sizeof(writeBuffer));
         typedef EncodedOutputStream<UTF8<>, FileWriteStream> EncodedOutputStream_UTF8;
         EncodedOutputStream_UTF8 os(ws, putBOM); // with BOM
-        rapidjson::Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
-        doc.Accept(writer);
+        if (isPretty) {
+            PrettyWriter<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
+            doc.Accept(writer);
+        }
+        else {
+            Writer<EncodedOutputStream_UTF8, UTF16<>, UTF8<>> writer(os);
+            doc.Accept(writer);
+        }
 
         //UTFType type = UTFType::kUTF8;
         //char writeBuffer[256];
@@ -95,7 +101,7 @@ class JsonHelper
     }
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 从文件(UTF-8)读取json. </summary>
+    /// <summary> 从文件(不考虑编码转化的)读取json. </summary>
     ///
     /// <remarks> Dx, 2019/3/11. </remarks>
     ///
@@ -104,12 +110,14 @@ class JsonHelper
     ///-------------------------------------------------------------------------------------------------
     static void readFile(const std::string& filePath, rapidjson::Document& doc)
     {
+        using namespace rapidjson;
         FILE* fp;
 #if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
 #elif defined(__linux__)
         fopen(&fp, filePath.c_str(), "r");
 #endif
+        //这里不能使用AutoUTF,因为这里的文件可能不是UTF的编码会导致失败.
         char readBuffer[256];
         rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
         doc.ParseStream(is);
@@ -124,7 +132,7 @@ class JsonHelper
     /// <param name="filePath"> Full pathname of the file. </param>
     /// <param name="doc">      [in,out] The document. </param>
     ///-------------------------------------------------------------------------------------------------
-    static void readFile(const std::string& filePath, rapidjson::DocumentW& doc, bool isBOM = false)
+    static void readFile(const std::string& filePath, rapidjson::DocumentW& doc)
     {
         using namespace rapidjson;
         FILE* fp;
