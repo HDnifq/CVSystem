@@ -306,8 +306,9 @@ void Draw::saveToMemory()
 
 void Draw::saveMemImgToFile(const std::string& dirPath)
 {
-    if (boost::filesystem::exists(dirPath)) {
-        if (!boost::filesystem::is_directory(dirPath)) {
+    namespace fs = boost::filesystem;
+    if (fs::exists(dirPath)) {
+        if (!fs::is_directory(dirPath)) {
             LogE("Draw.saveMemImgToFile():保存图片路径存在,但不是文件夹! %s", dirPath.c_str());
             return;
         }
@@ -315,7 +316,7 @@ void Draw::saveMemImgToFile(const std::string& dirPath)
     else {
         LogI("Draw.saveMemImgToFile():保存图片路径不存在,尝试创建文件夹! %s", dirPath.c_str());
         try {
-            boost::filesystem::create_directories(dirPath);
+            fs::create_directories(dirPath);
         }
         catch (const std::exception& ex) {
             LogE("异常:%s", ex.what());
@@ -327,9 +328,11 @@ void Draw::saveMemImgToFile(const std::string& dirPath)
     while (_impl->dqDiagram.size() > 0) {
         cv::Mat img = _impl->dqDiagram.front();
         _impl->dqDiagram.pop_front();
-        char fileName[128];
-        sprintf_s(fileName, 128, "%s%02d.png", dirPath.c_str(), nameCount);
-        cv::imwrite(fileName, img);
+
+        char fileName[64];
+        snprintf(fileName, sizeof(fileName), "%02d.png", nameCount);
+        fs::path filePath = fs::path(dirPath) / fileName;
+        cv::imwrite(filePath.string(), img);
         nameCount++;
     }
 }
