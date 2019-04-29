@@ -1,16 +1,14 @@
 ﻿#include "MultiCameraMT.h"
 
 #include "DevicesHelper.h"
-#include "iostream"
+#include <iostream>
 #include <map>
-#include <windows.h>
 #include "../Common/StringHelper.h"
 #include "../Common/CoolTime.hpp"
 #include "CameraManger.h"
 #include "../Common/Event.h"
 
-//都是c11的
-#include <Chrono>
+#include <chrono>
 #include <thread>
 
 namespace dxlib {

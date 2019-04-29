@@ -1,8 +1,12 @@
 ﻿#pragma once
 
 #include <atomic>
-#include <Chrono>
+#include <chrono>
 #include <thread>
+
+#ifdef __linux
+#    include <functional>
+#endif
 
 #include "dlog/dlog.h"
 #ifdef DLOG_EXPORT
@@ -241,7 +245,7 @@ class BaseThread
     }
 
     /// <summary> 是否工作的控制标记. </summary>
-    std::atomic_bool _isRun = false;
+    std::atomic_bool _isRun{false};
 
     /// <summary> 实际线程. </summary>
     std::shared_ptr<std::thread> _thread = nullptr;
@@ -256,10 +260,10 @@ class BaseThread
     FunRelease _release = nullptr;
 
     /// <summary> 确保只执行一次release的标记</summary>
-    std::atomic_bool _isReleaseProc = false;
+    std::atomic_bool _isReleaseProc{false};
 
     /// <summary> 是否线程函数已经执行完毕了. </summary>
-    std::atomic_bool _isThreadFunReturn = false;
+    std::atomic_bool _isThreadFunReturn{false};
 
     /// <summary> 自身引用的持有. </summary>
     std::shared_ptr<BaseThread> _self;

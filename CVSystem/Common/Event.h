@@ -39,7 +39,7 @@ class Event
     /// 当前opencv界面来的待处理的key值，如果无按键那么为-1.
     /// (由各个模块自己设置它的值，然后监听部分轮询它的当前值，响应后再将它设置回-1).
     /// </summary>
-    std::atomic_int cvKey = -1;
+    std::atomic_int cvKey{-1};
 
     /// <summary> 相机错误?. </summary>
     std::atomic_int cameraError;

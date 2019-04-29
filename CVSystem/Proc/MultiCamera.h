@@ -195,16 +195,16 @@ class MultiCamera
     pBaseThread _thread = nullptr;
 
     /// <summary> 是否停止. </summary>
-    std::atomic_bool _isRun = false;
+    std::atomic_bool _isRun{false};
 
     /// <summary> 是否正在打开. </summary>
-    std::atomic_bool _isOpening = false;
+    std::atomic_bool _isOpening{false};
 
     /// <summary> 是否正在停止. </summary>
-    std::atomic_bool _isStopping = false;
+    std::atomic_bool _isStopping{false};
 
     /// <summary> 是否采图. </summary>
-    std::atomic_bool _isGrab = true;
+    std::atomic_bool _isGrab{true};
 
     /// <summary> 设置的下一个激活index. </summary>
     uint _nextActiveProcIndex = 0;

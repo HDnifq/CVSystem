@@ -1,5 +1,5 @@
 ﻿#include "CameraGrab.h"
-#include <Chrono>
+#include <chrono>
 #include <boost/timer.hpp>
 #include <memory>
 #include "dlog/dlog.h"

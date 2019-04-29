@@ -1,5 +1,5 @@
 ﻿#include "CameraThread.h"
-#include <Chrono>
+#include <chrono>
 #include <boost/timer.hpp>
 #include <memory>
 #include "../Common/StringHelper.h"

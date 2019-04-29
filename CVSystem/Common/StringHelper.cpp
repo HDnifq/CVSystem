@@ -1,6 +1,7 @@
-﻿#include <string>
+﻿#include "string.h"
 #include <locale.h>
 #include "StringHelper.h"
+#include <stdlib.h>
 
 //#include <boost/date_time/posix_time/posix_time.hpp>
 //#define BOOST_DATE_TIME_SOURCE  //这个定义不知道有什么用
@@ -13,20 +14,29 @@
 //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
 //devNameA = converter.to_bytes(aDevName);
 
+using namespace std;
+
 namespace dxlib {
 
 std::string StringHelper::ws2s(const std::wstring& ws)
 {
-    std::string curLocale = setlocale(LC_ALL, "chs");
+    string curLocale = setlocale(LC_ALL, NULL); // curLocale = "C";
+
+    setlocale(LC_ALL, "chs");
 
     const wchar_t* _Source = ws.c_str();
     size_t _Dsize = 2 * ws.size() + 1;
     char* _Dest = new char[_Dsize];
     memset(_Dest, 0, _Dsize);
 
-    size_t i;
-    wcstombs_s(&i, _Dest, _Dsize, _Source, _Dsize);
-    std::string result = _Dest;
+#if defined(_WIN32) || defined(_WIN64)
+    size_t res = 0;
+    wcstombs_s(&res, _Dest, _Dsize, _Source, _Dsize); //换了个安全函数，未测
+#else
+    wcstombs(_Dest, _Source, _Dsize);
+#endif
+
+    string result = _Dest;
     delete[] _Dest;
 
     setlocale(LC_ALL, curLocale.c_str());
@@ -45,19 +55,22 @@ std::string StringHelper::ws2s(const std::wstring& ws)
 ///-------------------------------------------------------------------------------------------------
 std::wstring StringHelper::s2ws(const std::string& s)
 {
-    std::string curLocale = setlocale(LC_ALL, "chs");
+    setlocale(LC_ALL, "chs");
 
     const char* _Source = s.c_str();
     size_t _Dsize = s.size() + 1;
     wchar_t* _Dest = new wchar_t[_Dsize];
     wmemset(_Dest, 0, _Dsize);
-
-    size_t i;
-    mbstowcs_s(&i, _Dest, _Dsize, _Source, _Dsize);
-    std::wstring result = _Dest;
+#if defined(_WIN32) || defined(_WIN64)
+    size_t res = 0;
+    mbstowcs_s(&res, _Dest, _Dsize, _Source, _Dsize); //换了个安全函数，未测
+#else
+    mbstowcs(_Dest, _Source, _Dsize);
+#endif
+    wstring result = _Dest;
     delete[] _Dest;
 
-    setlocale(LC_ALL, curLocale.c_str());
+    setlocale(LC_ALL, "C");
     return result;
 }
 
@@ -77,7 +90,12 @@ std::string StringHelper::byte2str(const void* data, int length)
     std::string msg;
     for (int i = 0; i < length; i++) {
         char b[8];
+
+#if defined(_WIN32) || defined(_WIN64)
         sprintf_s(b, 8, "%02X ", pChar[i]);
+#else
+        snprintf(b, 8, "%02X ", pChar[i]);
+#endif
         msg.append(b);
     }
     return msg;

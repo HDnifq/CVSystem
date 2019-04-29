@@ -1,7 +1,6 @@
 ﻿#include "MultiCamera.h"
 #include "iostream"
 #include <map>
-#include <windows.h>
 #include "../Common/StringHelper.h"
 #include "../Common/CoolTime.hpp"
 #include "../Common/Event.h"

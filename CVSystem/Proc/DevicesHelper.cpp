@@ -5,15 +5,14 @@
 
 #if defined _MSC_VER && _MSC_VER >= 100
 //'sprintf': name was marked as #pragma deprecated
-#pragma warning(disable : 4995)
+#    pragma warning(disable : 4995)
 #endif
 
 #ifdef __MINGW32__
 // MinGW does not understand COM interfaces
-#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#    pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #endif
 
-#include <tchar.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -22,11 +21,15 @@
 
 #include <vector>
 
-#include "DShow.h"
+#if defined(_WIN32) || defined(_WIN64)
+#    include <tchar.h>
+#    include "DShow.h"
 //#include "strmif.h"
 //#include "Aviriff.h"
 //#include "dvdmedia.h"
 //#include "bdaiface.h"
+#endif
+
 #include <map>
 #include <iostream>
 
@@ -46,7 +49,9 @@ DevicesHelper::~DevicesHelper()
 {
 }
 
-bool DevicesHelper::comInit()
+#if defined(_WIN32) || defined(_WIN64)
+
+bool comInit()
 {
     HRESULT hr = NOERROR;
 
@@ -54,11 +59,11 @@ bool DevicesHelper::comInit()
     if (comInitCount == 0) {
         // Initialize the COM library.
         //CoInitializeEx so videoInput can run in another thread
-#ifdef VI_COM_MULTI_THREADED
+#    ifdef VI_COM_MULTI_THREADED
         hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-#else
+#    else
         hr = CoInitialize(NULL);
-#endif
+#    endif
         //this is the only case where there might be a problem
         //if another library has started com as single threaded
         //and we need it multi-threaded - send warning but don't fail
@@ -72,7 +77,7 @@ bool DevicesHelper::comInit()
     return true;
 }
 
-bool DevicesHelper::comUnInit()
+bool comUnInit()
 {
     if (comInitCount > 0) comInitCount--; //decrease the count of instances using com
 
@@ -83,6 +88,7 @@ bool DevicesHelper::comUnInit()
 
     return false;
 }
+#endif
 
 int DevicesHelper::getIndexWithName(std::wstring name)
 {
@@ -111,7 +117,7 @@ std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstrin
     }
     return openDevList;
 }
-
+#if defined(_WIN32) || defined(_WIN64)
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
     devListout.clear();
@@ -192,6 +198,12 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 
     return deviceCounter;
 }
+#elif __linux
+
+int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
+{
+}
+#endif
 
 int DevicesHelper::listDevices()
 {

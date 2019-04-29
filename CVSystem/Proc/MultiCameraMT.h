@@ -163,13 +163,13 @@ class MultiCameraMT
     static MultiCameraMT* m_pInstance;
 
     /// <summary> 是否停止. </summary>
-    std::atomic_bool _isRun = false;
+    std::atomic_bool _isRun{false};
 
     /// <summary> 是否正在打开. </summary>
-    std::atomic_bool _isOpening = false;
+    std::atomic_bool _isOpening{false};
 
     /// <summary> 是否正在停止. </summary>
-    std::atomic_bool _isStopping = false;
+    std::atomic_bool _isStopping{false};
 
     /// <summary> 综合分析线程. </summary>
     pBaseThread _thread = nullptr;

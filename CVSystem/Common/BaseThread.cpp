@@ -1,8 +1,9 @@
 ﻿#include "BaseThread.h"
 #include "../Common/concurrentqueue.h"
 #include "../Common/blockingconcurrentqueue.h"
-#include <windows.h>
-
+#if defined(_WIN32) || defined(_WIN64)
+#    include <windows.h>
+#endif
 namespace dxlib {
 
 #ifdef USE_BTGC
@@ -41,6 +42,7 @@ void BaseThread::BTGC::clear()
 
 void BaseThread::setPriority(unsigned long processPriority, int threadPriority)
 {
+#    if defined(_WIN32) || defined(_WIN64)
     DWORD dwError;
     if (!SetPriorityClass(GetCurrentProcess(), processPriority)) {
         dwError = GetLastError();
@@ -54,6 +56,7 @@ void BaseThread::setPriority(unsigned long processPriority, int threadPriority)
         dwError = GetLastError();
         LogE("BaseThread.setPriority():进程优先级设置失败%d", dwError);
     }
+#    endif
 }
 
 ///-------------------------------------------------------------------------------------------------
@@ -63,7 +66,9 @@ void BaseThread::setPriority(unsigned long processPriority, int threadPriority)
 ///-------------------------------------------------------------------------------------------------
 void BaseThread::setPriorityHigh()
 {
+#    if defined(_WIN32) || defined(_WIN64)
     setPriority(REALTIME_PRIORITY_CLASS, THREAD_PRIORITY_HIGHEST);
+#    endif
 }
 
 #endif // USE_BTGC

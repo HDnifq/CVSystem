@@ -2,8 +2,8 @@
 #include "dlog/dlog.h"
 #include "../Common/StringHelper.h"
 #include "DevicesHelper.h"
-#include <Chrono>
-#include <Thread>
+#include <chrono>
+#include <thread>
 
 namespace dxlib {
 
