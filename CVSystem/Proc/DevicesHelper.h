@@ -16,9 +16,6 @@ class DevicesHelper
     /// <summary> 单例. </summary>
     static DevicesHelper* m_pInstance;
 
-    /// <summary> 用于com初始化的计数. </summary>
-    int comInitCount = 0;
-
     /// <summary> 设备名. </summary>
     char deviceNames[20][255];
 

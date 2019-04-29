@@ -51,6 +51,9 @@ DevicesHelper::~DevicesHelper()
 
 #if defined(_WIN32) || defined(_WIN64)
 
+/// <summary> 用于com初始化的计数. </summary>
+int comInitCount = 0;
+
 bool comInit()
 {
     HRESULT hr = NOERROR;

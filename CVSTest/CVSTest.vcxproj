@@ -35,7 +35,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;..\lib\dlog\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;C:\dxlib\lib\dlog\x64;$(LibraryPath)</LibraryPath>
     <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
