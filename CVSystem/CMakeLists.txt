@@ -19,7 +19,6 @@ add_library(${SUB_NAME}
             Common/concurrentqueue.h
             Common/Event.h
             Common/StringHelper.h
-            Data/Scene.h
             DTO/DTOType.h
             DTO/JsonHelper.h
             DTO/Serialize.h
@@ -52,7 +51,6 @@ add_library(${SUB_NAME}
             Common/BaseThread.cpp
             Common/Event.cpp
             Common/StringHelper.cpp
-            Data/Scene.cpp
             eventbus/AsyncEventBus.cpp
             Proc/Camera.cpp
             Proc/CameraGrab.cpp
