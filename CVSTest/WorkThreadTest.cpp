@@ -3,7 +3,6 @@
 #include "../CVSystem/CVSystem.h"
 
 using namespace dxlib;
-using namespace dxlib::u3d;
 
 int workCount1 = 0;
 

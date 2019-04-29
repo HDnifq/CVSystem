@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "../CVSystem/CVSystem.h"
-#include "../CVSystem/AlGO.hpp"
+#include "../CVSystem/ALGO.hpp"
 
 using namespace dxlib;
 using namespace std;

@@ -106,5 +106,5 @@ add_subdirectory(CVSystem)
 
 include(CTest)
 #include(GoogleTest)
-# add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+add_subdirectory(${CMAKE_SOURCE_DIR}/CVSTest)
 

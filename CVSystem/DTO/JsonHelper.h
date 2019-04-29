@@ -48,7 +48,7 @@ class JsonHelper
 #if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
 #elif defined(__linux__)
-        fopen(&fp, filePath.c_str(), "w");
+        fp = fopen(filePath.c_str(), "w");
 #endif
         char writeBuffer[256];
         rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
@@ -74,7 +74,7 @@ class JsonHelper
 #if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "wb"); // 非 Windows 平台使用 "w"
 #elif defined(__linux__)
-        fopen(&fp, filePath.c_str(), "w");
+        fp = fopen(filePath.c_str(), "w");
 #endif
         char writeBuffer[256];
         FileWriteStream ws(fp, writeBuffer, sizeof(writeBuffer));
@@ -115,7 +115,7 @@ class JsonHelper
 #if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
 #elif defined(__linux__)
-        fopen(&fp, filePath.c_str(), "r");
+        fp = fopen(filePath.c_str(), "r");
 #endif
         //这里不能使用AutoUTF,因为这里的文件可能不是UTF的编码会导致失败.
         char readBuffer[256];
@@ -139,7 +139,7 @@ class JsonHelper
 #if defined(_WIN32) || defined(_WIN64)
         fopen_s(&fp, filePath.c_str(), "rb"); // 非 Windows 平台使用 "r"
 #elif defined(__linux__)
-        fopen(&fp, filePath.c_str(), "r");
+        fp = fopen(filePath.c_str(), "r");
 #endif
         char readBuffer[256];
         FileReadStream bis(fp, readBuffer, sizeof(readBuffer));

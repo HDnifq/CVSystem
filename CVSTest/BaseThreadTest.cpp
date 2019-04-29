@@ -39,7 +39,7 @@ TEST(BaseThread, new_delete)
 TEST(BaseThread, stop)
 {
     for (size_t i = 0; i < 3; i++) {
-        std::atomic_int workCount1 = 0;
+        std::atomic_int workCount1{0};
         std::shared_ptr<BaseThread> spbt =
             BaseThread::creat(nullptr,
                               [](std::shared_ptr<BaseThread>& tb) {

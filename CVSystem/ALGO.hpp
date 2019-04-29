@@ -6,6 +6,7 @@
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/assign.hpp>
 #include <algorithm>
+#include "string.h"
 
 namespace dxlib {
 
@@ -274,7 +275,10 @@ class ALGO
             vec.reserve((vec.capacity() + buf_size) * 2); //扩容到一个安全容量
         }
         vec.resize(size + buf_size);
+#if defined(_WIN32) || defined(_WIN64)
         memcpy_s(&vec[size], buf_size * sizeof(T), buf, buf_size * sizeof(T)); //拷贝数组到末尾
+#endif
+        memcpy(&vec[size], buf, buf_size * sizeof(T)); //拷贝数组到末尾
     }
 };
 } // namespace dxlib
