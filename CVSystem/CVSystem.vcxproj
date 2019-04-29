@@ -85,7 +85,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;..\lib\rapidjson\include;..\lib;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;$(IncludePath)</IncludePath>
     <LibraryPath>..\lib\dlog\x64;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -174,7 +174,6 @@
     <ClInclude Include="Common\FPSCalc.hpp" />
     <ClInclude Include="cvsdef.h" />
     <ClInclude Include="CVSystem.h" />
-    <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="eventbus\AsyncEventBus.h" />
     <ClInclude Include="eventbus\EventBus.h" />
     <ClInclude Include="eventbus\EventCollector.h" />
@@ -202,7 +201,6 @@
     <ClCompile Include="Common\StringHelper.cpp" />
     <ClCompile Include="Proc\Draw.cpp" />
     <ClCompile Include="CVSystem.cpp" />
-    <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="eventbus\AsyncEventBus.cpp" />
     <ClCompile Include="Proc\Camera.cpp" />
     <ClCompile Include="Proc\CameraManger.cpp" />

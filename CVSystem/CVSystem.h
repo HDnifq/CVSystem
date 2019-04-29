@@ -4,8 +4,6 @@
 
 #include "Common.h"
 
-#include "./Data/Scene.h"
-
 #include "./Proc/Draw.h"
 #include "./Proc/CameraManger.h"
 #include "./Proc/CameraThread.h"

@@ -6,18 +6,18 @@
 
 #include "dlog/dlog.h"
 #ifdef DLOG_EXPORT
-#include "dlog/dlog.h"
+#    include "dlog/dlog.h"
 #else
-#define LogD printf
-#define LogI printf
-#define LogW printf
-#define LogE printf
+#    define LogD printf
+#    define LogI printf
+#    define LogW printf
+#    define LogE printf
 #endif // DLOG_EXPORT
 
 //把userObj的指针转换成对象引用
 //第一个参数T为要转换的类型，第二个参数tb为BaseThread指针
 #ifndef TO_USER_OBJ
-#define TO_USER_OBJ(T, tb) (*(T*)tb->userObj);
+#    define TO_USER_OBJ(T, tb) (*(T*)tb->userObj);
 #endif
 
 #define USE_BTGC 1

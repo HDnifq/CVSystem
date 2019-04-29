@@ -1,0 +1,13 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "cmake.buildDirectory": "${workspaceRoot}/build/Win64",
+    // 注意kit和generator是两个东西,只能在这里设置这个generator,windows平台已经把这个设置到了全局设置里
+    // "cmake.generator": "Visual Studio 15 2017 Win64",
+    "cmake.configureArgs": [
+        "-DBUILD_GMOCK:BOOL=0",
+        "-DINSTALL_GTEST:BOOL=0",
+        "-Dgtest_force_shared_crt:BOOL=1",
+        "-DBUILD_TESTING:BOOL=0",
+        "-DENABLE_TEST:BOOL=1",
+    ]
+}

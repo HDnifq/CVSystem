@@ -54,9 +54,6 @@
     <ClInclude Include="Proc\CameraManger.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Data\Scene.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="eventbus\internal\AsyncCallbackVector.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\CameraManger.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="eventbus\AsyncEventBus.cpp">
