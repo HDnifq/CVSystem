@@ -25,7 +25,8 @@ class TestClass
 typedef std::shared_ptr<TestClass> pTestClass;
 
 //宽字符的转换测试
-TEST(Common, s2ws_ws2s)
+#if defined(_WIN32) || defined(_WIN64)
+ TEST(Common, s2ws_ws2s)
 {
     //注意：有的字符是会转换失败的，如"· "
     std::string s = "试试能不能123（）╮(╯▽╰)╭ c++ float截取位数 - 修罗的博客 - CSDN博客 2018 - 7 - 23对于一个double a = 1.234567; 如果我只取小数点后3位，那么我可以这样做： a = floor(a * 1000) / 1000; floor函数的作用是返回一个小于传入参数的最大整数，所以...";
@@ -37,6 +38,7 @@ TEST(Common, s2ws_ws2s)
     EXPECT_TRUE(s1 == s);
     EXPECT_TRUE(ws1 == ws);
 }
+#endif
 
 //指针使用测试
 TEST(Common, shared_ptr)
