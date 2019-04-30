@@ -28,10 +28,13 @@
 //#include "Aviriff.h"
 //#include "dvdmedia.h"
 //#include "bdaiface.h"
+#else
+#    include <boost/filesystem.hpp>
 #endif
 
 #include <map>
 #include <iostream>
+#include <regex>
 
 #include "../Common/StringHelper.h"
 #include "dlog/dlog.h"
@@ -93,12 +96,20 @@ bool comUnInit()
 }
 #endif
 
-int DevicesHelper::getIndexWithName(std::wstring name)
+int DevicesHelper::getIndexWithName(std::wstring name, bool isRegex)
 {
 
     for (int i = 0; i < devList.size(); i++) {
-        if (devList.at(i) == name) {
-            return i;
+        if (isRegex) {
+            const std::wregex pattern(name);
+            if (std::regex_match(devList.at(i), pattern)) {
+                return i;
+            }
+        }
+        else {
+            if (devList.at(i) == name) {
+                return i;
+            }
         }
     }
     LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", StringHelper::ws2s(name).c_str(), devList.size());
@@ -205,6 +216,27 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
+    namespace fs = boost::filesystem;
+    using namespace std;
+
+    //设备在v4l里
+    fs::path pv4l = "/dev/v4l";
+    if (!fs::exists(pv4l)) //不存在相机
+    {
+        return 0;
+    }
+    fs::directory_iterator di(pv4l / "by-id");
+    for (auto& de : di) {
+        wstring name = de.path().filename().wstring(); //设备名字
+        //看看能不能匹配到usb-F3D_USB_Camera_201903050001-video-index0
+        //usb-046d_HD_Pro_Webcam_C920_A15963EF-video-index0
+        const std::wregex pattern(L".*index0$");
+        if (regex_match(name, pattern)) {
+            LogI("DevicesHelper.listDevices():找到了设备%s", StringHelper::ws2s(name).c_str());
+            devListout[devListout.size()] = de.path().wstring();
+        }
+    }
+    return devListout.size();
 }
 #endif
 

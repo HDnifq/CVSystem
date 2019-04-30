@@ -63,7 +63,7 @@ class DevicesHelper
     ///
     /// <returns> The index with name. </returns>
     ///-------------------------------------------------------------------------------------------------
-    int getIndexWithName(std::wstring name);
+    int getIndexWithName(std::wstring name, bool isRegex = false);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 输入一组需要的摄像机名字的得到一个设备列表(注意调用前需要先调用一次listDevices). </summary>

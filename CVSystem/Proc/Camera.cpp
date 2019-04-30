@@ -92,8 +92,12 @@ bool Camera::openCamera()
         LogE("Camera.openCamera():listDevices相机个数为0,直接返回!");
         return false;
     }
+#if defined(_WIN32) || defined(_WIN64)
     devID = DevicesHelper::GetInst()->getIndexWithName(devName); //记录devID
-    if (devID != -1) {                                           //如果打开失败会返回-1
+#else
+    devID = DevicesHelper::GetInst()->getIndexWithName(devName, true); //记录devID,使用正则寻找
+#endif
+    if (devID != -1) { //如果打开失败会返回-1
 
         // In case a resource was already
         // associated with the VideoCapture instance
@@ -103,7 +107,11 @@ bool Camera::openCamera()
         while (count < 3) { //重试3次
             try {
                 //调用opencv的打开相机
+#if defined(_WIN32) || defined(_WIN64)
                 if (capture->open(devID)) {
+#elif __linux
+                if (capture->open(StringHelper::ws2s(devName), cv::CAP_V4L)) {
+#endif
                     applyCapProp(); //打开成功之后设置一下相机属性
                     break;          //打开成功
                 }
