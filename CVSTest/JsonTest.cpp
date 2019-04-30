@@ -336,7 +336,7 @@ TEST(Json, utf8To16)
 {
     //这个测试必须要定义下面的才能方便
     //#pragma execution_character_set("utf-8")
-    unsigned char s[] = {0xE8, 0xAF, 0x95}; //这三个字节是"试"的UTF8
+    unsigned char s[] = {0xE8, 0xAF, 0x95, 0x00}; //这三个字节是"试"的UTF8
     std::wstring ws = JsonHelper::utf8To16((char*)s);
     EXPECT_TRUE(ws == L"试");
 }

@@ -19,7 +19,11 @@ class TestProc : public FrameProc
         EXPECT_FALSE(image.empty()); //确实能采图
         count++;                     //采图的计数加1
 
-        key = cv::waitKey(1); //一定要加waitKey无法显示图片
+        try {
+            key = cv::waitKey(1); //一定要加waitKey无法显示图片
+        }
+        catch (const std::exception& e) {
+        }
     }
     void onEnable() override
     {

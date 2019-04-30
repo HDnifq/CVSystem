@@ -42,7 +42,12 @@ class CamImageProc : public FrameProc
             cv::imshow("CamImage" + std::to_string(item.camera->camIndex), out);
         }
 
-        key = cv::waitKey(1); //一定要加waitKey无法显示图片
+        try {
+            key = cv::waitKey(1); //一定要加waitKey无法显示图片
+        }
+        catch (const std::exception& e) {
+        }
+
         if (key == 'r') {
             isRemap = !isRemap;
         }
