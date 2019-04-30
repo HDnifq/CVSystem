@@ -73,11 +73,12 @@ TEST(MultiCamera, open)
     for (size_t i = 0; i < 2; i++) {          //测试两次
         MultiCamera::GetInst()->openCamera(); //打开相机
         EXPECT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
-        std::this_thread::sleep_for(std::chrono::milliseconds(500)); //工作500秒
+        std::this_thread::sleep_for(std::chrono::milliseconds(800)); //工作1000毫秒
 
         //测一下TestProc里是不是处理了图像帧
         TestProc* testfp = (TestProc*)MultiCamera::GetInst()->vProc[0].get();
         EXPECT_TRUE(testfp->count > 0);
+        LogI("TestProcRelease.process():fps=%f", MultiCamera::GetInst()->fps);
 
         EXPECT_TRUE(MultiCamera::GetInst()->frameCount > 0);
         MultiCamera::GetInst()->close();
@@ -125,7 +126,7 @@ TEST(MultiCamera, release)
         LogI("TEST(MultiCamera, release):当前MT工作状态 = %d", MultiCamera::GetInst()->isRun());
         while (MultiCamera::GetInst()->isRun()) {
             LogI("TEST(MultiCamera, release):主线程等待关闭！id=%d", std::this_thread::get_id());
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); //等待500
+            std::this_thread::sleep_for(std::chrono::milliseconds(800)); //等待800
         }
 
         LogI("TEST(MultiCamera, release):主线程发现已经关闭！");
