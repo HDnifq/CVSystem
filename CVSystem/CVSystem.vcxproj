@@ -86,7 +86,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\lib\dlog\x64;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\dxlib\lib\dlog\x64;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
