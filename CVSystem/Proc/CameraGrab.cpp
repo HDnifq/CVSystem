@@ -95,7 +95,7 @@ bool CameraGrab::open()
         boost::timer t;
 
         //打开相机
-        if (vCameras[camIndex]->openCamera()) {
+        if (vCameras[camIndex]->open()) {
             double costTime = t.elapsed();
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
@@ -113,7 +113,7 @@ bool CameraGrab::close()
 {
     for (size_t i = 0; i < vCameras.size(); i++) {
         LogI("CameraGrab.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
-        vCameras[i]->releaseCamera();
+        vCameras[i]->release();
     }
     clear();
     return true;

@@ -166,7 +166,7 @@ bool CameraThread::open(bool isRunInError)
         boost::timer t;
 
         //打开相机
-        if (vCameras[camIndex]->openCamera()) {
+        if (vCameras[camIndex]->open()) {
             double costTime = t.elapsed();
 
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
@@ -214,7 +214,7 @@ bool CameraThread::close()
 
     for (size_t i = 0; i < vCameras.size(); i++) {
         LogI("CameraThread.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
-        vCameras[i]->releaseCamera();
+        vCameras[i]->release();
     }
 
     reset(); //清空队列

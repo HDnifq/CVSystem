@@ -4,9 +4,6 @@
 #include <iostream>
 #include <memory>
 
-//所有的CV_CAP_PROP的数组的长度
-#define DXLIB_CAMERA_CAP_PROP_LEN 128
-
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -19,6 +16,9 @@ class Camera
   public:
     /// <summary> 构造. </summary>
     Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize = cv::Size(640, 360), int aBrightness = -64);
+
+    /// <summary> 析构. </summary>
+    ~Camera();
 
     /// <summary> 相机的编号0-3. </summary>
     int camIndex = -2;
@@ -71,6 +71,9 @@ class Camera
     /// <summary> 双目相机里的另一对相机. </summary>
     std::shared_ptr<Camera> stereoOther = nullptr;
 
+    /// <summary> 这是相机采图的帧率. </summary>
+    float FPS = 0;
+
     /// <summary> 用户使用的附加对象. </summary>
     void* userData;
 
@@ -88,16 +91,22 @@ class Camera
     ///
     /// <returns> 打开成功返回true. </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool openCamera();
+    bool open();
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 关闭相机设备. </summary>
     ///
     /// <remarks> Dx, 2019/1/12. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    void releaseCamera();
+    void release();
 
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 相机是否打开了. </summary>
+    ///
+    /// <remarks> Dx, 2019/5/14. </remarks>
+    ///
+    /// <returns> 打开了就返回true,没打开返回false. </returns>
+    ///-------------------------------------------------------------------------------------------------
     bool isOpened()
     {
         if (capture == nullptr) {
@@ -108,17 +117,16 @@ class Camera
         }
     }
 
-    /// <summary> 暂存的上次设置的结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
-    double lastCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
-
-    /// <summary> 设置当前的相机的属性. </summary>
-    void setProp(int CV_CAP_PROP, double value)
-    {
-        _setCapProp[CV_CAP_PROP] = value;
-    }
-
-    /// <summary> 这是相机采图的帧率. </summary>
-    float FPS = 0;
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置当前的相机的一项属性. </summary>
+    ///
+    /// <remarks> Dx, 2019/5/14. </remarks>
+    ///
+    /// <param name="CV_CAP_PROP"> The cv capability
+    ///                            property. </param>
+    /// <param name="value">       The value. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setProp(int CV_CAP_PROP, double value);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 由采图线程去应用相机的属性设置. </summary>
@@ -130,11 +138,17 @@ class Camera
     bool applyCapProp();
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 在控制台输出当前实际的相机状态. </summary>
+    /// <summary> 用比较紧凑的格式在控制台输出当前实际的相机状态,两行信息只输出一些主要信息. </summary>
     ///
     /// <remarks> Dx, 2019/1/11. </remarks>
     ///-------------------------------------------------------------------------------------------------
     void outputProp();
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 一行一个属性的输出所有的属性. </summary>
+    ///
+    /// <remarks> Dx, 2019/5/14. </remarks>
+    ///-------------------------------------------------------------------------------------------------
     void outputAllProp();
 
 #pragma endregion
@@ -158,8 +172,11 @@ class Camera
 #pragma endregion
 
   private:
-    /// <summary> 用来做状态的记录，好触发设置动作. </summary>
-    double _setCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
+    //隐藏成员字段
+    struct Impl;
+
+    /// <summary> 数据成员. </summary>
+    Impl* _impl = nullptr;
 };
 /// <summary>定义这个智能指针类型. </summary>
 typedef std::shared_ptr<Camera> pCamera;

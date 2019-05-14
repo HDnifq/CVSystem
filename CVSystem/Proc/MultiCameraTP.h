@@ -1,32 +1,30 @@
 ﻿#pragma once
 
-#include "../Common/FPSCalc.hpp"
-#include "CameraThread.h"
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
 #include "dlog/dlog.h"
 #include "../Common/BaseThread.h"
+#include "../Common/FPSCalc.hpp"
 #include "FrameProc.h"
+#include "CameraGrab.h"
 
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 多摄像机，它使用一个线程进行所有图像的处理工作. </summary>
+/// <summary> 使用单线程来采图加处理的MultiCamera. </summary>
 ///
-/// <remarks> Surface, 2018/11/16. </remarks>
+/// <remarks> Dx, 2019/3/5. </remarks>
 ///-------------------------------------------------------------------------------------------------
-class MultiCameraMT
+class MultiCameraTP
 {
   public:
-    MultiCameraMT(); // 1000 / 1000
-
-    ~MultiCameraMT();
-
-    static MultiCameraMT* GetInst()
+    MultiCameraTP();
+    ~MultiCameraTP();
+    static MultiCameraTP* GetInst()
     {
         if (m_pInstance == NULL)
-            m_pInstance = new MultiCameraMT();
+            m_pInstance = new MultiCameraTP();
         return m_pInstance;
     }
 
@@ -36,55 +34,15 @@ class MultiCameraMT
     /// <summary> 处理的fps. </summary>
     float fps = 0;
 
-    /// <summary> 多个相机处理器的处理对象,每一个相机开一个VideoProcessor. </summary>
-    CameraThread* cameraThread = nullptr;
-
     /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
     std::vector<pFrameProc> vProc;
-
-    /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
-    uint _activeProcIndex = 0;
-
-    ///// <summary> 如果当前的FrameProc中有调用waitkey，那么可以传出一个按键值供外界的响应处理. </summary>
-    //MultiCameraKeyEvent procKeyEvent = nullptr;
-
-    ///// <summary> 当前待处理的key值，如果无按键那么为-1. (换成Event单例)</summary>
-    //std::atomic_int key = -1;
-
-    /// <summary> 是否显示窗口. </summary>
-    bool isShowWin = false;
-
-    /// <summary> 锁小线程们的锁. </summary>
-    std::mutex mtx_ct;
-
-    /// <summary> 给小线程们的通知. </summary>
-    std::condition_variable cv_ct;
-
-    /// <summary> 全局互斥锁. </summary>
-    std::mutex mtx_mt;
-
-    /// <summary> 其他人向自己的通知. </summary>
-    std::condition_variable cv_mt;
-
-    /// <summary> openCamera函数的设置. </summary>
-    enum OpenCameraType
-    {
-        /// <summary> 如果打开相机成功就启动一个计算线程. </summary>
-        StartCalcThread,
-
-        /// <summary> 不启动计算线程，时候自己运行run()函数. </summary>
-        NotStartCalcThread,
-
-        /// <summary> 不管打开相机是否成功都强制启动一个计算线程. </summary>
-        ForceStartCalcThread,
-    };
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     /// 打开相机会启动线程函数,目前一般尝试创建一个线程来计算,
     /// 这里需要做一个预先的激活proc的设置（activeIndex赋值）,
     /// 以便第一帧运行就能正确的执行到想要的proc.
-    /// 如果相机打开失败的话那么就不会创建分析线程。采图线程也不会创建了。.
+    /// 如果相机打开失败的话那么就不会创建分析线程。采图线程也不会创建了.
     /// </summary>
     ///
     /// <remarks> Dx, 2018/2/1. </remarks>
@@ -94,7 +52,7 @@ class MultiCameraMT
     ///
     /// <returns> 打开成功返回ture. </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool openCamera(uint activeIndex = 0, OpenCameraType openType = OpenCameraType::StartCalcThread);
+    bool openCamera(uint activeIndex = 0);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 关闭所有相机. </summary>
@@ -133,13 +91,69 @@ class MultiCameraMT
     void setActiveProc(uint index);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置当前是否采图，主要是控制它的成员CameraThread. </summary>
+    /// <summary> 当前激活的Proc的index. </summary>
     ///
-    /// <remarks> Dx, 2018/11/20. </remarks>
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 当前激活的Proc的index. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    uint activeProcIndex()
+    {
+        return _activeProcIndex;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前激活的Proc. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/24. </remarks>
+    ///
+    /// <returns> 当前激活的Proc的指针,为空表示没有proc. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    FrameProc* activeProc()
+    {
+        if (_activeProcIndex < vProc.size()) {
+            return vProc[_activeProcIndex].get();
+        }
+        return nullptr;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 重置当前生效的proc,会对当前proc重新执行一次disable和enable.
+    /// </summary>
+    ///
+    /// <remarks> Dx, 2019/3/21. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    void resetActiveProc()
+    {
+        _isResetActiveProc = true;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置当前是否采图，主要是为了在不需要采图的手减少开销. </summary>
+    ///
+    /// <remarks>
+    /// 如果不采图那么处理线程就会一直不停的休眠 Dx, 2018/11/20.
+    /// </remarks>
     ///
     /// <param name="isGrab"> 如果是真就是采图. </param>
     ///-------------------------------------------------------------------------------------------------
-    void setIsGrab(bool isGrab);
+    void setIsGrab(bool isGrab)
+    {
+        _isGrab = isGrab;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前的抓图状态,如果不采图那么处理线程就会一直不停的休眠. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 如果是真就是采图. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool isGrab()
+    {
+        return _isGrab.load();
+    }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 是否当前正在正常工作. </summary>
@@ -153,8 +167,32 @@ class MultiCameraMT
         return _isRun.load();
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 当前执行的proc的名字,如果没有proc就返回null. </summary>
+    ///
+    /// <remarks> Surface, 2019/3/20. </remarks>
+    ///
+    /// <returns> 前执行的proc的名字. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    const char* activeProcName()
+    {
+        if (vProc.size() > _activeProcIndex)
+            return vProc[_activeProcIndex]->name();
+        else
+            return nullptr;
+    }
+
   private:
-    static MultiCameraMT* m_pInstance;
+    static MultiCameraTP* m_pInstance;
+
+    /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
+    uint _activeProcIndex = 0;
+
+    /// <summary> 相机采图类. </summary>
+    CameraGrab _cameraGrab;
+
+    /// <summary> 综合分析线程. </summary>
+    pBaseThread _thread = nullptr;
 
     /// <summary> 是否停止. </summary>
     std::atomic_bool _isRun{false};
@@ -165,8 +203,8 @@ class MultiCameraMT
     /// <summary> 是否正在停止. </summary>
     std::atomic_bool _isStopping{false};
 
-    /// <summary> 综合分析线程. </summary>
-    pBaseThread _thread = nullptr;
+    /// <summary> 是否采图. </summary>
+    std::atomic_bool _isGrab{true};
 
     /// <summary> 设置的下一个激活index. </summary>
     uint _nextActiveProcIndex = 0;
@@ -185,5 +223,12 @@ class MultiCameraMT
 
     //计算fps的辅助
     FPSCalc _fpsCalc;
+
+    /// <summary> 隐藏成员字段. </summary>
+    struct Impl;
+
+    /// <summary> 数据成员. </summary>
+    Impl* _impl = nullptr;
 };
+
 } // namespace dxlib
