@@ -132,6 +132,9 @@
     <ClInclude Include="Proc\MultiCameraTP.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Common\ThreadPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -177,6 +180,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Proc\MultiCameraTP.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ThreadPool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
