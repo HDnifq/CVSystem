@@ -239,6 +239,18 @@ class Draw
     cv::Mat& drawMat(const cv::Mat& src, int index);
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> 对相机图像上画一个矩形. </summary>
+    ///
+    /// <remarks> Dx, 2018/11/26. </remarks>
+    ///
+    /// <param name="rect">  The rectangle. </param>
+    /// <param name="color"> (Optional) The color. </param>
+    ///
+    /// <returns> A cv::Mat. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Mat& drawRectangleROI(int index, const cv::Rect2f& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 对相机图像上画线. </summary>
     ///
     /// <remarks> Dx, 2019/3/13. </remarks>

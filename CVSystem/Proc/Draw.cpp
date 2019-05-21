@@ -213,6 +213,16 @@ cv::Mat& Draw::drawMat(const cv::Mat& src, int index)
     return _impl->diagram;
 }
 
+cv::Mat& Draw::drawRectangleROI(int index, const cv::Rect2f& rect, const cv::Scalar& color)
+{
+    if (!isEnableDraw) {
+        return _impl->diagram;
+    }
+    cv::Mat camImage = _impl->diagram(_impl->vImageROI[index]);
+    cv::rectangle(camImage, rect, color, 1); //画方框
+    return _impl->diagram;
+}
+
 cv::Mat& Draw::drawLineROI(int index, const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
