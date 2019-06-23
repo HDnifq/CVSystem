@@ -25,8 +25,8 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <VcpkgTriplet>x64-windows-static-md</VcpkgTriplet>
-    <VcpkgEnabled>true</VcpkgEnabled>
+    <!-- <VcpkgTriplet>x64-windows-static-md</VcpkgTriplet>
+    <VcpkgEnabled>true</VcpkgEnabled> -->
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -35,8 +35,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;C:\dxlib\lib\dlog\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\lib;C:\dxlib\lib\dlog\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;C:\dxlib\lib\boost_1_70_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
@@ -158,16 +158,16 @@ xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\op
     </Link>
     <PreBuildEvent>
       <Command>xcopy "$(SolutionDir)lib\dlog\x64" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_core341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_highgui341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_imgcodecs341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_imgproc341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_videoio341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_video341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_calib3d341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_features2d341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_flann341.dll" "$(TargetDir)" /Y /I /E
-xcopy "D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_aruco341.dll" "$(TargetDir)" /Y /I /E</Command>
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_core341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_highgui341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_imgcodecs341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_imgproc341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_videoio341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_video341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_calib3d341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_features2d341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_flann341.dll" "$(TargetDir)" /Y /I /E
+xcopy "C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\bin\opencv_aruco341.dll" "$(TargetDir)" /Y /I /E</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
