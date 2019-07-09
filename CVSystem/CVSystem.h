@@ -5,6 +5,7 @@
 #include "Common.h"
 
 #include "./Proc/Draw.h"
+#include "./Proc/ImageSave.h"
 #include "./Proc/CameraManger.h"
 #include "./Proc/CameraThread.h"
 #include "./Proc/DevicesHelper.h"

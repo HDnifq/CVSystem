@@ -159,6 +159,7 @@
     <ClInclude Include="DTO\Serialize.h" />
     <ClInclude Include="DTO\sht.h" />
     <ClInclude Include="Json.h" />
+    <ClInclude Include="Proc\ImageSave.h" />
     <ClInclude Include="Proc\MultiCamera.h" />
     <ClInclude Include="Proc\CameraGrab.h" />
     <ClInclude Include="Common.h" />
@@ -196,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\ThreadPool.cpp" />
+    <ClCompile Include="Proc\ImageSave.cpp" />
     <ClCompile Include="Proc\MultiCamera.cpp" />
     <ClCompile Include="Proc\CameraGrab.cpp" />
     <ClCompile Include="Common\BaseThread.cpp" />

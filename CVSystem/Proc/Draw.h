@@ -24,17 +24,8 @@ class Draw
     /// <summary> 画面高度. </summary>
     int height;
 
-    /// <summary>要开启的窗口名字. </summary>
-    //std::string winName;
-
     /// <summary> 保存图片到硬盘时的名字计数. </summary>
     int nameCount;
-
-    /// <summary> 按行写文本时起始位置记录. </summary>
-    //cv::Point point_line = cv::Point(0, 10);
-
-    /// <summary> 一个图片队列. </summary>
-    //std::deque<cv::Mat> dqDiagram;
 
     //隐藏成员字段
     struct Impl;
