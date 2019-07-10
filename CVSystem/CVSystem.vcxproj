@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithm\LightPoint.hpp" />
     <ClInclude Include="Common\ThreadPool.h" />
     <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />

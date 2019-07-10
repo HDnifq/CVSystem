@@ -58,7 +58,6 @@ void ImageSave::ReadFormFile(const std::string& dirPath)
 {
     namespace fs = boost::filesystem;
     using namespace std;
-    vector<string> vImagePath;
 
     map<string, map<string, fs::path>> mapfiles;
 
@@ -88,8 +87,11 @@ void ImageSave::ReadFormFile(const std::string& dirPath)
         }
     }
     for (auto& kvpig : mapfiles) {
+        string num = kvpig.first;
+        auto& igPath = kvpig.second;
         std::map<std::string, std::string> ig;
-        for (auto& kvp : kvpig.second) {
+        for (auto& kvp : igPath) {
+
             //ig[kvp.first] = cv::imread(kvp.second.string()); //读取图片文件
             ig[kvp.first] = kvp.second.string();
         }
