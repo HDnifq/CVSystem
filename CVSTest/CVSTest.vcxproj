@@ -53,6 +53,7 @@
     <ClCompile Include="DevicesHelperTest.cpp" />
     <ClCompile Include="DrawTest.cpp" />
     <ClCompile Include="EventbusTest.cpp" />
+    <ClCompile Include="ImageSaveTest.cpp" />
     <ClCompile Include="JsonTest.cpp" />
     <ClCompile Include="MultiCameraTest.cpp" />
     <ClCompile Include="pch.cpp">
