@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\eigen;$(IncludePath)</IncludePath>
     <LibraryPath>../lib/_64/MT;../lib/_64/MD;D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;C:\dxlib\lib\boost_1_70_0;$(IncludePath)</IncludePath>
+    <IncludePath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;C:\dxlib\lib\boost_1_70_0;C:\dxlib\lib\eigen;$(IncludePath)</IncludePath>
     <LibraryPath>C:\dxlib\lib\dlog\x64;C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\LightPoint.hpp" />
+    <ClInclude Include="Algorithm\Project3DTo2D.hpp" />
     <ClInclude Include="Common\ThreadPool.h" />
     <ClInclude Include="DTO\DTOType.h" />
     <ClInclude Include="DTO\JsonHelper.h" />

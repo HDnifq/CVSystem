@@ -36,7 +36,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\x64\vc15\lib;C:\dxlib\lib\dlog\x64;C:\dxlib\lib\boost_1_70_0\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;C:\dxlib\lib\boost_1_70_0;$(IncludePath)</IncludePath>
+    <IncludePath>C:\dxlib\lib\opencv-341-build-x64-vs2017\install\include;C:\dxlib\lib\rapidjson\include;C:\dxlib\lib;C:\dxlib\lib\boost_1_70_0;C:\dxlib\lib\eigen;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\SDK\opencv\opencv3\opencv-341-build-x64-vs2017\install\include;$(IncludePath)</IncludePath>
