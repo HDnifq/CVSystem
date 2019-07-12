@@ -32,6 +32,8 @@ class Project3DTo2D
 
         //映射关系
         std::vector<Eigen::Vector3d> p3d;
+
+        //范围在(-1,1之间)
         std::vector<Eigen::Vector2d> p2d;
     };
 
@@ -43,7 +45,10 @@ class Project3DTo2D
     class Result
     {
       public:
-        //变换矩阵
+        //模型空间变换到相机空间的第三行
+        Eigen::Matrix<double, 1, 4> L2VMat;
+
+        //整个4x4变换矩阵(等于L2V整合Project矩阵)的第一行和第二行
         Eigen::Matrix<double, 2, 4> tranMat;
     };
 
@@ -57,16 +62,22 @@ class Project3DTo2D
         auto& p3d = param.p3d;
         auto& p2d = param.p2d;
 
-        //方程组系数的第一行,只有平面上的x
-        Eigen::Matrix<double, 4, 4> L0_A;
-        L0_A << p3d[0].x(), p3d[0].y(), p3d[0].z(), 1,
-            p3d[1].x(), p3d[1].y(), p3d[1].z(), 1,
-            p3d[2].x(), p3d[2].y(), p3d[2].z(), 1,
-            p3d[3].x(), p3d[3].y(), p3d[3].z(), 1;
+        //思路是利用w=-z.  tranMat的结果(x,y,z,w)中的x就等于kw,(k范围是-1,1),这个方程组就是要把L2VMat的第3行和tranMat的第一行一起求解.
+        Eigen::Matrix<double, 8, 8> L0_A;
+        for (size_t i = 0; i < 8; i++) {
+            L0_A.row(i) << p3d[i].x(), p3d[i].y(), p3d[i].z(), 1, p2d[i].x() * p3d[i].x(), p2d[i].x() * p3d[i].y(), p2d[i].x() * p3d[i].z(), p2d[i].x();
+        }
 
-        Eigen::Vector4d L0_B;
-        L0_B << p2d[0].x(), p2d[1].x(), p2d[2].x(), p2d[3].x();
-        Eigen::Vector4d L0 = L0_A.fullPivLu().solve(L0_B);
+        Eigen::Matrix<double, 8, 1> L0_B;
+        //L0_B << p2d[0].x(), p2d[1].x(), p2d[2].x(), p2d[3].x();
+        for (size_t i = 0; i < 8; i++) {
+            L0_B.row(i) << 0;
+        }
+
+        Eigen::Matrix<double, 8, 1> L0 = L0_A.fullPivLu().solve(L0_B);
+
+        //下面的内容是先前的,目前还没有实现完整的
+
 
         //方程组系数的第一行,只有平面上的y
         Eigen::Matrix<double, 4, 4> L1_A;
