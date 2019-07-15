@@ -73,14 +73,34 @@ class ImageSave
     ///
     /// <returns> The image. </returns>
     ///-------------------------------------------------------------------------------------------------
-    std::map<std::string, cv::Mat> GetImage()
+    std::map<std::string, cv::Mat> GetFrontImage()
+    {
+        std::map<std::string, cv::Mat> res;
+        if (!dqImageFile.empty())
+            //从记录的文件名中得到最前的一项
+            for (auto& kvp : dqImageFile.front()) {
+                res[kvp.first] = cv::imread(kvp.second); //读取图片
+            }
+        dqImageFile.pop_front();
+        return res;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 得到队列最后面的一组图片. </summary>
+    ///
+    /// <remarks> Dx, 2019/7/10. </remarks>
+    ///
+    /// <returns> The image. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    std::map<std::string, cv::Mat> GetBackImage()
     {
         std::map<std::string, cv::Mat> res;
         //从记录的文件名中得到最前的一项
-        for (auto& kvp : dqImageFile.front()) {
-            res[kvp.first] = cv::imread(kvp.second);//读取图片
-        }
-        dqImageFile.pop_front();
+        if (!dqImageFile.empty())
+            for (auto& kvp : dqImageFile.back()) {
+                res[kvp.first] = cv::imread(kvp.second); //读取图片
+            }
+        dqImageFile.pop_back();
         return res;
     }
 

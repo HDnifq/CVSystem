@@ -26,6 +26,6 @@ TEST(ImageSave, ReadFormFile2)
     ImageSave::GetInst()->ReadFormFile("D:\\Work\\MRSystem\\x64\\Release\\images\\debug\\camera");
     size_t size = ImageSave::GetInst()->dqImageFile.size();
     EXPECT_TRUE(size > 0);
-    auto ig = ImageSave::GetInst()->GetImage();
+    auto ig = ImageSave::GetInst()->GetFrontImage();
     EXPECT_TRUE(ig.size() > 0);
 }

@@ -13,7 +13,7 @@ TEST(CVALGO, LightPoint)
 {
     ImageSave::GetInst()->ReadFormFile("..\\..\\TestImage\\ALGO\\GlassPoint");
 
-    auto ig = ImageSave::GetInst()->GetImage();
+    auto ig = ImageSave::GetInst()->GetBackImage();
 
     LightPoint::Param param;
     for (auto& kvp : ig) {
@@ -143,4 +143,11 @@ TEST(Matrix, Rank)
     //对于Ax=0的齐次线性方程组，列出其系数矩阵（不需要增广矩阵），使用高斯消元法化简，化为阶梯形矩阵，化简后，判断有效方程组个数是否小于未知数个数，
     //如果有效方程组个数小于未知数个数，叫做有非零解（多个解）如果有效方程组个数小于未知数个数，叫做有非零解（多个解）
     //如果等于，叫做只有零解（唯一解）
+}
+
+TEST(Math, cross)
+{
+    Eigen::Vector3d d1(1, 0, 0);
+    double c = d1.dot(Eigen::Vector3d{-1, 0, 0}); //-1
+    double c2 = d1.dot(Eigen::Vector3d{1, 0, 0}); //1
 }

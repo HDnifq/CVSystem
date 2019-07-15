@@ -51,11 +51,15 @@ class LightPoint
     ///-------------------------------------------------------------------------------------------------
     static void detection(const cv::Mat& image, const LightPoint::Param& param, LightPoint::Result& result)
     {
+        cv::Mat grayImage;
+        cv::Mat thrImage;
+
         //转换一次黑白图像
-        cvtColor(image, result.grayImage, CV_BGR2GRAY);
+        cvtColor(image, grayImage, CV_BGR2GRAY);
 
         //门限结果输出到thr(50)
-        cv::threshold(result.grayImage, result.thrImage, param.highLightThr, 255, cv::THRESH_BINARY); //70
+        cv::threshold(grayImage, thrImage, param.highLightThr, 255, cv::THRESH_BINARY); //70
+
     }
 
   private:
