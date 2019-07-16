@@ -30,6 +30,12 @@ class LightPoint
       public:
         /// <summary> 高亮门限. </summary>
         int highLightThr = 200;
+
+        /// <summary> 轮廓的最大大小. </summary>
+        int contMaxSize = 20;
+
+        /// <summary> 轮廓的最小大小. </summary>
+        int contMinSize = 4;
     };
 
     ///-------------------------------------------------------------------------------------------------
@@ -42,6 +48,9 @@ class LightPoint
       public:
         cv::Mat grayImage;
         cv::Mat thrImage;
+
+        /// <summary> 高亮的轮廓结果. </summary>
+        std::vector<std::vector<cv::Point>> contours;
     };
 
     ///-------------------------------------------------------------------------------------------------
@@ -53,13 +62,24 @@ class LightPoint
     {
         cv::Mat grayImage;
         cv::Mat thrImage;
-
+        std::vector<std::vector<cv::Point>>& contours = result.contours;
         //转换一次黑白图像
         cvtColor(image, grayImage, CV_BGR2GRAY);
 
-        //门限结果输出到thr(50)
-        cv::threshold(grayImage, thrImage, param.highLightThr, 255, cv::THRESH_BINARY); //70
+        //门限结果输出到thrImage
+        cv::threshold(grayImage, thrImage, param.highLightThr, 255, cv::THRESH_BINARY);
 
+        cv::findContours(thrImage,
+                         contours,              //轮廓的结果数组
+                         CV_RETR_EXTERNAL,      //获取外轮廓
+                         CV_CHAIN_APPROX_NONE); //获取每个轮廓的每个像素
+
+        for (size_t i = 0; i < contours.size(); i++) {
+            //根据大小筛除轮廓
+            if (contours[i].size() < param.contMinSize && contours[i].size() > param.contMaxSize) {
+                continue;
+            }
+        }
     }
 
   private:
