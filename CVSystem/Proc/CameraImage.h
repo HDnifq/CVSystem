@@ -16,7 +16,7 @@ struct ImageItem
     /// <summary> 采图图片. </summary>
     cv::Mat image;
 
-    /// <summary> 对应相机. </summary>
+    /// <summary> 对应相机（如果这里为null，那么基本上应该认为这个item是无效的）. </summary>
     Camera* camera = nullptr;
 
     /// <summary> 是否采图成功. </summary>
@@ -46,7 +46,7 @@ class CameraImage
     /// <summary> 相机帧序号. </summary>
     unsigned int fnum = 0;
 
-    /// <summary> 这一帧里这一组相机的原始图像(但是index并不是camIndex). </summary>
+    /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
     std::vector<ImageItem> vImage;
 
     /// <summary> 这一帧的采集开始时间戳. </summary>
@@ -105,6 +105,38 @@ class CameraImage
         }
         LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
         return nullptr;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> Gets an item. </summary>
+    ///
+    /// <remarks> Dx, 2019/8/5. </remarks>
+    ///
+    /// <param name="camIndex"> Zero-based index of the
+    ///                         camera. </param>
+    /// <param name="item">     [in,out] The item. </param>
+    ///
+    /// <returns>
+    /// True if it succeeds, false if it fails.
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool getItem(int camIndex, ImageItem& item) const
+    {
+        //如果vector的index是能够对应上的，那么就直接返回这一项
+        if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
+            item = vImage[camIndex];
+            return true;
+        }
+
+        //如果对应不上那么只能遍历搜索
+        for (size_t i = 0; i < vImage.size(); i++) {
+            if (vImage[i].camera->camIndex == camIndex) {
+                item = vImage[camIndex];
+                return true;
+            }
+        }
+        LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
+        return false;
     }
 };
 /// <summary>定义这个智能指针类型. </summary>

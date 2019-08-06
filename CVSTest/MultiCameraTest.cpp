@@ -137,3 +137,17 @@ TEST(MultiCamera, release)
     BaseThread::GC();
     dlog_set_file_thr(dlog_level::info);
 }
+
+TEST(MultiCamera, camIndex)
+{
+    CameraManger::GetInst()->add(pCamera(new Camera(0, L"F3D0001")));
+    CameraManger::GetInst()->add(pCamera(new Camera(3, L"F3D0004")));
+    CameraManger::GetInst()->add(pCamera(new Camera(5, L"F3D0006")));
+    MultiCamera::GetInst()->addProc(new CamImageProc());
+    MultiCamera::GetInst()->MultiCamera::GetInst()->openCamera();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    MultiCamera::GetInst()->vProc.clear();
+    MultiCamera::GetInst()->close();
+}

@@ -26,8 +26,15 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 {
     vCameras.clear();
     for (auto& kvp : camMap) {
-        if (!kvp.second->isVirtualCamera)
-            vCameras.push_back(kvp.second);
+        if (!kvp.second->isVirtualCamera) {
+            //保证resize
+            if (vCameras.size() <= kvp.second->camIndex) {
+                vCameras.resize(kvp.second->camIndex + 1); //这里resize一个指针数组那么会创建一些空指针
+            }
+            vCameras[kvp.second->camIndex] = kvp.second;
+        }
+        else {
+        }
     }
 }
 
@@ -35,7 +42,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
 {
     //执行完毕之后就更新相机的属性状态
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
-        vCameras[camIndex]->applyCapProp();
+        if (vCameras[camIndex] != nullptr) {
+            vCameras[camIndex]->applyCapProp();
+        }
     }
     //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
     ++fnumber;
@@ -49,13 +58,19 @@ bool CameraGrab::grab(pCameraImage& cimg)
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
+            if (vCameras[camIndex] == nullptr) {
+                continue;
+            }
+
+            if (!vCameras[camIndex]->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
+                if (!isIgnoreFailureCamera) {
+                    LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
+                }
+                continue;
+            }
             ImageItem& item = cimg->vImage[camIndex];
             item.camera = vCameras[camIndex].get(); //标记camera来源
 
-            if (!vCameras[camIndex]->isOpened()) {
-                LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
-                return false;
-            }
             item.grabStartTime = clock();
             if (vCameras[camIndex]->capture->read(item.image)) {
 
@@ -91,6 +106,10 @@ bool CameraGrab::open()
 
     bool isSuccess = true;
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
+        if (vCameras[camIndex] == nullptr) {
+            continue;
+        }
+
         LogI("CameraGrab.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
         boost::timer t;
 
@@ -103,7 +122,8 @@ bool CameraGrab::open()
             LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", vCameras[camIndex]->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
-            isSuccess = false;
+            if (!isIgnoreFailureCamera) //如果不忽略失败的相机
+                isSuccess = false;
         }
     }
     return isSuccess;
@@ -112,8 +132,10 @@ bool CameraGrab::open()
 bool CameraGrab::close()
 {
     for (size_t i = 0; i < vCameras.size(); i++) {
-        LogI("CameraGrab.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
-        vCameras[i]->release();
+        if (vCameras[i] != nullptr) {
+            LogI("CameraGrab.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
+            vCameras[i]->release();
+        }
     }
     clear();
     return true;
@@ -134,7 +156,8 @@ void CameraGrab::updateFPS()
     if (costTime > 1.0) { //如果经过了1秒
         //FPS写入到了camera
         for (size_t i = 0; i < vCameras.size(); i++) {
-            vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+            if (vCameras[i] != nullptr)
+                vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
         }
 
         _lastTime = now;        //记录现在的最近一次的时间
@@ -143,7 +166,8 @@ void CameraGrab::updateFPS()
     else if (costTime > 0.5) { //在0.5秒之后可以开始计算了
         //FPS写入到了camera
         for (size_t i = 0; i < vCameras.size(); i++) {
-            vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
+            if (vCameras[i] != nullptr)
+                vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
         }
     }
 }

@@ -136,6 +136,7 @@ bool MultiCamera::openCamera(uint activeIndex)
 
     //根据当前录入的相机的东西里的设置来打开相机
     _cameraGrab.setCameras(CameraManger::GetInst()->camMap);
+    _cameraGrab.isIgnoreFailureCamera = true;
 
     //设置当前的帧处理
     this->setActiveProc(activeIndex);

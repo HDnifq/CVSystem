@@ -20,7 +20,7 @@ class Camera
     /// <summary> 析构. </summary>
     ~Camera();
 
-    /// <summary> 相机的编号0-3. </summary>
+    /// <summary> 相机的编号0-3，它代表一个编程逻辑上的编号. </summary>
     int camIndex = -2;
 
     /// <summary> 这个相机的设备名. </summary>
@@ -35,7 +35,7 @@ class Camera
     /// </summary>
     bool isVirtualCamera = false;
 
-    /// <summary> 设备的id顺序. </summary>
+    /// <summary> 设备的id顺序，硬件上的index. </summary>
     int devID = -1;
 
     /// <summary> 相机的分辨率size. </summary>

@@ -31,6 +31,12 @@ class CamImageProc : public FrameProc
     {
         //显示所有校正过的相机图像
         for (auto& item : camImage->vImage) {
+
+            //应该只有采图成功的相机才处理
+            if (!item.isSuccess) {
+                continue;
+            }
+
             cv::Mat out;
             if (isRemap) {
                 cv::remap(item.image, out, item.camera->rmap1, item.camera->rmap2, cv::INTER_LINEAR);

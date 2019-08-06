@@ -27,7 +27,7 @@ class CameraThread
 
     ~CameraThread();
 
-    /// <summary> 相机参数. </summary>
+    /// <summary> 相机vector. </summary>
     std::vector<pCamera> vCameras;
 
     /// <summary> 是否停止运行（由外部操作）. </summary>
