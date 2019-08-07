@@ -4,7 +4,10 @@
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 一个相机的采图方法，里面有一个vector记录相机，然后打开这些相机. </summary>
+/// <summary>
+/// 一个相机的采图方法，里面有一个vector记录相机，然后打开这些相机,
+/// 调用grab()函数对这些相机采图.
+/// </summary>
 ///
 /// <remarks> Dx, 2019/3/5. </remarks>
 ///-------------------------------------------------------------------------------------------------
@@ -29,12 +32,15 @@ class CameraGrab
     ///
     /// <remarks> Dx, 2019/3/5. </remarks>
     ///
-    /// <param name="camMap"> [in,out] The camera map. </param>
+    /// <param name="camMap"> [in] The camera map. </param>
     ///-------------------------------------------------------------------------------------------------
     void setCameras(const std::map<int, pCamera>& camMap);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 进行一次抓图，输出的结果里面的vector图片的ImageItem的index应该是和相机的camIndex一致的. </summary>
+    /// <summary>
+    /// 进行一次抓图，依次对所有记录的相机进行采图，
+    /// 输出的结果里面的vector图片的ImageItem的index应该是和相机的camIndex一致的.
+    /// </summary>
     ///
     /// <remarks> Dx, 2019/3/5. </remarks>
     ///
@@ -43,6 +49,50 @@ class CameraGrab
     /// <returns> A pCameraImage. </returns>
     ///-------------------------------------------------------------------------------------------------
     bool grab(pCameraImage& result);
+
+#pragma region 拆解的单个相机的采图(为了实现多线程)
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 采图拆解的3步(第一步开始采图,构造结果对象). </summary>
+    ///
+    /// <remarks> Dx, 2019/8/7. </remarks>
+    ///
+    /// <param name="result"> [out] The result. </param>
+    ///
+    /// <returns>
+    /// True if it succeeds, false if it fails.
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool startGrabImage(pCameraImage& result);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 采图拆解的3步(对一个相机抓图). </summary>
+    ///
+    /// <remarks> Dx, 2019/8/7. </remarks>
+    ///
+    /// <param name="result">   [out] The result. </param>
+    /// <param name="camIndex"> 相机的index. </param>
+    ///
+    /// <returns>
+    /// True if it succeeds, false if it fails.
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool grabWithCamIndex(pCameraImage& result, int camIndex);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 采图拆解的3步(结束这次抓图). </summary>
+    ///
+    /// <remarks> Dx, 2019/8/7. </remarks>
+    ///
+    /// <param name="result"> [out] The result. </param>
+    ///
+    /// <returns>
+    /// True if it succeeds, false if it fails.
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool endGrabImage(pCameraImage& result);
+
+#pragma endregion
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 打开相机. </summary>
