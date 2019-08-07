@@ -13,6 +13,10 @@
 #    define LogE printf
 #endif // DLOG_EXPORT
 
+#if defined(_WIN32) || defined(_WIN64)
+#    include <windows.h>
+#endif
+
 namespace dxlib {
 
 ThreadPool* ThreadPool::m_pInstance = new ThreadPool();
@@ -23,13 +27,15 @@ class ThreadPool::Impl
   public:
     Impl()
     {
+        pool = new boost::asio::thread_pool{4};
     }
     ~Impl()
     {
+        delete pool;
     }
 
     /// <summary> asio的线程池. </summary>
-    boost::asio::thread_pool pool{4}; // 4 threads
+    boost::asio::thread_pool* pool{nullptr}; // 4 threads
 
     /// <summary> 输入执行的计数. </summary>
     std::_Atomic_ullong addMsgCount{0};
@@ -75,7 +81,7 @@ void ThreadPool::post(std::shared_ptr<ThreadMsg>& msg)
     _impl->addMsgCount += 1;
 
     //这里的传递必须要使用一个拷贝,否则会被释放有问题
-    boost::asio::post(_impl->pool, [msg, this] {
+    boost::asio::post(*(_impl->pool), [msg, this] {
         if (isRun.load()) {
             //执行记录的三个函数指针
             if (msg->init != nullptr) {
@@ -125,13 +131,50 @@ void ThreadPool::waitDone()
 
 void ThreadPool::dispose()
 {
-    _impl->pool.join();
-    _impl->pool.stop();
+    _impl->pool->join();
+    _impl->pool->stop();
+}
+
+void ThreadPool::reset()
+{
+    _impl->pool->stop();
+    delete _impl->pool;
+    _impl->pool = new boost::asio::thread_pool{4};
 }
 
 int ThreadPool::waitExecuteCount()
 {
     return _impl->addMsgCount.load() - _impl->doneCount.load();
 }
+
+#if defined(_WIN32) || defined(_WIN64)
+
+void setPriority(unsigned long processPriority, int threadPriority)
+{
+    DWORD dwError;
+    if (!SetPriorityClass(GetCurrentProcess(), processPriority)) {
+        dwError = GetLastError();
+        LogE("ThreadPool.setPriority():进程优先级设置失败%d", dwError);
+    }
+    //_thread->native_handle()
+    if (!SetThreadPriority(GetCurrentProcess(), threadPriority)) {
+        dwError = GetLastError();
+        LogE("ThreadPool.setPriority():进程优先级设置失败%d", dwError);
+    }
+}
+
+///-------------------------------------------------------------------------------------------------
+/// <summary>
+/// 当前的线程设置高优先级.
+/// </summary>
+///
+/// <remarks> Dx, 2019/8/7. </remarks>
+///-------------------------------------------------------------------------------------------------
+void ThreadPool::CurThreadSetPriorityHigh()
+{
+    setPriority(REALTIME_PRIORITY_CLASS, THREAD_PRIORITY_HIGHEST);
+}
+
+#endif
 
 } // namespace dxlib

@@ -111,6 +111,32 @@ TEST(ThreadPool, CommonThreadPool)
     EXPECT_TRUE(count.load() == 4000) << "count=" << count.load();
 }
 
+TEST(ThreadPool, reset)
+{
+    using namespace dxlib;
+
+    //释放10次,重新构造10次
+    for (size_t i = 0; i < 10; i++) {
+
+        ThreadPool::GetInst()->dispose();
+        ThreadPool::GetInst()->reset();
+
+        std::atomic<int> count{0};
+        for (size_t i = 0; i < 10; i++) {
+            auto msg = ThreadPool::GetInst()->creatMsg();
+            msg->doWork = std::bind([&] {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                count++;
+                //printf("一次%d", count.load());
+            });
+            ThreadPool::GetInst()->post(msg);
+        }
+        ThreadPool::GetInst()->waitDone();
+
+        EXPECT_TRUE(count.load() == 10) << "count=" << count.load();
+    }
+}
+
 TEST(ThreadPool, bindTest)
 {
     using namespace dxlib;
