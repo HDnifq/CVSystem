@@ -117,15 +117,20 @@ void ThreadPool::post(std::shared_ptr<ThreadMsg>& msg)
     });
 }
 
-void ThreadPool::waitDone()
+void ThreadPool::waitDone(int timeSec)
 {
     int count = 1;
+    clock_t t0 = clock();
     while (true) {
         if (_impl->addMsgCount.load() == _impl->doneCount.load()) {
             break;
         }
+        double costTime = (double)(clock() - t0) / CLOCKS_PER_SEC; //计算一个等待了的时间
+        if (timeSec > 0 && costTime > timeSec) {
+            break;
+        }
         count = count * 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(10 * count < 1000 ? 10 * count : 1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10 * count < 100 ? 10 * count : 100));
     }
 }
 
@@ -135,11 +140,11 @@ void ThreadPool::dispose()
     _impl->pool->stop();
 }
 
-void ThreadPool::reset()
+void ThreadPool::reset(size_t num_threads)
 {
     _impl->pool->stop();
     delete _impl->pool;
-    _impl->pool = new boost::asio::thread_pool{4};
+    _impl->pool = new boost::asio::thread_pool{num_threads};
 }
 
 int ThreadPool::waitExecuteCount()

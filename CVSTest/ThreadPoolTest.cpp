@@ -164,3 +164,27 @@ TEST(ThreadPool, bindTest)
     pool.join();
     EXPECT_TRUE(count.load() == 10000) << "count=" << count.load();
 }
+
+TEST(ThreadPool, waitDone)
+{
+    using namespace dxlib;
+    std::atomic<int> count{0};
+    ThreadPool *pool = ThreadPool::GetInst();
+    ThreadPool::GetInst()->dispose();
+    ThreadPool::GetInst()->reset(16);
+
+    //使用100条,200条,300条...依次测试waitDone()的功能.
+    for (size_t i = 0; i < 1000; i += 100) {
+        count = 0;
+        for (size_t j = 0; j < i; j++) {
+            auto msg = ThreadPool::GetInst()->creatMsg();
+            msg->doWork = std::bind([&] {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                count++;
+            });
+            ThreadPool::GetInst()->post(msg);
+        }
+        ThreadPool::GetInst()->waitDone();
+        EXPECT_TRUE(count.load() == i) << "count=" << count.load();
+    }
+}

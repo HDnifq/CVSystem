@@ -42,7 +42,6 @@ void MultiCamera::release(std::shared_ptr<BaseThread>& tb)
 /// <summary> 提供给BaseThread的bing执行事件. </summary>
 void MultiCamera::workonce(std::shared_ptr<BaseThread>& tb)
 {
-
     while (true) {
         //如果这个线程已经是处在要关闭状态了，那么这个函数就赶紧退出吧
         if (!tb->isRun()) {
@@ -156,7 +155,7 @@ bool MultiCamera::openCamera(uint activeIndex)
     }
     else {
         LogE("MultiCamera.openCamera():cameraGrab相机打开失败,关闭相机!");
-        _cameraGrab.close(); //打开失败就关闭线程
+        _cameraGrab.close(); //打开失败就关闭所有相机
         _isRun = false;
         _isOpening = false;
         return false;
