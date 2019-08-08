@@ -11,7 +11,7 @@ using namespace std;
 //亮点测试
 TEST(CVALGO, LightPoint)
 {
-    ImageSave::GetInst()->ReadFormFile("..\\..\\TestImage\\ALGO\\GlassPoint");
+    ImageSave::GetInst()->ReadFormFile("D:\\Work\\CVSystem\\TestImage\\ALGO\\GlassPoint");
 
     auto ig = ImageSave::GetInst()->GetBackImage();
 

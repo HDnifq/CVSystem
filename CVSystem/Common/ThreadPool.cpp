@@ -76,6 +76,8 @@ void ThreadPool::post(std::shared_ptr<ThreadMsg>& msg)
     if (!isRun.load()) {
         return;
     }
+    msg->exeThreadID = std::this_thread::get_id();
+    msg->isRun = true;
 
     //添加计数递增
     _impl->addMsgCount += 1;
@@ -92,16 +94,18 @@ void ThreadPool::post(std::shared_ptr<ThreadMsg>& msg)
                     LogE("ThreadPool.post():消息%s执行init委托异常:%s", msg->name.c_str(), e.what());
                 }
             }
+            msg->isInitDone = true;
 
             if (msg->doWork != nullptr) {
                 try {
                     //在这里用户的代码判断是否需要跳出了然后直接结束
-                    msg->doWork(this->isRun);
+                    msg->doWork(this->isRun, msg);
                 }
                 catch (const std::exception& e) {
                     LogE("ThreadPool.post():消息%s执行doWork委托异常:%s", msg->name.c_str(), e.what());
                 }
             }
+            msg->isDoWorkDone = true;
 
             if (msg->release != nullptr) {
                 try {
@@ -111,9 +115,15 @@ void ThreadPool::post(std::shared_ptr<ThreadMsg>& msg)
                     LogE("ThreadPool.post():消息%s执行release委托异常:%s", msg->name.c_str(), e.what());
                 }
             }
+            msg->isReleaseDone = true;
         }
 
         _impl->doneCount += 1; //标记已经完成了一条消息
+
+        //如果有附带的下一条执行消息,那么就丢进去给后面接着执行
+        if (msg->nextMsg != nullptr) {
+            post(msg->nextMsg);
+        }
     });
 }
 
@@ -175,7 +185,7 @@ void setPriority(unsigned long processPriority, int threadPriority)
 ///
 /// <remarks> Dx, 2019/8/7. </remarks>
 ///-------------------------------------------------------------------------------------------------
-void ThreadPool::CurThreadSetPriorityHigh()
+void ThreadPool::SetCurThreadPriorityHigh()
 {
     setPriority(REALTIME_PRIORITY_CLASS, THREAD_PRIORITY_HIGHEST);
 }

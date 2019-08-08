@@ -15,19 +15,27 @@ namespace dxlib {
 class ThreadMsg
 {
   public:
+    typedef std::function<void()> FunInit;
+    typedef std::function<void(std::atomic_bool&, std::shared_ptr<ThreadMsg>)> FunDoWork;
+    typedef std::function<void()> FunRelease;
+
     ThreadMsg() {}
+    //ThreadMsg(FunInit pInit = nullptr, FunDoWork pDoWork = nullptr, FunRelease pRelease = nullptr)
+    //    : init(pInit), doWork(pDoWork), release(pRelease) {}
     ThreadMsg(const std::string& name) : name(name) {}
     ~ThreadMsg() {}
-
-    typedef std::function<void()> FunInit;
-    typedef std::function<void(std::atomic_bool&)> FunDoWork;
-    typedef std::function<void()> FunRelease;
 
     /// <summary> 一个序号id.</summary>
     size_t id;
 
     /// <summary> 名字.</summary>
     std::string name{"unmanned"};
+
+    /// <summary> 这个工作消息还要不要工作.</summary>
+    std::atomic_bool isRun{true};
+
+    /// <summary> 执行的线程的ID.</summary>
+    std::thread::id exeThreadID;
 
     /// <summary> 执行委托init.</summary>
     FunInit init{nullptr};
@@ -37,6 +45,39 @@ class ThreadMsg
 
     /// <summary> 执行委托release. </summary>
     FunRelease release{nullptr};
+
+    /// <summary> 执行完这个消息之后再执行的下一个消息. </summary>
+    std::shared_ptr<ThreadMsg> nextMsg{nullptr};
+
+#pragma region 执行状态
+
+    std::atomic_bool isInitDone{false};
+    std::atomic_bool isDoWorkDone{false};
+    std::atomic_bool isReleaseDone{false};
+
+#pragma endregion
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 等待这个消息执行完毕. </summary>
+    ///
+    /// <remarks> Dx, 2019/8/8. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    std::shared_ptr<ThreadMsg> waitDone()
+    {
+        //如果是自己执行的时候要停止自己
+        if (std::this_thread::get_id() == exeThreadID) {
+            return nextMsg;
+        }
+        else {
+            while (true) {
+                if (isReleaseDone.load()) {
+                    break;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            }
+        }
+        return nextMsg;
+    }
 
   private:
 };
@@ -141,7 +182,7 @@ class ThreadPool
     ///
     /// <remarks> Dx, 2019/8/7. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    static void CurThreadSetPriorityHigh();
+    static void SetCurThreadPriorityHigh();
 
 #endif
 

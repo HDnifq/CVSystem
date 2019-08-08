@@ -148,7 +148,7 @@ class BaseThread
         _init = nullptr;
         _workOnce = nullptr;
 
-        //如果是当前线程执行的Stop，那么就直接执行一次
+        //如果是当前线程执行的Stop，那么就直接执行一次release
         if (std::this_thread::get_id() == _thread->get_id()) {
             if (!_isReleaseProc.load() && _release != nullptr) {
                 _isReleaseProc = true;
@@ -197,6 +197,31 @@ class BaseThread
     bool isThreadFunReturn()
     {
         return _isThreadFunReturn.load();
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 等待线程执行完毕,返回false表示没有能够等待,因为当前执行的线程就是这个工作线程,
+    /// 返回true表示成功等待.
+    /// </summary>
+    ///
+    /// <remarks> Dx, 2019/8/8. </remarks>
+    ///
+    /// <returns>
+    /// 返回false表示没有能够等待,因为当前执行的线程就是这个工作线程,返回true表示成功等待.
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool waitExit()
+    {
+        //如果执行函数的就是线程自己,那么就直接返回
+        if (std::this_thread::get_id() == _thread->get_id()) {
+            return false;
+        }
+        //一直等线程执行完毕
+        while (!_isThreadFunReturn.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        return true;
     }
 
     ///-------------------------------------------------------------------------------------------------
