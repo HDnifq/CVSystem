@@ -69,20 +69,53 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 }
                 continue;
             }
-            ImageItem& item = cimg->vImage[camIndex];
-            item.camera = vCameras[camIndex].get(); //标记camera来源
+            //如果不是stereo相机这样
+            if (!vCameras[camIndex]->isStereoCamera) {
+                ImageItem& item = cimg->vImage[camIndex];
+                item.camera = vCameras[camIndex].get(); //标记camera来源
 
-            item.grabStartTime = clock();
-            if (vCameras[camIndex]->capture->read(item.image)) {
+                item.grabStartTime = clock();
+                if (vCameras[camIndex]->capture->read(item.image)) {
 
-                item.isSuccess = true;
-                item.grabEndTime = clock();
-                LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+                    item.isSuccess = true;
+                    item.grabEndTime = clock();
+                    LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+                }
+                else {
+                    item.isSuccess = false;
+                    item.grabEndTime = clock();
+                    LogE("CameraGrab.grab():cam %d 采图read失败！", camIndex);
+                }
             }
             else {
-                item.isSuccess = false;
-                item.grabEndTime = clock();
-                LogE("CameraGrab.grab():cam %d 采图read失败！", camIndex);
+                //如果是stereo相机
+                ImageItem& item = cimg->vImage[camIndex];
+                item.camera = vCameras[camIndex].get(); //标记camera来源
+
+                int camIndexL = vCameras[camIndex]->stereoL->camIndex;
+                int camIndexR = vCameras[camIndex]->stereoR->camIndex;
+                ImageItem& itemL = cimg->vImage[camIndexL];
+                ImageItem& itemR = cimg->vImage[camIndexR];
+                itemL.camera = vCameras[camIndexL].get(); //标记camera来源
+                itemR.camera = vCameras[camIndexR].get(); //标记camera来源
+                item.grabStartTime = itemL.grabStartTime = itemR.grabStartTime = clock();
+
+                if (vCameras[camIndex]->capture->read(item.image)) {
+                    item.isSuccess = itemL.isSuccess = itemR.isSuccess = true;
+                    item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
+
+                    int w = item.image.cols;
+                    int h = item.image.rows;
+                    itemL.image = cv::Mat(item.image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
+                    itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的左半边
+                    LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+                }
+                else {
+                    item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
+                    item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
+
+                    LogE("CameraGrab.grab():cam %d 采图read失败！", camIndex);
+                }
             }
         }
         catch (const std::exception& e) {

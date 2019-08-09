@@ -19,6 +19,12 @@ TEST(CVALGO, LightPoint)
     for (auto& kvp : ig) {
         LightPoint::Result result;
         LightPoint::detection(kvp.second, param, result);
+
+        cv::Mat img = kvp.second;
+        int w = img.cols;
+        int h = img.rows;
+        cv::Mat imgL = cv::Mat(img, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
+        cv::Mat imgR = cv::Mat(img, cv::Rect(w / 2, 0, w / 2, h)); //等于图的左半边
     }
 }
 

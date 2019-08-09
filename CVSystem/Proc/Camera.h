@@ -171,6 +171,25 @@ class Camera
 
 #pragma endregion
 
+#pragma region 立体相机扩展
+    /*
+     * 当这个相机是一个硬件上的双目相机的时候,那么先录入所有的逻辑相机,然后再创建这个立体相机
+     */
+
+    /// <summary> 这个相机是否是一个立体相机. </summary>
+    bool isStereoCamera = false;
+
+    /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
+    size_t scID = 0;
+
+    /// <summary> 双目相机里的L相机. </summary>
+    std::shared_ptr<Camera> stereoL = nullptr;
+
+    /// <summary> 双目相机里的R相机. </summary>
+    std::shared_ptr<Camera> stereoR = nullptr;
+
+#pragma endregion
+
   private:
     //隐藏成员字段
     struct Impl;
