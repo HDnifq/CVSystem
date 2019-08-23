@@ -6,8 +6,25 @@ namespace dxlib {
 
 #pragma region 私有字段
 
-struct Draw::Impl
+class Draw::Impl
 {
+  public:
+    Impl()
+    {
+        vColor.push_back({0, 255, 0});
+        vColor.push_back({214, 112, 218});
+        vColor.push_back({0, 255, 225});
+        vColor.push_back({87, 207, 227});
+        vColor.push_back({100, 255, 0});
+        vColor.push_back({150, 255, 0});
+        vColor.push_back({200, 255, 0});
+        vColor.push_back({255, 0, 0});
+        vColor.push_back({255, 100, 0});
+        vColor.push_back({255, 140, 0});
+        vColor.push_back({255, 200, 100});
+        vColor.push_back({200, 200, 200});
+    }
+
     /// <summary>要开启的窗口名字. </summary>
     std::string winName;
 
@@ -22,6 +39,9 @@ struct Draw::Impl
 
     /// <summary> 预设的用来画相机的图像的roi. </summary>
     std::vector<cv::Rect> vImageROI;
+
+    /// <summary> 所有颜色. </summary>
+    std::vector<cv::Scalar> vColor;
 };
 
 cv::Mat& Draw::diagram()
@@ -84,6 +104,16 @@ void Draw::setImageROI(const cv::Size& size, int count)
 
     _impl->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height, size.width, size.height));     //3号相机画在右下角
     _impl->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height * 2, size.width, size.height)); //4号相机画在右上角
+}
+
+cv::Scalar Draw::getColor(unsigned int seed)
+{
+    if (seed >= 0 && seed < _impl->vColor.size()) {
+        return _impl->vColor[seed];
+    }
+    else {
+        _impl->vColor.back();
+    }
 }
 
 cv::Mat& Draw::drawRectangle(const cv::Rect2f& rect, const cv::Scalar& color)

@@ -81,6 +81,19 @@ pStereoCamera CameraManger::getStereo(pCamera camera)
     return nullptr;
 }
 
+pStereoCamera CameraManger::getStereo(int camIndex)
+{
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->camL->camIndex == camIndex) {
+            return vStereo[i];
+        }
+        if (vStereo[i]->camR->camIndex == camIndex) {
+            return vStereo[i];
+        }
+    }
+    return nullptr;
+}
+
 bool CameraManger::setProp(int camIndex, int CAP_PROP, double value)
 {
     auto iter = camMap.find(camIndex);

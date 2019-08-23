@@ -28,7 +28,7 @@ class Draw
     int nameCount;
 
     //隐藏成员字段
-    struct Impl;
+    class Impl;
 
     /// <summary> 数据成员. </summary>
     Impl* _impl = nullptr;
@@ -104,6 +104,17 @@ class Draw
     /// <param name="count"> 预备的数量. </param>
     ///-------------------------------------------------------------------------------------------------
     void setImageROI(const cv::Size& size, int count = 4);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 根据一个int去得到一个颜色. </summary>
+    ///
+    /// <remarks> Dx, 2019/8/23. </remarks>
+    ///
+    /// <param name="seed"> The seed. </param>
+    ///
+    /// <returns> The color. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Scalar getColor(unsigned int seed);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 画一个矩形. </summary>
