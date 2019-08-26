@@ -20,6 +20,8 @@ typedef GenericStringBuffer<UTF16<>> StringBufferW;
 
 } // namespace rapidjson
 
+//注.如果定义了#pragma execution_character_set("utf-8"),那么文件内容是UTF-8
+
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -205,7 +207,7 @@ class JsonHelper
     ///
     /// <returns> A std::wstring. </returns>
     ///-------------------------------------------------------------------------------------------------
-    static inline std::wstring utf8To16(const std::string str)
+    static inline std::wstring utf8To16(const std::string& str)
     {
         using namespace rapidjson;
         StringStream source(str.c_str());
@@ -231,7 +233,7 @@ class JsonHelper
     ///
     /// <returns> A std::string. </returns>
     ///-------------------------------------------------------------------------------------------------
-    static inline std::string utf16To8(const std::wstring str)
+    static inline std::string utf16To8(const std::wstring& str)
     {
         using namespace rapidjson;
         StringStreamW source(str.c_str());
