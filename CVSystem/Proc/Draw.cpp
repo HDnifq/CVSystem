@@ -112,7 +112,7 @@ cv::Scalar Draw::getColor(unsigned int seed)
         return _impl->vColor[seed];
     }
     else {
-        _impl->vColor.back();
+       return _impl->vColor.back();
     }
 }
 
