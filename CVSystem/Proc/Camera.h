@@ -171,6 +171,33 @@ class Camera
 
 #pragma endregion
 
+#pragma region 特殊相机扩展
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 相机的一些特殊安装形式,如安装时翻转了180度等等. </summary>
+    ///
+    /// <remarks> Dx, 2019/10/7. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    enum class SpecialTpye
+    {
+        /// <summary>
+        /// 正常.
+        /// </summary>
+        None,
+        /// <summary>
+        /// 旋转了180度.
+        /// </summary>
+        Rotate180,
+    };
+
+    /// <summary> 相机的特殊类型. </summary>
+    SpecialTpye specialTpye = SpecialTpye::None;
+
+    /// <summary> 是否在采图的时候处理相机的特殊类型. </summary>
+    bool isProcSpecialTpye = true;
+
+#pragma endregion
+
 #pragma region 立体相机扩展
     /*
      * 当这个相机是一个硬件上的双目相机的时候,那么先录入所有的逻辑相机,然后再创建这个立体相机
@@ -182,11 +209,11 @@ class Camera
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
     size_t scID = 0;
 
-    /// <summary> 双目相机里的L相机. </summary>
-    std::shared_ptr<Camera> stereoL = nullptr;
+    /// <summary> 双目相机里的L相机(要改成camIndex比较好). </summary>
+    Camera* stereoL = nullptr;
 
-    /// <summary> 双目相机里的R相机. </summary>
-    std::shared_ptr<Camera> stereoR = nullptr;
+    /// <summary> 双目相机里的R相机(要改成camIndex比较好). </summary>
+    Camera* stereoR = nullptr;
 
 #pragma endregion
 

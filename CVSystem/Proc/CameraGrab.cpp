@@ -61,8 +61,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
             if (vCameras[camIndex] == nullptr) {
                 continue;
             }
+            Camera* curCamera = vCameras[camIndex].get();
 
-            if (!vCameras[camIndex]->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
+            if (!curCamera->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
                 if (!isIgnoreFailureCamera) {
                     //如果忽略失败相机那么就打个日志
                     LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
@@ -70,13 +71,18 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 continue;
             }
             //如果不是stereo相机这样
-            if (!vCameras[camIndex]->isStereoCamera) {
+            if (!curCamera->isStereoCamera) {
                 ImageItem& item = cimg->vImage[camIndex];
-                item.camera = vCameras[camIndex].get(); //标记camera来源
+                item.camera = curCamera; //标记camera来源
 
                 item.grabStartTime = clock();
-                if (vCameras[camIndex]->capture->read(item.image)) {
-
+                if (curCamera->capture->read(item.image)) {
+                    //如果是需要处理,特殊相机旋转了180度的
+                    if (curCamera->isProcSpecialTpye && curCamera->specialTpye == Camera::SpecialTpye::Rotate180) {
+                        cv::Mat normalImage;
+                        cv::rotate(item.image, normalImage, cv::ROTATE_180);
+                        item.image = normalImage;
+                    }
                     item.isSuccess = true;
                     item.grabEndTime = clock();
                     LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
