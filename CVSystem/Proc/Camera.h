@@ -169,6 +169,19 @@ class Camera
     ///-------------------------------------------------------------------------------------------------
     std::string toFOURCC(double FOURCC);
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 将屏幕上的一点根据内参矩阵映射到世界空间中的一点,这个方法配合Charuco使用,目前发现将M矩阵的焦距中心放到正中,
+    ///           把所有的畸变参数都去掉了,它计算合并的比较准. </summary>
+    ///
+    /// <remarks> Dx, 2019/10/8. </remarks>
+    ///
+    /// <param name="screenPoint"> 屏幕上的一点. </param>
+    /// <param name="z">           (Optional) 一般为1 </param>
+    ///
+    /// <returns> A cv::Point3d. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Point3d screenToWorld(cv::Point2f screenPoint, float z = 1);
+
 #pragma endregion
 
 #pragma region 特殊相机扩展
