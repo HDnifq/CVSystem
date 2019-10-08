@@ -1,7 +1,5 @@
 ﻿#pragma once
 #include <opencv2/opencv.hpp>
-#include <Eigen/Geometry>
-#include <unsupported/Eigen/EulerAngles>
 #include <iostream>
 #include <memory>
 
@@ -70,10 +68,10 @@ class Camera
     cv::Mat camRT4x4;
 
     /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    Eigen::Vector3d camPos;
+    std::array<double, 3> camPos;
 
     /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    Eigen::Quaterniond camRotate;
+    std::array<double, 4> camRotate;
 
     /// <summary> 双目相机里的另一对相机. </summary>
     std::shared_ptr<Camera> stereoOther = nullptr;
@@ -187,7 +185,7 @@ class Camera
     ///
     /// <returns> A cv::Point3d. </returns>
     ///-------------------------------------------------------------------------------------------------
-    Eigen::Vector3d screenToWorld(cv::Point2f screenPoint, float z = 1);
+    cv::Point3d screenToWorld(cv::Point2f screenPoint, float z = 1);
 
 #pragma endregion
 

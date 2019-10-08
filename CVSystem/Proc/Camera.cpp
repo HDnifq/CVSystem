@@ -272,7 +272,7 @@ void Camera::initUndistortRectifyMap()
     cv::initUndistortRectifyMap(this->camMatrix, this->distCoeffs, this->R, this->P, this->size, CV_16SC2, this->rmap1, this->rmap2);
 }
 
-Eigen::Vector3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
+cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
 {
     screenPoint.y = this->size.height - screenPoint.y; //是以左下角为起点的
     const double* pd = this->camMatrix.ptr<double>();
@@ -284,6 +284,6 @@ Eigen::Vector3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
     //世界坐标
     cv::Mat mp = (cv::Mat_<double>(4, 1) << (screenPoint.x - cx) / fx * z, (screenPoint.y - cy) / fy * z, z, 1);
     cv::Mat p = this->camRT4x4 * mp;
-    return Eigen::Vector3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
+    return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
 } // namespace dxlib
