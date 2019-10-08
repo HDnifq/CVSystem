@@ -137,6 +137,10 @@ bool MultiCamera::openCamera(uint activeIndex)
     _cameraGrab.setCameras(CameraManger::GetInst()->camMap);
     _cameraGrab.isIgnoreFailureCamera = true;
 
+    if (this->vProc.size() == 0) {
+        LogW("MultiCamera.openCamera():当前没有添加处理proc...");
+    }
+
     //设置当前的帧处理
     this->setActiveProc(activeIndex);
 
