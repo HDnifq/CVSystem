@@ -78,9 +78,10 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     }
 
     //默认设置一个属性值
+    //_impl->_setCapProp[CV_CAP_PROP_FOURCC] = CV_FOURCC('M', 'J', 'P', 'G');
     _impl->_setCapProp[CV_CAP_PROP_BRIGHTNESS] = aBrightness;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
+    //_impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
+    //_impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
     devNameA = StringHelper::ws2s(aDevName);
 
@@ -99,6 +100,10 @@ void Camera::setProp(int CV_CAP_PROP, double value)
 
 bool Camera::open()
 {
+    if (isVirtualCamera) {
+        return false;
+    }
+
     //如果存在VideoCapture那么就释放
     if (capture != nullptr) {
         capture->release();
@@ -107,9 +112,6 @@ bool Camera::open()
 
     capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
 
-    //重设一下等会要打开相机的时候需要设置的属性
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = size.height;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = size.width;
     // CV_FOURCC('M', 'J', 'P', 'G');
 
     //列出设备
@@ -138,6 +140,15 @@ bool Camera::open()
 #elif __linux
                 if (capture->open(StringHelper::ws2s(devName), cv::CAP_V4L)) {
 #endif
+                    outputProp();
+                    //重设一下等会要打开相机的时候需要设置的属性
+                    //double dFourcc = capture->get(CV_CAP_PROP_FOURCC);
+                    //重设一下等会要打开相机的时候需要设置的属性
+                    setProp(CV_CAP_PROP_FRAME_HEIGHT, size.height);
+                    setProp(CV_CAP_PROP_FRAME_WIDTH, size.width);
+                    setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+                    //capture->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+
                     applyCapProp(); //打开成功之后设置一下相机属性
                     break;          //打开成功
                 }
@@ -182,6 +193,10 @@ void Camera::release()
 
 bool Camera::applyCapProp()
 {
+    if (isVirtualCamera) {
+        return true;
+    }
+
     if (capture == nullptr || !capture->isOpened()) {
         return false;
     }
@@ -237,7 +252,7 @@ void Camera::outputProp()
     int FOCUS = static_cast<int>(capture->get(CV_CAP_PROP_FOCUS));
     int AUTO_EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_AUTO_EXPOSURE));
 
-    LogI("Camera.outputProp()相机当前w =%d h=%d fps=%d mode=%d fourcc=%s brightness=%d", w, h, fps, mode, fourcc, brightness);
+    LogI("Camera.outputProp()相机当前w=%d h=%d fps=%d mode=%d fourcc=%s brightness=%d", w, h, fps, mode, fourcc, brightness);
     LogI("Camera.outputProp()AUTO_EXPOSURE=%d EXPOSURE=%d FOCUS=%d", AUTO_EXPOSURE, EXPOSURE, FOCUS);
 }
 

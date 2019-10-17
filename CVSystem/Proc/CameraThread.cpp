@@ -28,8 +28,7 @@ CameraThread::CameraThread(const pCamera& cp)
 {
     this->queueData = new QueueData();
 
-    if (!cp->isVirtualCamera)
-        vCameras.push_back(cp);
+    vCameras.push_back(cp);
 }
 
 CameraThread::CameraThread(const std::vector<pCamera>& cps)
@@ -37,8 +36,7 @@ CameraThread::CameraThread(const std::vector<pCamera>& cps)
     this->queueData = new QueueData();
 
     for (auto& item : cps) {
-        if (!item->isVirtualCamera)
-            vCameras.push_back(item);
+        vCameras.push_back(item);
     }
 }
 
@@ -48,8 +46,7 @@ CameraThread::CameraThread(const std::map<int, pCamera>& cps)
 
     //使用这个那么没有办法保证一个vCameras的顺序等于index
     for (auto& kvp : cps) {
-        if (!kvp.second->isVirtualCamera)
-            vCameras.push_back(kvp.second);
+        vCameras.push_back(kvp.second);
     }
 }
 

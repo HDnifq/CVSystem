@@ -227,11 +227,11 @@ class Camera
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
     size_t scID = 0;
 
-    /// <summary> 双目相机里的L相机(要改成camIndex比较好). </summary>
-    Camera* stereoL = nullptr;
+    /// <summary> 双目相机里的L相机的camIndex. </summary>
+    int stereoCamIndexL = 0;
 
-    /// <summary> 双目相机里的R相机(要改成camIndex比较好). </summary>
-    Camera* stereoR = nullptr;
+    /// <summary> 双目相机里的R相机的camIndex. </summary>
+    int stereoCamIndexR = 0;
 
 #pragma endregion
 

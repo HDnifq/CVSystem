@@ -13,8 +13,7 @@ CameraGrab::CameraGrab()
 CameraGrab::CameraGrab(const std::vector<pCamera>& cps)
 {
     for (auto& item : cps) {
-        if (!item->isVirtualCamera)
-            vCameras.push_back(item);
+        vCameras.push_back(item);
     }
 }
 
@@ -26,15 +25,11 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 {
     vCameras.clear();
     for (auto& kvp : camMap) {
-        if (!kvp.second->isVirtualCamera) {
-            //保证resize
-            if (vCameras.size() <= kvp.second->camIndex) {
-                vCameras.resize(kvp.second->camIndex + 1); //这里resize一个指针数组那么会创建一些空指针
-            }
-            vCameras[kvp.second->camIndex] = kvp.second;
+        //保证resize
+        if (vCameras.size() <= kvp.second->camIndex) {
+            vCameras.resize(kvp.second->camIndex + 1); //这里resize一个指针数组那么会创建一些空指针
         }
-        else {
-        }
+        vCameras[kvp.second->camIndex] = kvp.second;
     }
 }
 
@@ -62,6 +57,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 continue;
             }
             Camera* curCamera = vCameras[camIndex].get();
+            if (curCamera->isVirtualCamera) {
+                continue;
+            }
 
             if (!curCamera->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
                 if (!isIgnoreFailureCamera) {
@@ -98,8 +96,8 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 ImageItem& item = cimg->vImage[camIndex];
                 item.camera = vCameras[camIndex].get(); //标记camera来源
 
-                int camIndexL = vCameras[camIndex]->stereoL->camIndex;
-                int camIndexR = vCameras[camIndex]->stereoR->camIndex;
+                int camIndexL = vCameras[camIndex]->stereoCamIndexL;
+                int camIndexR = vCameras[camIndex]->stereoCamIndexR;
                 ImageItem& itemL = cimg->vImage[camIndexL];
                 ImageItem& itemR = cimg->vImage[camIndexR];
                 itemL.camera = vCameras[camIndexL].get(); //标记camera来源
@@ -113,7 +111,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
                     int w = item.image.cols;
                     int h = item.image.rows;
                     itemL.image = cv::Mat(item.image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
-                    itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的左半边
+                    itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
                     LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
                 }
                 else {
@@ -207,10 +205,12 @@ bool CameraGrab::open()
         if (vCameras[camIndex] == nullptr) {
             continue;
         }
-
+        if (vCameras[camIndex]->isVirtualCamera) {
+            LogI("CameraGrab.open(): 相机 %s 是虚拟相机...", vCameras[camIndex]->devNameA.c_str());
+            continue;
+        }
         LogI("CameraGrab.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
         boost::timer t;
-
         //打开相机
         if (vCameras[camIndex]->open()) {
             double costTime = t.elapsed();
