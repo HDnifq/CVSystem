@@ -33,7 +33,7 @@ class CamImageProc : public FrameProc
         for (auto& item : camImage->vImage) {
 
             //应该只有采图成功的相机才处理
-            if (!item.isSuccess) {
+            if (!item.isSuccess || item.camera == nullptr) {
                 continue;
             }
 
@@ -44,6 +44,11 @@ class CamImageProc : public FrameProc
             else {
                 out = item.image;
             }
+
+            char buf[32];
+            snprintf(buf, sizeof(buf), "fps:%.1f", item.camera->FPS);
+            cv::putText(out, buf, cv::Point(0, 14), cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(0, 255, 0), 1, 8);
+
             cv::namedWindow("CamImage" + std::to_string(item.camera->camIndex), cv::WINDOW_AUTOSIZE);
             cv::imshow("CamImage" + std::to_string(item.camera->camIndex), out);
         }
@@ -66,9 +71,10 @@ class CamImageProc : public FrameProc
     ///-------------------------------------------------------------------------------------------------
     void onEnable() override
     {
-        for (auto& kvp : CameraManger::GetInst()->camMap) {
-            kvp.second->setProp(CV_CAP_PROP_BRIGHTNESS, 64);
-        }
+        //不要去调设置了
+        //for (auto& kvp : CameraManger::GetInst()->camMap) {
+        //    kvp.second->setProp(CV_CAP_PROP_BRIGHTNESS, 64);
+        //}
     }
 
     ///-------------------------------------------------------------------------------------------------

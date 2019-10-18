@@ -211,8 +211,8 @@ class Camera
     /// <summary> 相机的特殊类型. </summary>
     SpecialTpye specialTpye = SpecialTpye::None;
 
-    /// <summary> 是否在采图的时候处理相机的特殊类型. </summary>
-    bool isProcSpecialTpye = true;
+    /// <summary> 是否在采图的时候自动处理相机的特殊类型，如采图的时候直接翻转180度，则后面处理逻辑不需要处理. </summary>
+    bool isAutoProcSpecialTpye = true;
 
 #pragma endregion
 
@@ -221,17 +221,20 @@ class Camera
      * 当这个相机是一个硬件上的双目相机的时候,那么先录入所有的逻辑相机,然后再创建这个立体相机
      */
 
-    /// <summary> 这个相机是否是一个立体相机. </summary>
+    /// <summary> 这个相机是否是一个立体相机，它标记着会去自动切割这个立体相机的图像，将它们转到对应的逻辑相机. </summary>
     bool isStereoCamera = false;
 
+    /// <summary> 是否不要传图到后面给Proc. </summary>
+    bool isNoSendToProc = false;
+
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
-    size_t scID = 0;
+    int scID = -1;
 
     /// <summary> 双目相机里的L相机的camIndex. </summary>
-    int stereoCamIndexL = 0;
+    int stereoCamIndexL = -1;
 
     /// <summary> 双目相机里的R相机的camIndex. </summary>
-    int stereoCamIndexR = 0;
+    int stereoCamIndexR = -1;
 
 #pragma endregion
 

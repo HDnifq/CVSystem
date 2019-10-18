@@ -80,8 +80,8 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     //默认设置一个属性值
     //_impl->_setCapProp[CV_CAP_PROP_FOURCC] = CV_FOURCC('M', 'J', 'P', 'G');
     _impl->_setCapProp[CV_CAP_PROP_BRIGHTNESS] = aBrightness;
-    //_impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
-    //_impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
+    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
+    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
     devNameA = StringHelper::ws2s(aDevName);
 
@@ -125,14 +125,14 @@ bool Camera::open()
 #else
     devID = DevicesHelper::GetInst()->getIndexWithName(devName, true); //记录devID,使用正则寻找
 #endif
-    if (devID != -1) { //如果打开失败会返回-1
+    if (devID != -1) { //如果获取ID失败会返回-1
 
         // In case a resource was already
         // associated with the VideoCapture instance
         capture->release();
 
         int count = 0;
-        while (count < 3) { //重试3次
+        while (count < 5) { //重试5次
             try {
                 //调用opencv的打开相机
 #if defined(_WIN32) || defined(_WIN64)
@@ -142,14 +142,10 @@ bool Camera::open()
 #endif
                     outputProp();
                     //重设一下等会要打开相机的时候需要设置的属性
-                    //double dFourcc = capture->get(CV_CAP_PROP_FOURCC);
-                    //重设一下等会要打开相机的时候需要设置的属性
-                    setProp(CV_CAP_PROP_FRAME_HEIGHT, size.height);
-                    setProp(CV_CAP_PROP_FRAME_WIDTH, size.width);
-                    setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+                    //setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
                     //capture->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
 
-                    applyCapProp(); //打开成功之后设置一下相机属性
+                    applyCapProp(); //打开成功之后立马设置一下相机属性
                     break;          //打开成功
                 }
                 else {
@@ -162,12 +158,12 @@ bool Camera::open()
             count++;
 
             capture->release();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //休眠1000ms
-        }
 
-        if (count == 3) { //失败超过3次
-            LogE("Camera.openCamera():打开摄像头失败!");
-            return false;
+            if (count == 5) { //失败超过5次
+                LogE("Camera.openCamera():打开摄像头失败!");
+                return false;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); //休眠2000ms
         }
 
         outputProp(); //输出一下当前关心的相机属性状态
@@ -187,6 +183,7 @@ void Camera::release()
 {
     if (capture != nullptr) {
         capture->release();
+        capture = nullptr;
     }
     FPS = 0;
 }

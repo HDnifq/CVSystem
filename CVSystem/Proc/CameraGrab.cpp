@@ -76,7 +76,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 item.grabStartTime = clock();
                 if (curCamera->capture->read(item.image)) {
                     //如果是需要处理,特殊相机旋转了180度的
-                    if (curCamera->isProcSpecialTpye && curCamera->specialTpye == Camera::SpecialTpye::Rotate180) {
+                    if (curCamera->isAutoProcSpecialTpye && curCamera->specialTpye == Camera::SpecialTpye::Rotate180) {
                         cv::Mat normalImage;
                         cv::rotate(item.image, normalImage, cv::ROTATE_180);
                         item.image = normalImage;
@@ -98,6 +98,8 @@ bool CameraGrab::grab(pCameraImage& cimg)
 
                 int camIndexL = vCameras[camIndex]->stereoCamIndexL;
                 int camIndexR = vCameras[camIndex]->stereoCamIndexR;
+                CV_Assert(camIndexL >= 0 && camIndexR >= 0);
+
                 ImageItem& itemL = cimg->vImage[camIndexL];
                 ImageItem& itemR = cimg->vImage[camIndexR];
                 itemL.camera = vCameras[camIndexL].get(); //标记camera来源
@@ -113,6 +115,12 @@ bool CameraGrab::grab(pCameraImage& cimg)
                     itemL.image = cv::Mat(item.image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
                     itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
                     LogD("CameraGrab.grab():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+
+                    //如果不传图到后面的处理,那么直接干掉这个
+                    if (curCamera->isNoSendToProc) {
+                        item.image.release();
+                        item.isSuccess = false;
+                    }
                 }
                 else {
                     item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
