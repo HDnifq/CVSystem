@@ -22,7 +22,7 @@ class CameraGrab
     std::vector<pCamera> vCameras;
 
     /// <summary> 是否忽略失败的相机. </summary>
-    bool isIgnoreFailureCamera{true};
+    bool isIgnoreFailureCamera = true;
 
     /// <summary> 已采集的帧数. </summary>
     long fnumber = 0;
@@ -98,8 +98,6 @@ class CameraGrab
     /// <summary> 打开相机. </summary>
     ///
     /// <remarks> Dx, 2019/3/5. </remarks>
-    ///
-    /// <param name="isIgnoreFailure"> (Optional) 是否忽略失败的相机. </param>
     ///
     /// <returns>
     /// True if it succeeds, false if it fails.

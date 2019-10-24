@@ -1,9 +1,9 @@
-﻿#include "Camera.h"
-#include "dlog/dlog.h"
+﻿#include "dlog/dlog.h"
 #include "../Common/StringHelper.h"
 #include "DevicesHelper.h"
 #include <chrono>
 #include <thread>
+#include "Camera.h"
 
 //所有的CV_CAP_PROP的数组的长度
 #define DXLIB_CAMERA_CAP_PROP_LEN 128
@@ -55,8 +55,12 @@ const char* CAP_PROP_STR[] = {
     "SAR_DEN",
 };
 
-struct Camera::Impl
+class Camera::Impl
 {
+  public:
+    Impl() {}
+    ~Impl() {}
+
     /// <summary> 暂存的上次设置的结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
     double lastCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 
@@ -93,90 +97,90 @@ Camera::~Camera()
     delete _impl;
 }
 
-void Camera::setProp(int CV_CAP_PROP, double value)
-{
-    _impl->_setCapProp[CV_CAP_PROP] = value;
-}
-
 bool Camera::open()
 {
     if (isVirtualCamera) {
-        return false;
+        //虚拟相机不应该打开,但是如果调用了,那么也不会报错.
+        LogW("Camera.open():该相机%s是虚拟相机,不应该调用open()函数，直接返回true！", this->devNameA.c_str());
+        return true;
     }
 
     //如果存在VideoCapture那么就释放
-    if (capture != nullptr) {
+    if (capture == nullptr) {
+        capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
+    }
+    else {
         capture->release();
     }
     FPS = 0;
 
-    capture = std::shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
-
-    // CV_FOURCC('M', 'J', 'P', 'G');
-
     //列出设备
     DevicesHelper::GetInst()->listDevices();
     if (DevicesHelper::GetInst()->devList.size() == 0) {
-        LogE("Camera.openCamera():listDevices相机个数为0,直接返回!");
+        LogE("Camera.open():listDevices相机个数为0,直接返回!");
         return false;
     }
-#if defined(_WIN32) || defined(_WIN64)
-    devID = DevicesHelper::GetInst()->getIndexWithName(devName); //记录devID
-#else
-    devID = DevicesHelper::GetInst()->getIndexWithName(devName, true); //记录devID,使用正则寻找
-#endif
-    if (devID != -1) { //如果获取ID失败会返回-1
 
-        // In case a resource was already
-        // associated with the VideoCapture instance
+#if __linux
+    devID = DevicesHelper::GetInst()->getIndexWithName(devName, true); //记录devID,使用正则寻找
+#else
+    devID = DevicesHelper::GetInst()->getIndexWithName(devName); //记录devID
+#endif
+
+    //如果获取ID失败会返回-1
+    if (devID == -1) {
+        LogE("Camera.open():未找到该名称的相机%s!", this->devNameA.c_str());
+        for (auto& kvp : DevicesHelper::GetInst()->devList) {
+            LogE("Camera.open():当前相机有:%s", StringHelper::ws2s(kvp.second).c_str());
+        }
+
+        release(); //去把capture置为null
+        return false;
+    }
+
+    // In case a resource was already
+    // associated with the VideoCapture instance
+    capture->release();
+
+    int count = 0;
+    while (true) { //重试5次，调用opencv的打开相机
+        try {
+#if __linux
+            if (capture->open(StringHelper::ws2s(devName), cv::CAP_V4L))
+#else
+            if (capture->open(devID))
+#endif
+            {
+                outputProp();
+                //重设一下等会要打开相机的时候需要设置的属性
+                //setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G')); //下面的applyCapProp里生效
+                //capture->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));//立即生效
+
+                applyCapProp(); //打开成功之后立马设置一下相机属性
+                break;          //打开成功
+            }
+            else {
+                LogW("Camera.open():打开摄像头失败，重试。。。");
+            }
+        }
+        catch (const std::exception& e) {
+            LogE("Camera.open():打开摄像头异常:%s ", e.what());
+        }
+        count++;
+
         capture->release();
 
-        int count = 0;
-        while (count < 5) { //重试5次
-            try {
-                //调用opencv的打开相机
-#if defined(_WIN32) || defined(_WIN64)
-                if (capture->open(devID)) {
-#elif __linux
-                if (capture->open(StringHelper::ws2s(devName), cv::CAP_V4L)) {
-#endif
-                    outputProp();
-                    //重设一下等会要打开相机的时候需要设置的属性
-                    //setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-                    //capture->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-
-                    applyCapProp(); //打开成功之后立马设置一下相机属性
-                    break;          //打开成功
-                }
-                else {
-                    LogW("Camera.openCamera():打开摄像头失败，重试。。。");
-                }
-            }
-            catch (const std::exception& e) {
-                LogE("Camera.openCamera():打开摄像头异常:%s ", e.what());
-            }
-            count++;
-
-            capture->release();
-
-            if (count == 5) { //失败超过5次
-                LogE("Camera.openCamera():打开摄像头失败!");
-                return false;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); //休眠2000ms
+        if (count == 5) { //失败超过5次
+            LogE("Camera.open():打开摄像头失败!");
+            release(); //去把capture置为null
+            return false;
         }
-
-        outputProp(); //输出一下当前关心的相机属性状态
-        return true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000)); //休眠2000ms
     }
-    else {
-        LogE("Camera.openCamera():未找到该名称的相机%s!", this->devNameA.c_str());
-        for (auto& kvp : DevicesHelper::GetInst()->devList) {
-            LogE("Camera.openCamera():当前相机有:%s", StringHelper::ws2s(kvp.second).c_str());
-        }
 
-        return false;
-    }
+    //打开相机成功之后会进入这里
+    outputProp(); //输出一下当前关心的相机属性状态
+    return true;
 }
 
 void Camera::release()
@@ -186,6 +190,11 @@ void Camera::release()
         capture = nullptr;
     }
     FPS = 0;
+}
+
+void Camera::setProp(int CV_CAP_PROP, double value)
+{
+    _impl->_setCapProp[CV_CAP_PROP] = value;
 }
 
 bool Camera::applyCapProp()

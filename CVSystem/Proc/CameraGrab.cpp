@@ -152,6 +152,7 @@ bool CameraGrab::startGrabImage(pCameraImage& cimg)
     cimg->fnum = fnumber;
     cimg->grabStartTime = clock();
     cimg->vImage.resize(vCameras.size()); //先直接创建算了
+    return true;
 }
 
 bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
@@ -171,7 +172,7 @@ bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
                 LogE("CameraGrab.grabWithCamIndex():cam %d 相机没有打开！", camIndex);
                 return false;
             }
-            return true;
+            return true; //TODO:如果忽略相机失败那么返回true? , 这个忽略相机失败的东西要去掉?
         }
         ImageItem& item = cimg->vImage[camIndex];
         item.camera = vCameras[camIndex].get(); //标记camera来源
@@ -182,23 +183,26 @@ bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
             item.isSuccess = true;
             item.grabEndTime = clock();
             LogD("CameraGrab.grabWithCamIndex():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+            return true;
         }
         else {
             item.isSuccess = false;
             item.grabEndTime = clock();
             LogE("CameraGrab.grabWithCamIndex():cam %d 采图read失败！", camIndex);
+            return false;
         }
     }
     catch (const std::exception& e) {
         LogE("CameraGrab.grabWithCamIndex():异常 %s", e.what());
-        return false;
     }
+    return false;
 }
 
 bool CameraGrab::endGrabImage(pCameraImage& result)
 {
     result->grabEndTime = clock();
     updateFPS();
+    return true;
 }
 
 bool CameraGrab::open()

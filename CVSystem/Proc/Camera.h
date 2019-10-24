@@ -1,7 +1,5 @@
 ﻿#pragma once
 #include <opencv2/opencv.hpp>
-#include <iostream>
-#include <memory>
 
 namespace dxlib {
 
@@ -82,8 +80,6 @@ class Camera
     /// <summary> 用户使用的附加对象. </summary>
     void* userData;
 
-#pragma region 工作状态
-
     /// <summary>
     /// 相机的capture，这里基本应该是只读的。
     /// </summary>
@@ -121,6 +117,8 @@ class Camera
             return capture->isOpened();
         }
     }
+
+#pragma region 相机属性
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置当前的相机的一项属性. </summary>
@@ -240,7 +238,7 @@ class Camera
 
   private:
     //隐藏成员字段
-    struct Impl;
+    class Impl;
 
     /// <summary> 数据成员. </summary>
     Impl* _impl = nullptr;
