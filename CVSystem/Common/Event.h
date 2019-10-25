@@ -13,11 +13,12 @@ struct MemEvent
 {
     /// <summary> 事件类型. </summary>
     int id;
+    /// <summary> 这个数据值对应共享内存的地址分布. </summary>
     int value[128];
 };
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 系统的公共的状态事件. </summary>
+/// <summary> 系统的公共的状态事件,使用了EventBus库. </summary>
 ///
 /// <remarks> Dx, 2019/1/10. </remarks>
 ///-------------------------------------------------------------------------------------------------
@@ -38,14 +39,21 @@ class Event
     /// <summary>
     /// 当前opencv界面来的待处理的key值，如果无按键那么为-1.
     /// (由各个模块自己设置它的值，然后监听部分轮询它的当前值，响应后再将它设置回-1).
+    /// 在MultiCamera中使用了这个，这个字段只是设置值，没有支持事件总线。
     /// </summary>
     std::atomic_int cvKey{-1};
 
     /// <summary> 相机错误?. </summary>
-    std::atomic_int cameraError;
+    //std::atomic_int cameraError;
 
-    /// <summary> 事件总线. </summary>
-    std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 获取事件总线. </summary>
+    ///
+    /// <remarks> Dx, 2019/10/25. </remarks>
+    ///
+    /// <returns> Null if it fails, else the bus. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    Dexode::EventBus* getBus();
 
 #pragma region 使用共享内存的方法来判断事件发出事件
 
@@ -59,7 +67,7 @@ class Event
     void setMemEventData(void* data);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 检查是否有一条事件. </summary>
+    /// <summary> 检查是否有一条事件，如果有事件来了会走EventBus发出一条事件. </summary>
     ///
     /// <remarks> Dx, 2019/1/13. </remarks>
     ///-------------------------------------------------------------------------------------------------
@@ -71,8 +79,9 @@ class Event
     /// <summary> 单例. </summary>
     static Event* m_pInstance;
 
-    /// <summary> 共享内存的消息模式. </summary>
-    void* memEventData = nullptr;
+    /// <summary> 隐藏成员. </summary>
+    class Impl;
+    Impl* _impl = nullptr;
 };
 
 } // namespace dxlib

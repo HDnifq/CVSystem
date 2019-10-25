@@ -22,7 +22,7 @@ class CameraGrab
     std::vector<pCamera> vCameras;
 
     /// <summary> 是否忽略失败的相机. </summary>
-    bool isIgnoreFailureCamera = true;
+    //bool isIgnoreFailureCamera = true;
 
     /// <summary> 已采集的帧数. </summary>
     long fnumber = 0;
@@ -95,12 +95,14 @@ class CameraGrab
 #pragma endregion
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 打开相机. </summary>
+    /// <summary>
+    /// 打开相机，如果有一个相机打开失败就会返回false，但是仍然会尝试去打开其他的相机.
+    /// </summary>
     ///
     /// <remarks> Dx, 2019/3/5. </remarks>
     ///
     /// <returns>
-    /// True if it succeeds, false if it fails.
+    /// 有一个相机打开失败就会返回false，全部打开成功会返回true.
     /// </returns>
     ///-------------------------------------------------------------------------------------------------
     bool open();

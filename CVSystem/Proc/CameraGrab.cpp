@@ -61,11 +61,8 @@ bool CameraGrab::grab(pCameraImage& cimg)
                 continue;
             }
 
-            if (!curCamera->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
-                if (!isIgnoreFailureCamera) {
-                    //如果忽略失败相机那么就打个日志
-                    LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
-                }
+            if (!curCamera->isOpened()) {
+                //LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
                 continue;
             }
             //如果不是stereo相机这样
@@ -165,14 +162,9 @@ bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
         if (vCameras[camIndex] == nullptr) {
             return true;
         }
-
-        if (!vCameras[camIndex]->isOpened()) { //如果相机没有打开，然后不是忽略失败相机的时候就打个日志
-            if (!isIgnoreFailureCamera) {
-                //如果忽略失败相机那么就打个日志
-                LogE("CameraGrab.grabWithCamIndex():cam %d 相机没有打开！", camIndex);
-                return false;
-            }
-            return true; //TODO:如果忽略相机失败那么返回true? , 这个忽略相机失败的东西要去掉?
+        if (!vCameras[camIndex]->isOpened()) {
+            //LogE("CameraGrab.grabWithCamIndex():cam %d 相机没有打开！", camIndex);
+            return false;
         }
         ImageItem& item = cimg->vImage[camIndex];
         item.camera = vCameras[camIndex].get(); //标记camera来源
@@ -218,7 +210,7 @@ bool CameraGrab::open()
             continue;
         }
         if (vCameras[camIndex]->isVirtualCamera) {
-            LogI("CameraGrab.open(): 相机 %s 是虚拟相机...", vCameras[camIndex]->devNameA.c_str());
+            LogI("CameraGrab.open():相机 %s 是虚拟相机，不需要打开...", vCameras[camIndex]->devNameA.c_str());
             continue;
         }
         LogI("CameraGrab.open():尝试打开相机 %s ...", vCameras[camIndex]->devNameA.c_str());
@@ -232,8 +224,7 @@ bool CameraGrab::open()
             LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", vCameras[camIndex]->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
-            if (!isIgnoreFailureCamera) //如果不忽略失败的相机
-                isSuccess = false;
+            isSuccess = false;
         }
     }
     return isSuccess;

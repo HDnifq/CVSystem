@@ -135,7 +135,6 @@ bool MultiCamera::openCamera(uint activeIndex)
 
     //根据当前录入的相机的东西里的设置来打开相机
     _cameraGrab.setCameras(CameraManger::GetInst()->camMap);
-    _cameraGrab.isIgnoreFailureCamera = true;
 
     if (this->vProc.size() == 0) {
         LogW("MultiCamera.openCamera():当前没有添加处理proc...");
@@ -144,26 +143,23 @@ bool MultiCamera::openCamera(uint activeIndex)
     //设置当前的帧处理
     this->setActiveProc(activeIndex);
 
-    if (_cameraGrab.open()) {
-        LogI("MultiCamera.openCamera():cameraGrab相机打开完成！创建计算线程。");
-        //综合分析计算线程
-        this->_thread = BaseThread::creat(std::bind(&MultiCamera::init, this, std::placeholders::_1),
-                                          std::bind(&MultiCamera::workonce, this, std::placeholders::_1),
-                                          std::bind(&MultiCamera::release, this, std::placeholders::_1));
-
-        this->_thread->setPriorityHigh();
-        _isRun.exchange(true);
-        _isOpening.exchange(false);
-
-        return true;
+    bool isSuccess = _cameraGrab.open();
+    if (isSuccess) {
+        LogI("MultiCamera.openCamera():cameraGrab相机打开成功！");
     }
     else {
-        LogE("MultiCamera.openCamera():cameraGrab相机打开失败,关闭相机!");
-        _cameraGrab.close(); //打开失败就关闭所有相机
-        _isRun = false;
-        _isOpening = false;
-        return false;
-    }
+        LogE("MultiCamera.openCamera():cameraGrab相机打开有失败的相机!");
+    } //综合分析计算线程
+    LogI("MultiCamera.openCamera():创建综合分析计算线程！");
+    this->_thread = BaseThread::creat(std::bind(&MultiCamera::init, this, std::placeholders::_1),
+                                      std::bind(&MultiCamera::workonce, this, std::placeholders::_1),
+                                      std::bind(&MultiCamera::release, this, std::placeholders::_1));
+
+    this->_thread->setPriorityHigh();
+    _isRun.exchange(true);
+    _isOpening.exchange(false);
+
+    return isSuccess;
 }
 
 void MultiCamera::close(bool isDeleteProc)

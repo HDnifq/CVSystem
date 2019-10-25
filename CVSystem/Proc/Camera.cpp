@@ -10,6 +10,7 @@
 
 namespace dxlib {
 
+/// <summary> 属性名字符串(和opencv中的枚举一致). </summary>
 const char* CAP_PROP_STR[] = {
     "POS_MSEC",
     "POS_FRAMES",
@@ -145,12 +146,16 @@ bool Camera::open()
     int count = 0;
     while (true) { //重试5次，调用opencv的打开相机
         try {
+            //打开相机是否成功
+            bool isSuccess = false;
 #if __linux
-            if (capture->open(StringHelper::ws2s(devName), cv::CAP_V4L))
+            isSuccess = capture->open(StringHelper::ws2s(devName), cv::CAP_V4L);
 #else
-            if (capture->open(devID))
+            //这个open函数可能会弹窗,导致一直卡死在这里
+            isSuccess = capture->open(devID);
 #endif
-            {
+
+            if (isSuccess) {
                 outputProp();
                 //重设一下等会要打开相机的时候需要设置的属性
                 //setProp(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G')); //下面的applyCapProp里生效
