@@ -59,35 +59,32 @@ if(CROSS_COMPILE)
 endif()
 message(STATUS "dlog_LIB = " ${dlog_LIB})
 
-# 设置boost库
-find_package(Boost 1.70.0 REQUIRED COMPONENTS filesystem date_time)
-message(STATUS "Boost_INCLUDE_DIRS = " ${Boost_INCLUDE_DIRS})
-message(STATUS "Boost_LIBRARIES = " ${Boost_LIBRARIES})
+# # 设置boost库
+# find_package(Boost 1.70.0 REQUIRED COMPONENTS filesystem date_time)
+# message(STATUS "Boost_INCLUDE_DIRS = " ${Boost_INCLUDE_DIRS})
+# message(STATUS "Boost_LIBRARIES = " ${Boost_LIBRARIES})
 
-# 设置opencv库
-find_package(OpenCV REQUIRED)
-message(STATUS "OpenCV_INCLUDE_DIRS = " ${OpenCV_INCLUDE_DIRS})
-message(STATUS "OpenCV_LIBS = " ${OpenCV_LIBS})
-if(WIN32)
-    set(OpenCV_LIBS_DIR ${OpenCV_DIR}/x64/vc15/bin)
-    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/Release) #拷贝整个文件夹算了
-    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo)
-endif()
+# # 设置opencv库
+# find_package(OpenCV REQUIRED)
+# message(STATUS "OpenCV_INCLUDE_DIRS = " ${OpenCV_INCLUDE_DIRS})
+# message(STATUS "OpenCV_LIBS = " ${OpenCV_LIBS})
+# if(WIN32)
+#     set(OpenCV_LIBS_DIR ${OpenCV_DIR}/x64/vc15/bin)
+#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/Release) #拷贝整个文件夹算了
+#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo)
+# endif()
 
 find_package (Threads)
 
 # Dependencies
 target_include_directories(${SUB_NAME} PRIVATE  ${CMAKE_SOURCE_DIR}
-                                                ${CMAKE_SOURCE_DIR}/CVSTest
                                                 ${PROJECT_LIB_DIR}
-                                                ${Boost_INCLUDE_DIRS}
-                                                ${OpenCV_INCLUDE_DIRS}
                                                 ${eigen_INCLUDE_DIR}
                                                 ${rapidjson_INCLUDE_DIR})
 
-target_link_libraries(${SUB_NAME} PRIVATE CVSystem ${dlog_LIB} ${Boost_LIBRARIES} gtest gtest_main ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${SUB_NAME} PRIVATE CVSystem ${dlog_LIB} ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 add_test(NAME AllCppTest COMMAND ${SUB_NAME})
 
