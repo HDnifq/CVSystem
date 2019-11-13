@@ -113,10 +113,7 @@ message(STATUS "dlog_LIB = " ${dlog_LIB})
 find_package (Threads)
 
 target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR}
-                                            ${PROJECT_LIB_DIR}
-                                            ${eigen_INCLUDE_DIR}
-                                            ${rapidjson_INCLUDE_DIR}
-                                            )
+                                            ${PROJECT_LIB_DIR})
 target_link_libraries(${SUB_NAME} PRIVATE ${dlog_LIB} ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 # 全都安装到根目录

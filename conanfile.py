@@ -20,6 +20,8 @@ class CVSystemConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = ("boost/1.71.0@conan/stable",
                 "opencv/3.4.5@conan/stable",
+                "eigen/3.3.7@conan/stable",
+                "rapidjson/1.1.0@bincrafters/stable",
                 "gtest/1.8.1@bincrafters/stable")
     options = {"shared": [True, False]}
     default_options = {"shared": False, "boost:without_test": True}

@@ -52,27 +52,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# # 设置opencv库
-# if(WIN32)
-#     set(OpenCV_DIR ${PROJECT_LIB_DIR}/opencv-341-build-x64-vs2017/install)
-# else()
-#     set(OpenCV_DIR ${PROJECT_LIB_DIR}/opencv-3.4.6/install/share/OpenCV)
-# endif()
-# if(CROSS_COMPILE)
-#     set(OpenCV_DIR ${PROJECT_LIB_DIR}/opencv-3.4.6_arm64/install/share/OpenCV)
-# endif()
-# message(STATUS "OpenCV_DIR = " ${OpenCV_DIR})
-
-# 设置eigen库
-if(NOT DEFINED eigen_INCLUDE_DIR)
-set(eigen_INCLUDE_DIR ${PROJECT_LIB_DIR}/eigen)
-endif()
-
-# 设置rapidjson库
-if(NOT DEFINED rapidjson_INCLUDE_DIR)
-set(rapidjson_INCLUDE_DIR ${PROJECT_LIB_DIR}/rapidjson/include)
-endif()
-
 # 使能测试
 enable_testing()
 

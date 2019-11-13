@@ -1,5 +1,5 @@
 python -V
-python ./tools/DownloadLib.py -d "C:/dxlib/download" -l "C:/dxlib/lib" "concurrentqueue" "dlog" "gtest" "boost" "opencv3" "eigen" "rapidjson"
+python ./tools/DownloadLib.py -d "C:/dxlib/download" -l "C:/dxlib/lib" "concurrentqueue" "dlog"
 
 conan create . demo/testing -s compiler.runtime=MD -s arch=x86_64 --build missing
 
