@@ -135,6 +135,7 @@ bool MultiCamera::openCamera(uint activeIndex)
 
     //根据当前录入的相机的东西里的设置来打开相机
     _cameraGrab.setCameras(CameraManger::GetInst()->camMap);
+    _cameraGrab.setCamerasAssist(CameraManger::GetInst()->camMapAssist);
 
     if (this->vProc.size() == 0) {
         LogW("MultiCamera.openCamera():当前没有添加处理proc...");

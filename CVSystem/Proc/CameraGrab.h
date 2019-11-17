@@ -21,6 +21,9 @@ class CameraGrab
     /// <summary> 相机参数(其中camIndex就等于这个vector的index). </summary>
     std::vector<pCamera> vCameras;
 
+    /// <summary> 辅助相机. </summary>
+    std::vector<pCamera> vCameraAssist;
+
     /// <summary> 是否忽略失败的相机. </summary>
     //bool isIgnoreFailureCamera = true;
 
@@ -35,6 +38,15 @@ class CameraGrab
     /// <param name="camMap"> [in] The camera map. </param>
     ///-------------------------------------------------------------------------------------------------
     void setCameras(const std::map<int, pCamera>& camMap);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置相机,这里就保证了输入map然后改成了正确的vector的index. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/5. </remarks>
+    ///
+    /// <param name="camMap"> [in] The camera map. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setCamerasAssist(const std::map<int, pCamera>& camMap);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
@@ -128,6 +140,8 @@ class CameraGrab
 
     /// <summary> 清空,close的时候会自动调用. </summary>
     void clear();
+
+    void grabOneCamra(pCameraImage& result, Camera* curCamera);
 };
 
 } // namespace dxlib
