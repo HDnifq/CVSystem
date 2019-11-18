@@ -45,7 +45,7 @@ class CameraManger
     /// <param name="cp">              要添加的相机. </param>
     /// <param name="isVirtualCamera"> (Optional) 是否这是一个虚拟相机. </param>
     ///-------------------------------------------------------------------------------------------------
-    pCamera& add(const pCamera& cp, bool isVirtualCamera = false);
+    pCamera add(pCamera cp, bool isVirtualCamera = false);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 添加一个辅助相机. </summary>
@@ -54,7 +54,7 @@ class CameraManger
     ///
     /// <param name="cp"> The cp. </param>
     ///-------------------------------------------------------------------------------------------------
-    pCamera& addAssist(const pCamera& cp);
+    pCamera addAssist(pCamera cp);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 添加立体相机对. </summary>

@@ -24,11 +24,17 @@ CameraGrab::~CameraGrab()
 void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 {
     vCameras.clear();
+    int size = 0;
     for (auto& kvp : camMap) {
-        //保证resize
-        if (vCameras.size() <= kvp.second->camIndex) {
-            vCameras.resize(kvp.second->camIndex + 1); //这里resize一个指针数组那么会创建一些空指针
+        if (kvp.second->camIndex + 1 > size) {
+            size = kvp.second->camIndex + 1;
         }
+    }
+    //保证resize
+    vCameras.resize(size);
+
+    for (auto& kvp : camMap) {
+        CV_Assert(kvp.first == kvp.second->camIndex);
         vCameras[kvp.second->camIndex] = kvp.second;
     }
 }
@@ -36,11 +42,18 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 void CameraGrab::setCamerasAssist(const std::map<int, pCamera>& camMap)
 {
     vCameraAssist.clear();
+
+    int size = 0;
     for (auto& kvp : camMap) {
-        //保证resize
-        if (vCameraAssist.size() <= kvp.second->camIndex) {
-            vCameraAssist.resize(kvp.second->camIndex + 1); //这里resize一个指针数组那么会创建一些空指针
+        if (kvp.second->camIndex + 1 > size) {
+            size = kvp.second->camIndex + 1;
         }
+    }
+    //保证resize
+    vCameraAssist.resize(size);
+
+    for (auto& kvp : camMap) {
+        CV_Assert(kvp.first == kvp.second->camIndex);
         vCameraAssist[kvp.second->camIndex] = kvp.second;
     }
 }
@@ -54,6 +67,12 @@ bool CameraGrab::grab(pCameraImage& cimg)
             vCameras[camIndex]->applyCapProp();
         }
     }
+    for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
+        if (vCameraAssist[camIndex] != nullptr) {
+            vCameraAssist[camIndex]->applyCapProp();
+        }
+    }
+
     //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
     ++fnumber;
 
@@ -258,6 +277,7 @@ bool CameraGrab::open()
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         auto& camera = vCameras[camIndex];
         if (camera == nullptr) {
+            LogI("CameraGrab.open():相机index%d 为null", camIndex);
             continue;
         }
         if (camera->isVirtualCamera) {
@@ -282,13 +302,14 @@ bool CameraGrab::open()
     for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
         auto& camera = vCameraAssist[camIndex];
         if (camera == nullptr) {
+            LogI("CameraGrab.open():Assist相机index%d 为null", camIndex);
             continue;
         }
         if (camera->isVirtualCamera) {
             LogI("CameraGrab.open():相机 %s 是虚拟相机，不需要打开...", camera->devNameA.c_str());
             continue;
         }
-        LogI("CameraGrab.open():尝试打开相机 %s ...", camera->devNameA.c_str());
+        LogI("CameraGrab.open():尝试打开Assist相机 %s ...", camera->devNameA.c_str());
         boost::timer t;
         //打开相机
         if (camera->open()) {
@@ -296,7 +317,7 @@ bool CameraGrab::open()
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
             camera->capture->read(img);
-            LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", camera->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
+            LogI("CameraGrab.open():成功打开一个Assist相机%s，耗时%.2f秒", camera->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
             isSuccess = false;

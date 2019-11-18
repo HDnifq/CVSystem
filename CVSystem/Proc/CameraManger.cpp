@@ -13,17 +13,19 @@ CameraManger::~CameraManger()
 
 CameraManger* CameraManger::m_pInstance = NULL;
 
-pCamera& CameraManger::add(const pCamera& cp, bool isVirtualCamera)
+pCamera CameraManger::add(pCamera cp, bool isVirtualCamera)
 {
     camMap[cp->camIndex] = cp;
     cp->isVirtualCamera = isVirtualCamera;
+    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
     return camMap[cp->camIndex];
 }
 
-pCamera& CameraManger::addAssist(const pCamera& cp)
+pCamera CameraManger::addAssist(pCamera cp)
 {
     camMapAssist[cp->camIndex] = cp;
     cp->isAssist = true;
+    LogI("CameraManger.addAssist():添加了一个相机%s,当前Assist相机个数%d！", cp->devNameA.c_str(), camMapAssist.size());
     return camMapAssist[cp->camIndex];
 }
 
