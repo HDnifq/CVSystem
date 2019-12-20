@@ -9,5 +9,6 @@
         "-Dgtest_force_shared_crt:BOOL=1",
         "-DBUILD_TESTING:BOOL=0",
         "-DENABLE_TEST:BOOL=1",
-    ]
+    ],
+    "python.pythonPath": "C:\\Users\\dx\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe"
 }

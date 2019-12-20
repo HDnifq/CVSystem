@@ -1,7 +1,7 @@
 python -V
-python ./tools/DownloadLib.py -d "C:/dxlib/download" -l "C:/dxlib/lib" "concurrentqueue" "dlog"
+python ./tools/DownloadLib.py -d "C:/dxlib/download" -l "C:/dxlib/lib" "concurrentqueue"
 
-conan create . demo/testing -s compiler.runtime=MD -s arch=x86_64 --build missing
+conan create . daixian/stable -s compiler.runtime=MD -s arch=x86_64 --build missing
 
 REM mkdir build
 REM cd build

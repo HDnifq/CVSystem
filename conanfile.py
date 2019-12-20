@@ -11,7 +11,7 @@ os.system(" chcp 65001 ")
 
 class CVSystemConan(ConanFile):
     name = "CVSystem"
-    version = "2.0"
+    version = "2.0.0"
     license = "<Put the package license here>"
     author = "<Put your name here> <And your email here>"
     url = "<Package recipe repository url here, for issues about the package>"
@@ -22,7 +22,8 @@ class CVSystemConan(ConanFile):
                 "opencv/3.4.5@conan/stable",
                 "eigen/3.3.7@conan/stable",
                 "rapidjson/1.1.0@bincrafters/stable",
-                "gtest/1.8.1@bincrafters/stable")
+                "gtest/1.8.1@bincrafters/stable",
+                "dlog/2.4@daixian/stable")
     options = {"shared": [True, False]}
     default_options = {"shared": False, "boost:without_test": True}
     generators = "cmake"
