@@ -28,6 +28,10 @@ class CVSystemConan(ConanFile):
     default_options = {"shared": False,
                        "build_test": True,
                        "dlog:shared": True,
+                       "opencv:shared":True,
+                       "opencv:jpeg":False,
+                       "opencv:contrib":True,
+                       "opencv:jasper":False,
                        "boost:without_test": True}
     generators = "cmake"
     exports_sources = "src/*"
