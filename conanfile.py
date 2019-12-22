@@ -10,7 +10,7 @@ os.system("chcp 65001")
 
 
 class CVSystemConan(ConanFile):
-    name = "CVSystem"
+    name = "cvsystem"
     version = "2.0.0"
     license = "<Put the package license here>"
     author = "daixian<amano_tooko@qq.com>"
