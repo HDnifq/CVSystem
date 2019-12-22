@@ -219,6 +219,9 @@ class Camera
      * 当这个相机是一个硬件上的双目相机的时候,那么先录入所有的逻辑相机,然后再创建这个立体相机
      */
 
+    /// <summary> 是否是辅助相机. </summary>
+    bool isAssist = false;
+
     /// <summary> 这个相机是否是一个立体相机，它标记着会去自动切割这个立体相机的图像，将它们转到对应的逻辑相机. </summary>
     bool isStereoCamera = false;
 

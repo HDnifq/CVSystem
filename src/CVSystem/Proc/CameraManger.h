@@ -24,6 +24,9 @@ class CameraManger
     /// <summary> 所有相机的map，以camIndex为key. </summary>
     std::map<int, pCamera> camMap;
 
+    /// <summary> 辅助的相机的map如同帧双目相机,通常不直接参与计算. </summary>
+    std::map<int, pCamera> camMapAssist;
+
     /// <summary> 立体相机对. </summary>
     std::vector<pStereoCamera> vStereo;
 
@@ -42,7 +45,16 @@ class CameraManger
     /// <param name="cp">              要添加的相机. </param>
     /// <param name="isVirtualCamera"> (Optional) 是否这是一个虚拟相机. </param>
     ///-------------------------------------------------------------------------------------------------
-    void add(const pCamera& cp, bool isVirtualCamera = false);
+    pCamera add(pCamera cp, bool isVirtualCamera = false);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 添加一个辅助相机. </summary>
+    ///
+    /// <remarks> Dx, 2019/11/16. </remarks>
+    ///
+    /// <param name="cp"> The cp. </param>
+    ///-------------------------------------------------------------------------------------------------
+    pCamera addAssist(pCamera cp);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 添加立体相机对. </summary>

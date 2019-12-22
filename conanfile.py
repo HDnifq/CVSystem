@@ -6,31 +6,44 @@ import sys
 import io
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='gbk')
 
-os.system(" chcp 65001 ")
+os.system("chcp 65001")
 
 
 class CVSystemConan(ConanFile):
     name = "CVSystem"
     version = "2.0.0"
     license = "<Put the package license here>"
-    author = "<Put your name here> <And your email here>"
-    url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of Hello here>"
-    topics = ("<Put some tag here>", "<here>", "<and here>")
+    author = "daixian<amano_tooko@qq.com>"
+    url = "https://github.com/daixian/CVSystem"
+    description = "基础的opencv采图系统"
+    topics = ("opencv", "daixian")
     settings = "os", "compiler", "build_type", "arch"
     requires = ("boost/1.71.0@conan/stable",
                 "opencv/3.4.5@conan/stable",
                 "eigen/3.3.7@conan/stable",
                 "rapidjson/1.1.0@bincrafters/stable",
                 "gtest/1.8.1@bincrafters/stable",
-                "dlog/2.4@daixian/stable")
-    options = {"shared": [True, False]}
-    default_options = {"shared": False, "boost:without_test": True}
+                "dlog/2.4.0@daixian/stable")
+    options = {"shared": [True, False], "build_test": [True, False]}
+    default_options = {"shared": False,
+                       "build_test": True,
+                       "dlog:shared": True,
+                       "boost:without_test": True}
     generators = "cmake"
     exports_sources = "src/*"
 
-    def build(self):
+    def _configure_cmake(self):
+        '''
+        转换python的设置到CMake
+        '''
         cmake = CMake(self)
+        cmake.definitions["CVSYSTEM_BUILD_TESTS"] = self.options.shared
+        cmake.definitions["CVSYSTEM_BUILD_SHARED"] = self.options.build_test
+        return cmake
+
+    def build(self):
+        print("进入了build...")
+        cmake = self._configure_cmake()
         cmake.configure(source_folder="src")
         cmake.build()
 

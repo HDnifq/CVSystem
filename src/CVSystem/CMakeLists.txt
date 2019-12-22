@@ -5,93 +5,129 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SUB_NAME "CVSystem")
 
-#这里的命名需要有.out,否则编译arm的时候不能运行...
-add_library(${SUB_NAME}
-            STATIC
-            Common.h
-            cvsdef.h
-            CVSystem.h
-            Json.h
-            stdafx.h
-            targetver.h
-            Common/BaseThread.h
-            Common/blockingconcurrentqueue.h
-            Common/concurrentqueue.h
-            Common/Event.h
-            Common/StringHelper.h
-            DTO/DTOType.h
-            DTO/JsonHelper.h
-            DTO/Serialize.h
-            DTO/sht.h
-            eventbus/AsyncEventBus.h
-            eventbus/EventBus.h
-            eventbus/EventCollector.h
-            eventbus/TokenHolder.h
-            eventbus/internal/AsyncCallbackVector.h
-            eventbus/internal/CallbackVector.h
-            eventbus/internal/common.h
-            eventbus/internal/TransactionCallbackVector.h
-            Proc/Camera.h
-            Proc/CameraGrab.h
-            Proc/CameraImage.h
-            Proc/CameraManger.h
-            Proc/CameraThread.h
-            Proc/DevicesHelper.h
-            Proc/Draw.h
-            Proc/FrameProc.h
-            Proc/MultiCamera.h
-            Proc/MultiCameraMT.h
-            ALGO.hpp
-            Common/CoolTime.hpp
-            Common/FPSCalc.hpp
-            Proc/CamImageProc.hpp
-            Proc/SimpleModule.hpp
-            CVSystem.cpp
-            stdafx.cpp
-            Common/BaseThread.cpp
-            Common/Event.cpp
-            Common/StringHelper.cpp
-            eventbus/AsyncEventBus.cpp
-            Proc/Camera.cpp
-            Proc/CameraGrab.cpp
-            Proc/CameraManger.cpp
-            Proc/CameraThread.cpp
-            Proc/DevicesHelper.cpp
-            Proc/Draw.cpp
-            Proc/MultiCamera.cpp
-            Proc/MultiCameraMT.cpp
-            )
-
-# 设置dlog库的库目录,x64版本
+add_definitions(-D UNICODE)
 if(WIN32)
-    if(NOT DEFINED dlog_LIB_DIR)
-        set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog/x64)
-    endif()
-    set(dlog_LIB ${dlog_LIB_DIR}/dlog.lib)
-    #拷贝dlog.dll到安装目录
-    # add_custom_command(TARGET app POST_BUILD        # Adds a post-build event to MyTest
-    #     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
-    #         "${PROJECT_LIB_DIR}/dlog/x64/dlog.dll"      # <--this is in-file
-    #         ${CMAKE_INSTALL_PREFIX}/dlog.dll)                 # <--this is out-file path
-    
-    # 这里的复制没有太好的方法,因为vs会自己多出Release文件夹来,只能把文件夹名字写死了
-    # https://stackoverflow.com/questions/10671916/how-to-copy-dll-files-into-the-same-folder-as-the-executable-using-cmake?rq=1
-    # https://stackoverflow.com/questions/39282430/how-to-get-current-configuration-release-debug-in-cmake-for-visual-studio
-    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/Release/dlog.dll)
-    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo/dlog.dll)
+    add_definitions(-D _WINDOWS)
+    add_definitions(-D _USERDLL)
+    # 这个设置只支持windows，所以不要使用了
+    # add_definitions(-D SPDLOG_WCHAR_TO_UTF8_SUPPORT)
+endif()
+
+set(SOURCE_LIST
+    Common.h
+    cvsdef.h
+    CVSystem.h
+    Json.h
+    stdafx.h
+    targetver.h
+    Common/BaseThread.h
+    Common/blockingconcurrentqueue.h
+    Common/concurrentqueue.h
+    Common/Event.h
+    Common/StringHelper.h
+    DTO/DTOType.h
+    DTO/JsonHelper.h
+    DTO/Serialize.h
+    DTO/sht.h
+    eventbus/AsyncEventBus.h
+    eventbus/EventBus.h
+    eventbus/EventCollector.h
+    eventbus/TokenHolder.h
+    eventbus/internal/AsyncCallbackVector.h
+    eventbus/internal/CallbackVector.h
+    eventbus/internal/common.h
+    eventbus/internal/TransactionCallbackVector.h
+    Proc/Camera.h
+    Proc/CameraGrab.h
+    Proc/CameraImage.h
+    Proc/CameraManger.h
+    Proc/CameraThread.h
+    Proc/DevicesHelper.h
+    Proc/Draw.h
+    Proc/FrameProc.h
+    Proc/MultiCamera.h
+    Proc/MultiCameraMT.h
+    ALGO.hpp
+    Common/CoolTime.hpp
+    Common/FPSCalc.hpp
+    Proc/CamImageProc.hpp
+    Proc/SimpleModule.hpp
+    CVSystem.cpp
+    stdafx.cpp
+    Common/BaseThread.cpp
+    Common/Event.cpp
+    Common/StringHelper.cpp
+    eventbus/AsyncEventBus.cpp
+    Proc/Camera.cpp
+    Proc/CameraGrab.cpp
+    Proc/CameraManger.cpp
+    Proc/CameraThread.cpp
+    Proc/DevicesHelper.cpp
+    Proc/Draw.cpp
+    Proc/MultiCamera.cpp
+    Proc/MultiCameraMT.cpp
+)
+
+# 这个函数在VS工程里生成一个文件路径
+function(assign_source_group)
+    foreach(_source IN ITEMS ${ARGN})
+        if (IS_ABSOLUTE "${_source}")
+            file(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
+        else()
+            set(_source_rel "${_source}")
+        endif()
+        get_filename_component(_source_path "${_source_rel}" PATH)
+        string(REPLACE "/" "\\" _source_path_msvc "${_source_path}")
+        #这个表示在VS里划分一个组
+        source_group("${_source_path_msvc}" FILES "${_source}")
+    endforeach()
+endfunction(assign_source_group)
+
+assign_source_group(${SOURCE_LIST})
+message(STATUS "SOURCE_LIST = ${SOURCE_LIST}")
+
+#这里的命名需要有.out,否则编译arm的时候不能运行...
+# Library definition
+if(CVSYSTEM_BUILD_SHARED)
+    add_library(${SUB_NAME}
+                SHARED
+                ${SOURCE_LIST})
 else()
-    if(NOT DEFINED dlog_LIB_DIR)
-        set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog)
-    endif()
-    set(dlog_LIB ${dlog_LIB_DIR}/libdlog.a)  
-    # 其他平台目前是静态编译的，就没有拷贝dll
+    add_library(${SUB_NAME}
+                STATIC
+                ${SOURCE_LIST})
 endif()
-if(CROSS_COMPILE)
-    set(dlog_LIB ${dlog_LIB_DIR}_arm64/libdlog.a)
-endif()
-message(STATUS "dlog_LIB = " ${dlog_LIB})
+ 
+# 设置dlog库的库目录,x64版本
+# if(WIN32)
+#     if(NOT DEFINED dlog_LIB_DIR)
+#         set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog/x64)
+#     endif()
+#     set(dlog_LIB ${dlog_LIB_DIR}/dlog.lib)
+#     #拷贝dlog.dll到安装目录
+#     # add_custom_command(TARGET app POST_BUILD        # Adds a post-build event to MyTest
+#     #     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
+#     #         "${PROJECT_LIB_DIR}/dlog/x64/dlog.dll"      # <--this is in-file
+#     #         ${CMAKE_INSTALL_PREFIX}/dlog.dll)                 # <--this is out-file path
+    
+#     # 这里的复制没有太好的方法,因为vs会自己多出Release文件夹来,只能把文件夹名字写死了
+#     # https://stackoverflow.com/questions/10671916/how-to-copy-dll-files-into-the-same-folder-as-the-executable-using-cmake?rq=1
+#     # https://stackoverflow.com/questions/39282430/how-to-get-current-configuration-release-debug-in-cmake-for-visual-studio
+#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/Release/dlog.dll)
+#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo/dlog.dll)
+# else()
+#     if(NOT DEFINED dlog_LIB_DIR)
+#         set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog)
+#     endif()
+#     set(dlog_LIB ${dlog_LIB_DIR}/libdlog.a)  
+#     # 其他平台目前是静态编译的，就没有拷贝dll
+# endif()
+# if(CROSS_COMPILE)
+#     set(dlog_LIB ${dlog_LIB_DIR}_arm64/libdlog.a)
+# endif()
+# message(STATUS "dlog_LIB = " ${dlog_LIB})
 
 # # 设置boost库
 # find_package(Boost 1.70.0 REQUIRED COMPONENTS filesystem date_time)
@@ -112,9 +148,11 @@ message(STATUS "dlog_LIB = " ${dlog_LIB})
 
 find_package (Threads)
 
-target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR}
-                                            ${PROJECT_LIB_DIR})
-target_link_libraries(${SUB_NAME} PRIVATE ${dlog_LIB} ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
+message(STATUS "CONAN_LIBS = ${CONAN_LIBS}")
+
+target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR} ${PROJECT_LIB_DIR})
+target_link_libraries(${SUB_NAME} PRIVATE ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 # 全都安装到根目录
 install(TARGETS ${SUB_NAME}

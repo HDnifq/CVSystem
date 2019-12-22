@@ -22,18 +22,18 @@ add_executable(${SUB_NAME}  pch.h
 # when building with Visual Studio
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-# CMake 2.8.11 之后gtest是自动添加的，所以下面的没有执行
-if (CMAKE_VERSION  VERSION_LESS 2.8.11)
-    include_directories("${gtest_SOURCE_DIR}/include"
-                        "${gmock_SOURCE_DIR}/include")
-endif()
+# # CMake 2.8.11 之后gtest是自动添加的，所以下面的没有执行
+# if (CMAKE_VERSION  VERSION_LESS 2.8.11)
+#     include_directories("${gtest_SOURCE_DIR}/include"
+#                         "${gmock_SOURCE_DIR}/include")
+# endif()
 
-# 设置dlog库的库目录,x64版本
-if(WIN32)
-    if(NOT DEFINED dlog_LIB_DIR)
-        set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog/x64)
-    endif()
-    set(dlog_LIB ${dlog_LIB_DIR}/dlog.lib)
+# # 设置dlog库的库目录,x64版本
+# if(WIN32)
+#     if(NOT DEFINED dlog_LIB_DIR)
+#         set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog/x64)
+#     endif()
+#     set(dlog_LIB ${dlog_LIB_DIR}/dlog.lib)
     #拷贝dlog.dll到安装目录
     # add_custom_command(TARGET app POST_BUILD        # Adds a post-build event to MyTest
     #     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
@@ -47,17 +47,17 @@ if(WIN32)
     # COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/Release/dlog.dll)
     # add_custom_command(TARGET app POST_BUILD
     # COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dlog_LIB_DIR}/dlog.dll" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo/dlog.dll)
-else()
-    if(NOT DEFINED dlog_LIB_DIR)
-        set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog)
-    endif()
-    set(dlog_LIB ${dlog_LIB_DIR}/libdlog.a)  
-    # 其他平台目前是静态编译的，就没有拷贝dll
-endif()
-if(CROSS_COMPILE)
-    set(dlog_LIB ${dlog_LIB_DIR}_arm64/libdlog.a)
-endif()
-message(STATUS "dlog_LIB = " ${dlog_LIB})
+# else()
+#     if(NOT DEFINED dlog_LIB_DIR)
+#         set(dlog_LIB_DIR ${PROJECT_LIB_DIR}/dlog)
+#     endif()
+#     set(dlog_LIB ${dlog_LIB_DIR}/libdlog.a)  
+#     # 其他平台目前是静态编译的，就没有拷贝dll
+# endif()
+# if(CROSS_COMPILE)
+#     set(dlog_LIB ${dlog_LIB_DIR}_arm64/libdlog.a)
+# endif()
+# message(STATUS "dlog_LIB = " ${dlog_LIB})
 
 # # 设置boost库
 # find_package(Boost 1.70.0 REQUIRED COMPONENTS filesystem date_time)
@@ -82,7 +82,7 @@ find_package (Threads)
 target_include_directories(${SUB_NAME} PRIVATE  ${CMAKE_SOURCE_DIR}
                                                 ${PROJECT_LIB_DIR})
 
-target_link_libraries(${SUB_NAME} PRIVATE CVSystem ${dlog_LIB} ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${SUB_NAME} PRIVATE CVSystem ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 add_test(NAME AllCppTest COMMAND ${SUB_NAME})
 

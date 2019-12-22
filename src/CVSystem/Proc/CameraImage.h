@@ -49,6 +49,9 @@ class CameraImage
     /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
     std::vector<ImageItem> vImage;
 
+    /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
+    std::vector<ImageItem> vImageAssist;
+
     /// <summary> 这一帧的采集开始时间戳. </summary>
     clock_t grabStartTime = 0;
 

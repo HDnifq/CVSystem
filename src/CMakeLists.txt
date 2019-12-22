@@ -18,15 +18,32 @@ cmake_minimum_required(VERSION 3.0)
 # 在上面设置工具链之后下面要立马project命令
 project(CVSystem VERSION 2.0.0 LANGUAGES CXX)
 
+# set(CMAKE_CXX_STANDARD 14)
+
+# 在有了project之后需要第一时间搞个conan设置吧
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+# conan_set_vs_runtime()
+
+# 设置是否编译Test
+option(CVSYSTEM_BUILD_TESTS "CVSYSTEM_BUILD_TESTS" ON)
+message(STATUS "CVSYSTEM_BUILD_TESTS = ${CVSYSTEM_BUILD_TESTS}" )
+# 设置是否编译成共享库
+option(CVSYSTEM_BUILD_SHARED "CVSYSTEM_BUILD_SHARED" ON)
+message(STATUS "CVSYSTEM_BUILD_SHARED = ${CVSYSTEM_BUILD_SHARED}" )
+
+add_definitions(-D DLOG_UTF8)
+add_definitions(-D _NO_ASYNCRTIMP)
+
+# 设置生成一个VS工程里的文件夹
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # 修改一些默认值 Use this snippet *after* PROJECT(xxx):
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install CACHE PATH "Install directory" FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-set(CMAKE_CXX_STANDARD 14)
-
-option(ENABLE_TEST "Enable test" OFF)
-
+ 
 # 设置工程外部库的文件夹 $ENV{HOME}
 if(WIN32)
 set(PROJECT_LIB_DIR "C:/dxlib/lib" CACHE STRING "dx's lib")
@@ -35,17 +52,12 @@ set(PROJECT_LIB_DIR $ENV{HOME}/dxlib/lib CACHE STRING "dx's lib")
 endif()
 message(STATUS "PROJECT_LIB_DIR = " ${PROJECT_LIB_DIR})
 
-enable_testing()
-
-if(WIN32)
-# 设置编译选项为MT https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-endif()
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-# conan_set_vs_runtime()
+# 现在使用了conan库,这里并不需要了
+# if(WIN32)
+# # 设置编译选项为MT https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
+#     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+#     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+# endif()
 
 #设置文件输出的目录
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -57,7 +69,8 @@ enable_testing()
 
 add_subdirectory(CVSystem)
 
+if(CVSYSTEM_BUILD_TESTS)
+enable_testing()
 include(CTest)
-include(GoogleTest)
 add_subdirectory(${CMAKE_SOURCE_DIR}/CVSTest)
-
+endif()
