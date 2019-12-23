@@ -68,13 +68,12 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # find_package(OpenCV REQUIRED)
 # message(STATUS "OpenCV_INCLUDE_DIRS = " ${OpenCV_INCLUDE_DIRS})
 # message(STATUS "OpenCV_LIBS = " ${OpenCV_LIBS})
-# if(WIN32)
-#     set(OpenCV_LIBS_DIR ${OpenCV_DIR}/x64/vc15/bin)
-#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/Release) #拷贝整个文件夹算了
-#     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCV_LIBS_DIR}" ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo)
-# endif()
+if(WIN32)
+    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CONAN_BIN_DIRS_OPENCV}" ${EXECUTABLE_OUTPUT_PATH}) #拷贝整个文件夹算了
+    add_custom_command(TARGET ${SUB_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CONAN_BIN_DIRS_DLOG}" ${EXECUTABLE_OUTPUT_PATH}) #拷贝整个文件夹算了
+endif()
 
 find_package (Threads)
 

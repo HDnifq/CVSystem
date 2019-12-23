@@ -19,19 +19,16 @@ class CVSystemConan(ConanFile):
     topics = ("opencv", "daixian")
     settings = "os", "compiler", "build_type", "arch"
     requires = ("boost/1.71.0@conan/stable",
-                "opencv/3.4.5@conan/stable",
                 "eigen/3.3.7@conan/stable",
                 "rapidjson/1.1.0@bincrafters/stable",
                 "gtest/1.8.1@bincrafters/stable",
+                "opencv/3.4.5@daixian/stable",
                 "dlog/2.4.0@daixian/stable")
     options = {"shared": [True, False], "build_test": [True, False]}
     default_options = {"shared": False,
                        "build_test": True,
                        "dlog:shared": True,
-                       "opencv:shared":True,
-                       "opencv:jpeg":False,
-                       "opencv:contrib":True,
-                       "opencv:jasper":False,
+                       "opencv:shared": True,
                        "boost:without_test": True}
     generators = "cmake"
     exports_sources = "src/*"
