@@ -18,12 +18,6 @@ class CVSystemConan(ConanFile):
     description = "基础的opencv采图系统"
     topics = ("opencv", "daixian")
     settings = "os", "compiler", "build_type", "arch"
-    requires = ("boost/1.71.0@conan/stable",
-                "eigen/3.3.7@conan/stable",
-                "rapidjson/1.1.0@bincrafters/stable",
-                "gtest/1.8.1@bincrafters/stable",
-                "opencv/3.4.5@daixian/stable",
-                "dlog/2.4.0@daixian/stable")
     options = {"shared": [True, False], "build_test": [True, False]}
     default_options = {"shared": False,
                        "build_test": True,
@@ -32,6 +26,16 @@ class CVSystemConan(ConanFile):
                        "boost:without_test": True}
     generators = "cmake"
     exports_sources = "src/*"
+
+    def requirements(self):
+        self.requires.add("boost/1.71.0@conan/stable")
+        self.requires.add("eigen/3.3.7@conan/stable")
+        self.requires.add("rapidjson/1.1.0@bincrafters/stable")
+        self.requires.add("opencv/3.4.5@daixian/stable")
+        self.requires.add("dlog/2.4.0@daixian/stable")
+
+    def build_requirements(self):
+        self.build_requires("gtest/1.8.1@bincrafters/stable")
 
     def _configure_cmake(self):
         '''
