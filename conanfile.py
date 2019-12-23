@@ -38,8 +38,8 @@ class CVSystemConan(ConanFile):
         转换python的设置到CMake
         '''
         cmake = CMake(self)
-        cmake.definitions["CVSYSTEM_BUILD_TESTS"] = self.options.shared
-        cmake.definitions["CVSYSTEM_BUILD_SHARED"] = self.options.build_test
+        cmake.definitions["CVSYSTEM_BUILD_SHARED"] = self.options.shared
+        cmake.definitions["CVSYSTEM_BUILD_TESTS"] = self.options.build_test
         return cmake
 
     def build(self):
