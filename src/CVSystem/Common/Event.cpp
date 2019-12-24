@@ -69,7 +69,7 @@ void Event::checkMemEvent()
 #if defined(_WIN32) || defined(_WIN64)
             memcpy_s(e->value, sizeof(e->value), ptr[i].value, sizeof(e->value));
 #else
-            memcpy(e.value, ptr[i].value, sizeof(e.value));
+            memcpy(e->value, ptr[i].value, sizeof(e->value));
 #endif
             memset(ptr, 0, sizeof(EventItem)); //清空这个消息的标记值
             _impl->bus->notify(*e);

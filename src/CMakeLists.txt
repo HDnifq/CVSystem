@@ -20,9 +20,14 @@ project(CVSystem VERSION 2.0.0 LANGUAGES CXX)
 
 # set(CMAKE_CXX_STANDARD 14)
 
+message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
+
 # 在有了project之后需要第一时间搞个conan设置吧
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+if(NOT DEFINED CONAN_BUILD_INFO_PATH)
+    # 如果没有设置过
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+endif()
 # conan_set_vs_runtime()
 
 # 设置是否编译Test
@@ -72,5 +77,5 @@ add_subdirectory(CVSystem)
 if(CVSYSTEM_BUILD_TESTS)
 enable_testing()
 include(CTest)
-add_subdirectory(${CMAKE_SOURCE_DIR}/CVSTest)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CVSTest)
 endif()
