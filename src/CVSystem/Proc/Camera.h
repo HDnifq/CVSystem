@@ -18,7 +18,7 @@ class Camera
     /// <summary> 析构. </summary>
     ~Camera();
 
-    /// <summary> 相机的编号0-3，它代表一个编程逻辑上的编号. </summary>
+    /// <summary> 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index. </summary>
     int camIndex = -2;
 
     /// <summary> 这个相机的设备名. </summary>
@@ -28,7 +28,7 @@ class Camera
     std::string devNameA;
 
     /// <summary>
-    /// 是否是一个不存在的虚拟的相机，仅仅只是利用这个录入参数，然后载入图像计算.
+    /// 是否是一个不存在的虚拟的相机（参数计算相机），仅仅只是利用这个录入参数，然后载入图像计算.
     /// (即如果设置了它为true，那么MultiCamera在根据CameraManger里录入的内容来open相机的时候不会自动的打开它).
     /// </summary>
     bool isVirtualCamera = false;

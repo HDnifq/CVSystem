@@ -156,6 +156,21 @@ class Serialize
         value.AddMember(fieldName, jv, allocator);
     }
 
+    static inline void AddMember(rapidjson::ValueW& value,
+                                 const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const std::vector<std::string>& obj, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        using namespace rapidjson;
+        ValueW jv(kArrayType);
+        for (size_t i = 0; i < obj.size(); i++) {
+            ValueW item; //string的话必须这样搞一下然后拷贝,它这个库分两种思路,ref的和拷贝的
+
+            item.SetString(utf8To16(obj[i]).c_str(), allocator);
+            jv.PushBack(item, allocator);
+        }
+        value.AddMember(fieldName, jv, allocator);
+    }
+
     template <typename T>
     static inline void AddMember(rapidjson::ValueW& value,
                                  const rapidjson::GenericStringRef<wchar_t>& fieldName,
@@ -339,6 +354,69 @@ class Serialize
 
 #pragma endregion
 
+#pragma region cvSize
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const cv::Size& obj, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        //一个对象带width和height字段
+        using namespace rapidjson;
+        ValueW jv(kObjectType);
+
+        jv.AddMember(L"width", obj.width, allocator);
+        jv.AddMember(L"height", obj.height, allocator);
+
+        value.AddMember(fieldName, jv, allocator);
+    }
+
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, cv::Size& m)
+    {
+        m.width = value[L"width"].GetInt();
+        m.height = value[L"height"].GetInt();
+    }
+
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const cv::Size2f& obj, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        //一个对象带width和height字段
+        using namespace rapidjson;
+        ValueW jv(kObjectType);
+
+        jv.AddMember(L"width", obj.width, allocator);
+        jv.AddMember(L"height", obj.height, allocator);
+
+        value.AddMember(fieldName, jv, allocator);
+    }
+
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, cv::Size2f& m)
+    {
+        m.width = value[L"width"].GetFloat();
+        m.height = value[L"height"].GetFloat();
+    }
+
+    static inline void AddMember(rapidjson::ValueW& value, const rapidjson::GenericStringRef<wchar_t>& fieldName,
+                                 const cv::Size2d& obj, rapidjson::MemoryPoolAllocator<>& allocator)
+    {
+        //一个对象带width和height字段
+        using namespace rapidjson;
+        ValueW jv(kObjectType);
+
+        jv.AddMember(L"width", obj.width, allocator);
+        jv.AddMember(L"height", obj.height, allocator);
+
+        value.AddMember(fieldName, jv, allocator);
+    }
+
+    //->obj 不带返回值的,参数作为结果的GetObj
+    static inline void GetObj(const rapidjson::ValueW& value, cv::Size2d& m)
+    {
+        m.width = value[L"width"].GetDouble();
+        m.height = value[L"height"].GetDouble();
+    }
+
+#pragma endregion
+
 #pragma region cvMat
 
     //->json 整个对象是一个object
@@ -451,6 +529,58 @@ class Serialize
     }
 
 #pragma endregion
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> UTF8转换成UTF16. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="str"> The string. </param>
+    ///
+    /// <returns> A std::wstring. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::wstring utf8To16(const std::string& str)
+    {
+        using namespace rapidjson;
+        StringStream source(str.c_str());
+        StringBufferW target;
+        bool hasError = false;
+        while (source.Peek() != '\0')
+            if (!Transcoder<UTF8<>, UTF16<>>::Transcode(source, target)) {
+                hasError = true;
+                break;
+            }
+        if (!hasError) {
+            return target.GetString();
+        }
+        return std::wstring();
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> UTF16转换成UTF8. </summary>
+    ///
+    /// <remarks> Dx, 2019/3/11. </remarks>
+    ///
+    /// <param name="str"> The string. </param>
+    ///
+    /// <returns> A std::string. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::string utf16To8(const std::wstring& str)
+    {
+        using namespace rapidjson;
+        StringStreamW source(str.c_str());
+        StringBuffer target;
+        bool hasError = false;
+        while (source.Peek() != L'\0')
+            if (!Transcoder<UTF16<>, UTF8<>>::Transcode(source, target)) {
+                hasError = true;
+                break;
+            }
+        if (!hasError) {
+            return target.GetString();
+        }
+        return std::string();
+    }
 };
 } // namespace json
 } // namespace dxlib

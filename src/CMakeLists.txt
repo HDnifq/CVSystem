@@ -69,12 +69,10 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# 使能测试
-enable_testing()
-
 add_subdirectory(CVSystem)
 
 if(CVSYSTEM_BUILD_TESTS)
+# 使能测试
 enable_testing()
 include(CTest)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CVSTest)
