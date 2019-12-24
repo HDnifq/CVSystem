@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <opencv2/opencv.hpp>
+#include <memory>
 
 namespace dxlib {
 
