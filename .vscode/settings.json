@@ -1,6 +1,6 @@
 {
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-    "cmake.buildDirectory": "${workspaceRoot}/build/Win64",
+    "cmake.buildDirectory": "${workspaceRoot}/build",
     // 注意kit和generator是两个东西,只能在这里设置这个generator,windows平台已经把这个设置到了全局设置里
     // "cmake.generator": "Visual Studio 15 2017 Win64",
     "cmake.configureArgs": [
