@@ -58,11 +58,12 @@ endif()
 message(STATUS "PROJECT_LIB_DIR = " ${PROJECT_LIB_DIR})
 
 # 现在使用了conan库,这里并不需要了
-# if(WIN32)
+if(WIN32)
 # # 设置编译选项为MT https://stackoverflow.com/questions/14172856/compile-with-mt-instead-of-md-using-cmake
-#     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-#     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-# endif()
+    # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    # 控制一下调试时候Debug的VC编译方式
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
+endif()
 
 #设置文件输出的目录
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
