@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.0)
 # endif()
 
 # 在上面设置工具链之后下面要立马project命令
-project(CVSystem VERSION 2.0.0 LANGUAGES CXX)
+project(CVSystem VERSION 3.0.0 LANGUAGES CXX)
 
 # set(CMAKE_CXX_STANDARD 14)
 
