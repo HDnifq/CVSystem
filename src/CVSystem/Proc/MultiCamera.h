@@ -223,6 +223,10 @@ class MultiCamera
 
     //计算fps的辅助
     FPSCalc _fpsCalc;
+
+    // 隐藏成员.
+    class Impl;
+    Impl* _impl;
 };
 
 } // namespace dxlib

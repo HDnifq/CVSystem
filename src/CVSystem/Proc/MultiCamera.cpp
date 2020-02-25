@@ -6,15 +6,37 @@
 #include "../Common/Event.h"
 #include "CameraManger.h"
 
+#include "Poco/Thread.h"
+#include "Poco/Runnable.h"
+#include "Poco/RunnableAdapter.h"
+
 namespace dxlib {
+
+class MultiCamera::Impl
+{
+  public:
+    Impl()
+    {
+    }
+    ~Impl()
+    {
+    }
+
+    /// <summary> 工作线程 </summary>
+    Poco::Thread* pThread = nullptr;
+
+  private:
+};
 
 MultiCamera::MultiCamera()
 {
+    _impl = new MultiCamera::Impl();
 }
 
 MultiCamera::~MultiCamera()
 {
     close();
+    delete _impl;
 }
 
 MultiCamera* MultiCamera::m_pInstance = NULL;
