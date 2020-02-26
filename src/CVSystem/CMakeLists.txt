@@ -13,60 +13,8 @@ if(WIN32)
     # add_definitions(-D SPDLOG_WCHAR_TO_UTF8_SUPPORT)
 endif()
 
-set(SOURCE_LIST
-    Common.h
-    cvsdef.h
-    CVSystem.h
-    Json.h
-    stdafx.h
-    targetver.h
-    Common/BaseThread.h
-    Common/blockingconcurrentqueue.h
-    Common/concurrentqueue.h
-    Common/Event.h
-    Common/StringHelper.h
-    DTO/DTOType.h
-    DTO/JsonHelper.h
-    DTO/Serialize.h
-    DTO/sht.h
-    eventbus/AsyncEventBus.h
-    eventbus/EventBus.h
-    eventbus/EventCollector.h
-    eventbus/TokenHolder.h
-    eventbus/internal/AsyncCallbackVector.h
-    eventbus/internal/CallbackVector.h
-    eventbus/internal/common.h
-    eventbus/internal/TransactionCallbackVector.h
-    Proc/Camera.h
-    Proc/CameraGrab.h
-    Proc/CameraImage.h
-    Proc/CameraManger.h
-    Proc/CameraThread.h
-    Proc/DevicesHelper.h
-    Proc/Draw.h
-    Proc/FrameProc.h
-    Proc/MultiCamera.h
-    Proc/MultiCameraMT.h
-    ALGO.hpp
-    Common/CoolTime.hpp
-    Common/FPSCalc.hpp
-    Proc/CamImageProc.hpp
-    Proc/SimpleModule.hpp
-    CVSystem.cpp
-    stdafx.cpp
-    Common/BaseThread.cpp
-    Common/Event.cpp
-    Common/StringHelper.cpp
-    eventbus/AsyncEventBus.cpp
-    Proc/Camera.cpp
-    Proc/CameraGrab.cpp
-    Proc/CameraManger.cpp
-    Proc/CameraThread.cpp
-    Proc/DevicesHelper.cpp
-    Proc/Draw.cpp
-    Proc/MultiCamera.cpp
-    Proc/MultiCameraMT.cpp
-)
+# 先自动添加算了
+FILE(GLOB_RECURSE SOURCE_LIST "*.cpp" "*.h" "*.hpp" "*.c")
 
 # 这个函数在VS工程里生成一个文件路径
 function(assign_source_group)

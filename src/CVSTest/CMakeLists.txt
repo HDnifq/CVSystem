@@ -5,18 +5,14 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 14)
 
 set(SUB_NAME "test.out")
-add_executable(${SUB_NAME}  pch.h 
-                            CommonTest.cpp
-                            CameraThreadTest.cpp
-                            EventbusTest.cpp
-                            JsonTest.cpp
-                            pch.cpp
-                            DrawTest.cpp
-                            DevicesHelperTest.cpp
-                            WorkThreadTest.cpp
-                            BaseThreadTest.cpp
-                            MultiCameraTest.cpp
-                            AlgoTest.cpp)
+add_definitions(-D UNICODE)
+if(WIN32)
+    add_definitions(-D _WINDOWS)
+endif()
+
+FILE(GLOB_RECURSE SOURCE_LIST "*.cpp" "*.h" "*.hpp" "*.c")
+
+add_executable(${SUB_NAME} ${SOURCE_LIST})
 
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
