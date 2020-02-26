@@ -307,6 +307,10 @@ void MultiCamera::start(uint activeProcindex)
         LogW("MultiCamera.start():当前计算线程正在执行,可能导致泄漏!");
     }
     LogI("MultiCamera.start():创建综合分析计算线程!");
+    if (activeProcindex >= _impl->vProc.size()) {
+        LogE("MultiCamera.start():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
+        return;
+    }
     _impl->_activeProcIndex = activeProcindex;
 
     _impl->curRunnable = new FrameProcRunnable();
