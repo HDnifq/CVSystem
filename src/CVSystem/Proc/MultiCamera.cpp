@@ -11,7 +11,6 @@
 #include "CameraGrab.h"
 
 #include <map>
-#include <mutex>
 #include <condition_variable>
 #include <atomic>
 
@@ -32,12 +31,13 @@ class FrameProcRunnable : public Poco::Runnable
     FrameProcRunnable() {}
     ~FrameProcRunnable() {}
 
+    /// <summary> proc对象. </summary>
     pFrameProc proc;
 
     /// <summary> 相机采图类. </summary>
     CameraGrab* _cameraGrab = nullptr;
 
-    /// <summary> 是否停止. </summary>
+    /// <summary> 是否保持运行. </summary>
     std::atomic_bool _isRun{true};
 
     /// <summary> 是否采图. </summary>
@@ -59,7 +59,7 @@ class FrameProcRunnable : public Poco::Runnable
                 break;
             }
 
-            LogD("MultiCamera.workonce():相机采图并处理！");
+            LogD("MultiCamera.run():相机采图并处理！");
             if (_isGrab.load()) {
                 //提取图片组帧
                 pCameraImage cimg;
@@ -70,11 +70,11 @@ class FrameProcRunnable : public Poco::Runnable
                     fps = _fpsCalc.update(++frameCount);
 
                     if (frameCount != cimg->fnum) {
-                        LogD("MultiCamera.workonce():有丢失帧，处理速度跟不上采图速度，frameCount=%d", frameCount);
+                        LogD("MultiCamera.run():有丢失帧，处理速度跟不上采图速度，frameCount=%d", frameCount);
                         frameCount = cimg->fnum; //还是让两个帧号保持一致
                     }
 
-                    LogD("MultiCamera.workonce():执行proc!");
+                    LogD("MultiCamera.run():执行proc!");
                     int ckey = -1; //让proc去自己想检测keydown就keydown
                     proc->process(cimg, ckey);
                     if (ckey != -1) { //如果有按键按下那么修改最近的按键值
@@ -86,8 +86,12 @@ class FrameProcRunnable : public Poco::Runnable
                     cimg->procEndTime = clock(); //标记处理结束时间
                 }
                 else {
-                    LogE("MultiCamera.workonce():采图失败了！");
-                    break;
+                    LogE("MultiCamera.run():采图失败了！");
+                    if (_cameraGrab == nullptr) {
+                        LogE("MultiCamera.run():_cameraGrab为NULL!");
+                        _isGrab.exchange(false); //那就不采图了算了
+                    }
+                    //break;
                 }
             }
             else {
@@ -95,7 +99,7 @@ class FrameProcRunnable : public Poco::Runnable
                 Event::GetInst()->checkMemEvent();
 
                 //选一个proc进行图像的处理
-                LogD("MultiCamera.workonce():执行proc!");
+                LogD("MultiCamera.run():执行proc!");
                 int ckey = -1; //让proc去自己想检测keydown就keydown
                 proc->onLightSleep(ckey);
                 if (ckey != -1) { //如果有按键按下那么修改最近的按键值
@@ -126,10 +130,10 @@ class MultiCamera::Impl
     {
     }
 
-    /// <summary> (直接暴露出来使用)一次只使能一个处理. </summary>
+    /// <summary> 一次只使能一个处理. </summary>
     std::vector<pFrameProc> vProc;
 
-    /// <summary> (直接暴露出来，只读取)当前激活的处理Index. </summary>
+    /// <summary> 当前激活的处理Index. </summary>
     uint _activeProcIndex = 0;
 
     /// <summary> 相机采图类. </summary>
@@ -139,7 +143,7 @@ class MultiCamera::Impl
     Poco::Thread* pThread = nullptr;
 
     /// <summary> 当前的执行对象. </summary>
-    FrameProcRunnable* curRunnable;
+    FrameProcRunnable* curRunnable = nullptr;
 
     /// <summary> 是否相机已经打开. </summary>
     std::atomic_bool _isOpened{false};
@@ -245,7 +249,7 @@ const char* MultiCamera::activeProcName()
     if (_impl->vProc.size() > _impl->_activeProcIndex)
         return _impl->vProc[_impl->_activeProcIndex]->name();
     else
-        return nullptr;
+        return "";
 }
 
 bool MultiCamera::openCamera()
@@ -323,12 +327,11 @@ void MultiCamera::stop()
 
         //标记处理工作停止
         _impl->curRunnable->_isRun.exchange(false);
-        LogI("MultiCamera.close():标记综合分析线程关闭！");
+        LogI("MultiCamera.stop():标记综合分析线程关闭！");
     }
 
-    //这里总是会遇到一个自己调用close的问题
+    //开始等待线程结束，这里总是会遇到一个自己调用close的问题
     if (_impl->pThread != nullptr) {
-
         //如果不是自己关自己（Poco::Thread::current()这个函数会返回null，如果不是Poco的线程的话）
         if (Poco::Thread::current() == nullptr || Poco::Thread::current()->id() != _impl->pThread->id()) {
             _impl->pThread->join(); //等待它结束
@@ -338,7 +341,7 @@ void MultiCamera::stop()
             _impl->curRunnable = nullptr;
         }
         else {
-            LogW("MultiCamera.close():是线程自己关闭自己！");
+            LogW("MultiCamera.stop():是线程自己关闭自己！");
         }
     }
     else {
