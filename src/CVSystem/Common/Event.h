@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <atomic>
-#include "../eventbus/EventBus.h"
+//#include "../eventbus/EventBus.h"
 
 namespace dxlib {
 
@@ -36,13 +36,6 @@ class Event
         return m_pInstance;
     }
 
-    /// <summary>
-    /// 当前opencv界面来的待处理的key值，如果无按键那么为-1.
-    /// (由各个模块自己设置它的值，然后监听部分轮询它的当前值，响应后再将它设置回-1).
-    /// 在MultiCamera中使用了这个，这个字段只是设置值，没有支持事件总线。
-    /// </summary>
-    std::atomic_int cvKey{-1};
-
     /// <summary> 相机错误?. </summary>
     //std::atomic_int cameraError;
 
@@ -53,7 +46,7 @@ class Event
     ///
     /// <returns> Null if it fails, else the bus. </returns>
     ///-------------------------------------------------------------------------------------------------
-    Dexode::EventBus* getBus();
+    //Dexode::EventBus* getBus();
 
 #pragma region 使用共享内存的方法来判断事件发出事件
 

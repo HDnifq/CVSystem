@@ -1,5 +1,5 @@
 ﻿#include "Event.h"
-#include "string.h"
+#include <string>
 
 namespace dxlib {
 
@@ -13,7 +13,7 @@ class Event::Impl
     void* memEventData = nullptr;
 
     /// <summary> 事件总线. </summary>
-    std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
+    //std::shared_ptr<Dexode::EventBus> bus = std::make_shared<Dexode::EventBus>();
 };
 
 ///-------------------------------------------------------------------------------------------------
@@ -41,10 +41,10 @@ Event::~Event()
 
 Event* Event::m_pInstance = NULL;
 
-Dexode::EventBus* Event::getBus()
-{
-    return _impl->bus.get();
-}
+//Dexode::EventBus* Event::getBus()
+//{
+//    return _impl->bus.get();
+//}
 
 void Event::setMemEventData(void* data)
 {
@@ -72,7 +72,7 @@ void Event::checkMemEvent()
             memcpy(e->value, ptr[i].value, sizeof(e->value));
 #endif
             memset(ptr, 0, sizeof(EventItem)); //清空这个消息的标记值
-            _impl->bus->notify(*e);
+            //_impl->bus->notify(*e);
         }
     }
 }

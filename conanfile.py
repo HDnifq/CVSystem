@@ -11,8 +11,8 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.0.0"
-    license = "<Put the package license here>"
+    version = "3.0.1"
+    license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
     description = "基础的opencv采图系统"

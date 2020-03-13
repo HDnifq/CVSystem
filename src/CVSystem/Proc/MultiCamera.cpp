@@ -21,7 +21,7 @@
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 执行一个帧处理. </summary>
+/// <summary> 线程函数对象，执行一个帧处理. </summary>
 ///
 /// <remarks> Dx, 2020/2/26. </remarks>
 ///-------------------------------------------------------------------------------------------------
@@ -48,6 +48,9 @@ class FrameProcRunnable : public Poco::Runnable
 
     /// <summary> 帧处理计数. </summary>
     uint frameCount = 0;
+
+    /// <summary> 当前按下的按键记录（看后面要不要删掉）. </summary>
+    std::atomic_int cvKey{-1};
 
     virtual void run()
     {
@@ -78,7 +81,7 @@ class FrameProcRunnable : public Poco::Runnable
                     int ckey = -1; //让proc去自己想检测keydown就keydown
                     proc->process(cimg, ckey);
                     if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                        Event::GetInst()->cvKey.exchange(ckey);
+                        cvKey.exchange(ckey);
                     }
 
                     //干脆用这个线程来驱动检查事件
@@ -103,7 +106,7 @@ class FrameProcRunnable : public Poco::Runnable
                 int ckey = -1; //让proc去自己想检测keydown就keydown
                 proc->onLightSleep(ckey);
                 if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                    Event::GetInst()->cvKey.exchange(ckey);
+                    cvKey.exchange(ckey);
                 }
 
                 //如果不抓图那么就睡眠
