@@ -28,16 +28,16 @@ class CVSystemConan(ConanFile):
     exports_sources = "src/*"
 
     def requirements(self):
-        self.requires.add("boost/1.71.0")
-        self.requires.add("eigen/3.3.7")
-        self.requires.add("xuexuejson/1.0.0@daixian/stable")
-        self.requires.add("opencv/3.4.5@daixian/stable")
-        # self.requires.add("opencvwin/3.4.1@daixian/stable")
-        self.requires.add("dlog/2.5.0@daixian/stable")
-        self.requires.add("poco/1.9.4")
+        self.requires("boost/1.71.0")
+        self.requires("eigen/3.3.7")
+        self.requires("xuexuejson/1.0.0@daixian/stable")
+        self.requires("opencv/3.4.5@daixian/stable")
+        # self.requires("opencvwin/3.4.1@daixian/stable")
+        self.requires("dlog/2.5.0@daixian/stable")
+        self.requires("poco/1.9.4")
 
     def build_requirements(self):
-        self.build_requires.add("gtest/1.8.1@bincrafters/stable")
+        self.build_requires("gtest/1.8.1@bincrafters/stable")
 
     def _configure_cmake(self):
         '''
