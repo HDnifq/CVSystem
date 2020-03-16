@@ -36,7 +36,7 @@ class Camera
     /// <summary> 设备的id顺序，硬件上的index. </summary>
     int devID = -1;
 
-    /// <summary> 相机的分辨率size. </summary>
+    /// <summary> 相机的分辨率size，打开相机之后会按照这个设置来尝试设置相机分辨率. </summary>
     cv::Size size;
 
     /// <summary> 相机的参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置. </summary>

@@ -188,6 +188,10 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
 
             int w = item.image.cols;
             int h = item.image.rows;
+            if (w != curCamera->size.width || h != curCamera->size.height) {
+                LogE("CameraGrab.grabOneCamra():cam %d 采图分辨率错误(%d,%d)", curCamera->camIndex, w, h);
+            }
+
             itemL.image = cv::Mat(item.image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
             itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
             LogD("CameraGrab.grabOneCamra():cam %d 采图完成！fnumber=%d", curCamera->camIndex, fnumber);

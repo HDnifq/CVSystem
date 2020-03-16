@@ -62,10 +62,10 @@ class Camera::Impl
     Impl() {}
     ~Impl() {}
 
-    /// <summary> 暂存的上次设置的结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
+    /// <summary> 暂存的读取的上次设置的实际结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
     double lastCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 
-    /// <summary> 用来做状态的记录，好触发设置动作. </summary>
+    /// <summary> 用来做状态的记录，好触发设置动作，执行过设置属性之后会把它置为FLT_MIN. </summary>
     double _setCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 };
 
@@ -82,14 +82,12 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
         _impl->_setCapProp[i] = FLT_MIN;
     }
 
-    //默认设置一个属性值
-    //_impl->_setCapProp[CV_CAP_PROP_FOURCC] = CV_FOURCC('M', 'J', 'P', 'G');
+    //因为没有成员变量,所以只能设置一下
     _impl->_setCapProp[CV_CAP_PROP_BRIGHTNESS] = aBrightness;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = aSize.height;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = aSize.width;
 
     devNameA = StringHelper::ws2s(aDevName);
 
+    //默认的参数size等于画面size
     paramSize = aSize;
 }
 
@@ -114,6 +112,12 @@ bool Camera::open()
         capture->release();
     }
     FPS = 0;
+
+    //默认设置一个属性值
+    //_impl->_setCapProp[CV_CAP_PROP_FOURCC] = CV_FOURCC('M', 'J', 'P', 'G');
+
+    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = size.height;
+    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = size.width;
 
     //列出设备
     DevicesHelper::GetInst()->listDevices();
@@ -193,6 +197,10 @@ void Camera::release()
     if (capture != nullptr) {
         capture->release();
         capture = nullptr;
+    }
+    //清空属性设置的触发
+    for (size_t i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
+        _impl->_setCapProp[i] = FLT_MIN;
     }
     FPS = 0;
 }
