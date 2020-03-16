@@ -31,8 +31,8 @@ class CVSystemConan(ConanFile):
         self.requires.add("boost/1.71.0")
         self.requires.add("eigen/3.3.7")
         self.requires.add("xuexuejson/1.0.0@daixian/stable")
-        # self.requires.add("opencv/3.4.5@daixian/stable")
-        self.requires.add("opencvwin/3.4.1@daixian/stable")
+        self.requires.add("opencv/3.4.5@daixian/stable")
+        # self.requires.add("opencvwin/3.4.1@daixian/stable")
         self.requires.add("dlog/2.5.0@daixian/stable")
         self.requires.add("poco/1.9.4")
 

@@ -66,7 +66,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # message(STATUS "OpenCV_LIBS = " ${OpenCV_LIBS})
 if(WIN32)
     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CONAN_BIN_DIRS_OPENCVWIN}" ${EXECUTABLE_OUTPUT_PATH}) #拷贝整个文件夹算了
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CONAN_BIN_DIRS_OPENCV}" ${EXECUTABLE_OUTPUT_PATH}) #拷贝整个文件夹算了
     add_custom_command(TARGET ${SUB_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CONAN_BIN_DIRS_DLOG}" ${EXECUTABLE_OUTPUT_PATH}) #拷贝整个文件夹算了
 endif()
