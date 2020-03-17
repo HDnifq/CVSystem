@@ -2,9 +2,11 @@
 #include "../CVSystem/CVSystem.h"
 #include <regex>
 #include <string>
+#include "Poco/File.h"
 
 using namespace dxlib;
 using namespace std;
+using namespace Poco;
 
 TEST(ImageSave, ReadFormFile)
 {
@@ -23,9 +25,13 @@ TEST(ImageSave, ReadFormFile)
 
 TEST(ImageSave, ReadFormFile2)
 {
-    ImageSave::GetInst()->ReadFormFile("D:\\Work\\MRSystem\\x64\\Release\\images\\debug\\camera");
-    size_t size = ImageSave::GetInst()->dqImageFile.size();
-    EXPECT_TRUE(size > 0);
-    auto ig = ImageSave::GetInst()->GetFrontImage();
-    EXPECT_TRUE(ig.size() > 0);
+    File file("D:\\Work\\MRSystem\\x64\\Release\\images\\debug\\camera");
+
+    if (file.exists() && file.isDirectory()) {
+        ImageSave::GetInst()->ReadFormFile(file.path());
+        size_t size = ImageSave::GetInst()->dqImageFile.size();
+        EXPECT_TRUE(size > 0);
+        auto ig = ImageSave::GetInst()->GetFrontImage();
+        EXPECT_TRUE(ig.size() > 0);
+    }
 }

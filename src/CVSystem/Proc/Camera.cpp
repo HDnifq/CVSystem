@@ -255,25 +255,43 @@ bool Camera::applyCapProp()
     return true;
 }
 
-void Camera::outputProp()
+std::map<std::string, std::string> Camera::outputProp()
 {
+    std::map<std::string, std::string> mprops;
     if (capture == nullptr || !capture->isOpened()) {
-        return;
+        return mprops;
     }
     int w = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FRAME_WIDTH));
+    mprops["CAP_PROP_FRAME_WIDTH"] = std::to_string(w);
+
     int h = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FRAME_HEIGHT));
+    mprops["CAP_PROP_FRAME_HEIGHT"] = std::to_string(h);
+
     int fps = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FPS));
+    mprops["CAP_PROP_FPS"] = std::to_string(fps);
+
     int mode = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_MODE));
+    mprops["CAP_PROP_MODE"] = std::to_string(mode);
+
     int ex = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FOURCC));
     char fourcc[] = {(char)(ex & 0XFF), (char)((ex & 0XFF00) >> 8), (char)((ex & 0XFF0000) >> 16), (char)((ex & 0XFF000000) >> 24), 0};
+    mprops["CAP_PROP_FOURCC"] = fourcc;
 
     int brightness = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS));
+    mprops["CAP_PROP_BRIGHTNESS"] = std::to_string(brightness);
+
     int EXPOSURE = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_EXPOSURE));
+    mprops["CAP_PROP_EXPOSURE"] = std::to_string(EXPOSURE);
+
     int FOCUS = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FOCUS));
+    mprops["CAP_PROP_FOCUS"] = std::to_string(FOCUS);
+
     int AUTO_EXPOSURE = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_AUTO_EXPOSURE));
+    mprops["AUTO_EXPOSURE"] = std::to_string(AUTO_EXPOSURE);
 
     LogI("Camera.outputProp()相机当前w=%d h=%d fps=%d mode=%d fourcc=%s brightness=%d", w, h, fps, mode, fourcc, brightness);
     LogI("Camera.outputProp()AUTO_EXPOSURE=%d EXPOSURE=%d FOCUS=%d", AUTO_EXPOSURE, EXPOSURE, FOCUS);
+    return mprops;
 }
 
 void Camera::outputAllProp()

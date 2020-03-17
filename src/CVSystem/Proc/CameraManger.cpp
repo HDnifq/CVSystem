@@ -35,6 +35,16 @@ void CameraManger::add(pStereoCamera sc)
     this->vStereo.push_back(sc);
 }
 
+pCamera CameraManger::getCamera(const std::string& devName)
+{
+    for (auto& kvp : camMap) {
+        if (kvp.second->devNameA == devName) {
+            return kvp.second;
+        }
+    }
+    return nullptr;
+}
+
 void CameraManger::clear()
 {
     this->camMap.clear();

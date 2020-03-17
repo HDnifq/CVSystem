@@ -78,6 +78,9 @@ TEST(MultiCamera, open)
         ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
         ASSERT_TRUE(CameraManger::GetInst()->camMap[0]->isOpened());
 
+        //输出一下
+        CameraManger::GetInst()->camMap[0]->outputProp();
+
         //启动计算线程
         MultiCamera::GetInst()->start();
         ASSERT_TRUE(MultiCamera::GetInst()->isRunning());
@@ -93,7 +96,6 @@ TEST(MultiCamera, open)
         ASSERT_TRUE(!MultiCamera::GetInst()->isRunning());
         MultiCamera::GetInst()->closeCamera();
         ASSERT_TRUE(!MultiCamera::GetInst()->isCameraOpened());
-
     }
 
     MultiCamera::GetInst()->clearProc();

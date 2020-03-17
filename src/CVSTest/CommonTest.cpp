@@ -3,6 +3,10 @@
 #include "../CVSystem/CVSystem.h"
 #include "time.h"
 
+//用来测试s2ws_ws2s
+#pragma execution_character_set("utf-8")
+#include "xuexuejson/Serialize.hpp"
+
 using namespace dxlib;
 using namespace std;
 
@@ -26,14 +30,19 @@ typedef std::shared_ptr<TestClass> pTestClass;
 
 //宽字符的转换测试
 #if defined(_WIN32) || defined(_WIN64)
- TEST(Common, s2ws_ws2s)
+TEST(Common, s2ws_ws2s)
 {
     //注意：有的字符是会转换失败的，如"· "
     std::string s = "试试能不能123（）╮(╯▽╰)╭ c++ float截取位数 - 修罗的博客 - CSDN博客 2018 - 7 - 23对于一个double a = 1.234567; 如果我只取小数点后3位，那么我可以这样做： a = floor(a * 1000) / 1000; floor函数的作用是返回一个小于传入参数的最大整数，所以...";
     std::wstring ws = L"试试能不能123（）╮(╯▽╰)╭ c++ float截取位数 - 修罗的博客 - CSDN博客 2018 - 7 - 23对于一个double a = 1.234567; 如果我只取小数点后3位，那么我可以这样做： a = floor(a * 1000) / 1000; floor函数的作用是返回一个小于传入参数的最大整数，所以...";
 
-    std::string s1 = StringHelper::ws2s(ws);
-    std::wstring ws1 = StringHelper::s2ws(s);
+    //这两个函数目前的实现它不是UTF8对UTF16的,它只是转到本地字符集.
+    //std::string s1 = StringHelper::ws2s(ws);
+    //std::wstring ws1 = StringHelper::s2ws(s);
+
+    //这两个是utf16和utf8的安全转换
+    std::string s1 = xuexue::json::JsonHelper::utf16To8(ws);
+    std::wstring ws1 = xuexue::json::JsonHelper::utf8To16(s);
 
     EXPECT_TRUE(s1 == s);
     EXPECT_TRUE(ws1 == ws);
