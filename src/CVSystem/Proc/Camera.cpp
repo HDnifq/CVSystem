@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include "Camera.h"
+#include <opencv2/videoio.hpp>
 
 //所有的CV_CAP_PROP的数组的长度
 #define DXLIB_CAMERA_CAP_PROP_LEN 128
@@ -83,7 +84,7 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     }
 
     //因为没有成员变量,所以只能设置一下
-    _impl->_setCapProp[CV_CAP_PROP_BRIGHTNESS] = aBrightness;
+    _impl->_setCapProp[cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS] = aBrightness;
 
     devNameA = StringHelper::ws2s(aDevName);
 
@@ -116,8 +117,8 @@ bool Camera::open()
     //默认设置一个属性值
     //_impl->_setCapProp[CV_CAP_PROP_FOURCC] = CV_FOURCC('M', 'J', 'P', 'G');
 
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_HEIGHT] = size.height;
-    _impl->_setCapProp[CV_CAP_PROP_FRAME_WIDTH] = size.width;
+    _impl->_setCapProp[cv::VideoCaptureProperties::CAP_PROP_FRAME_HEIGHT] = size.height;
+    _impl->_setCapProp[cv::VideoCaptureProperties::CAP_PROP_FRAME_WIDTH] = size.width;
 
     //列出设备
     DevicesHelper::GetInst()->listDevices();
@@ -156,7 +157,7 @@ bool Camera::open()
             isSuccess = capture->open(StringHelper::ws2s(devName), cv::CAP_V4L);
 #else
             //这个open函数可能会弹窗,导致一直卡死在这里
-            isSuccess = capture->open(devID);
+            isSuccess = capture->open(devID, cv::CAP_DSHOW);
 #endif
 
             if (isSuccess) {
@@ -226,7 +227,7 @@ bool Camera::applyCapProp()
             double setValue = _impl->_setCapProp[i]; //用户想设置的值
 
             //输出用户想设置的值
-            if (i == CV_CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
+            if (i == cv::VideoCaptureProperties::CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
                 std::string fourcc = toFOURCC(setValue);
                 LogI("Camera.applyCapProp():设置相机%d -> %s = %s", camIndex, str, fourcc.c_str());
             }
@@ -242,7 +243,7 @@ bool Camera::applyCapProp()
 
             //读当前值然后顺便记录一下
             _impl->lastCapProp[i] = capture->get(i);
-            if (i == CV_CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
+            if (i == cv::VideoCaptureProperties::CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
                 std::string fourcc = toFOURCC(_impl->lastCapProp[i]);
                 LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %s", camIndex, str, fourcc.c_str());
             }
@@ -259,17 +260,17 @@ void Camera::outputProp()
     if (capture == nullptr || !capture->isOpened()) {
         return;
     }
-    int w = static_cast<int>(capture->get(CV_CAP_PROP_FRAME_WIDTH));
-    int h = static_cast<int>(capture->get(CV_CAP_PROP_FRAME_HEIGHT));
-    int fps = static_cast<int>(capture->get(CV_CAP_PROP_FPS));
-    int mode = static_cast<int>(capture->get(CV_CAP_PROP_MODE));
-    int ex = static_cast<int>(capture->get(CV_CAP_PROP_FOURCC));
+    int w = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FRAME_WIDTH));
+    int h = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FRAME_HEIGHT));
+    int fps = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FPS));
+    int mode = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_MODE));
+    int ex = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FOURCC));
     char fourcc[] = {(char)(ex & 0XFF), (char)((ex & 0XFF00) >> 8), (char)((ex & 0XFF0000) >> 16), (char)((ex & 0XFF000000) >> 24), 0};
 
-    int brightness = static_cast<int>(capture->get(CV_CAP_PROP_BRIGHTNESS));
-    int EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_EXPOSURE));
-    int FOCUS = static_cast<int>(capture->get(CV_CAP_PROP_FOCUS));
-    int AUTO_EXPOSURE = static_cast<int>(capture->get(CV_CAP_PROP_AUTO_EXPOSURE));
+    int brightness = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS));
+    int EXPOSURE = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_EXPOSURE));
+    int FOCUS = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_FOCUS));
+    int AUTO_EXPOSURE = static_cast<int>(capture->get(cv::VideoCaptureProperties::CAP_PROP_AUTO_EXPOSURE));
 
     LogI("Camera.outputProp()相机当前w=%d h=%d fps=%d mode=%d fourcc=%s brightness=%d", w, h, fps, mode, fourcc, brightness);
     LogI("Camera.outputProp()AUTO_EXPOSURE=%d EXPOSURE=%d FOCUS=%d", AUTO_EXPOSURE, EXPOSURE, FOCUS);

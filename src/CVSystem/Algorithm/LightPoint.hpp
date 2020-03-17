@@ -64,15 +64,15 @@ class LightPoint
         cv::Mat thrImage;
         std::vector<std::vector<cv::Point>>& contours = result.contours;
         //转换一次黑白图像
-        cvtColor(image, grayImage, CV_BGR2GRAY);
+        cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
 
         //门限结果输出到thrImage
         cv::threshold(grayImage, thrImage, param.highLightThr, 255, cv::THRESH_BINARY);
 
         cv::findContours(thrImage,
-                         contours,              //轮廓的结果数组
-                         CV_RETR_EXTERNAL,      //获取外轮廓
-                         CV_CHAIN_APPROX_NONE); //获取每个轮廓的每个像素
+                         contours,               //轮廓的结果数组
+                         cv::RETR_EXTERNAL,      //获取外轮廓
+                         cv::CHAIN_APPROX_NONE); //获取每个轮廓的每个像素
 
         for (size_t i = 0; i < contours.size(); i++) {
             //根据大小筛除轮廓

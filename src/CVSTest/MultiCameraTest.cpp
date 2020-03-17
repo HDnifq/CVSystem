@@ -67,7 +67,7 @@ TEST(MultiCamera, open)
     wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
-    CameraManger::GetInst()->camMap[0]->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
+    CameraManger::GetInst()->camMap[0]->setProp(cv::CAP_PROP_AUTO_EXPOSURE, 0);
 
     MultiCamera::GetInst()->addProc(new TestProc());
 
