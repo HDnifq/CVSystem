@@ -75,3 +75,10 @@ TEST(Common, returnTest)
     //TestClass tc = func(&msg); //这里赋值执行了拷贝构造函数
     //EXPECT_TRUE(msg.length() > 0);
 }
+
+TEST(Common, string_at)
+{
+    std::string str = "12345678";
+    EXPECT_TRUE(str[0] == '1');
+    EXPECT_TRUE(str[1] == '2');
+}

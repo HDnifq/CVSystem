@@ -96,6 +96,15 @@ class Camera
     bool open();
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> 采一张图片. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/18. </remarks>
+    ///
+    /// <param name="image"> The image to read. </param>
+    ///-------------------------------------------------------------------------------------------------
+    bool read(cv::Mat& image);
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 关闭相机设备. </summary>
     ///
     /// <remarks> Dx, 2019/1/12. </remarks>
@@ -122,15 +131,27 @@ class Camera
 #pragma region 相机属性
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置当前的相机的一项属性. </summary>
+    /// <summary>
+    /// 设置当前的相机的一项属性，注意第二个参数value是double类型.
+    /// </summary>
     ///
     /// <remarks> Dx, 2019/5/14. </remarks>
     ///
-    /// <param name="CV_CAP_PROP"> The cv capability
-    ///                            property. </param>
+    /// <param name="CV_CAP_PROP"> 要设置的属性. </param>
     /// <param name="value">       The value. </param>
     ///-------------------------------------------------------------------------------------------------
-    void setProp(int CV_CAP_PROP, double value);
+    void setProp(cv::VideoCaptureProperties CV_CAP_PROP, double value);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置当前的相机的一项属性. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/18. </remarks>
+    ///
+    /// <param name="CV_CAP_PROP"> The cv capability
+    ///                            property. </param>
+    /// <param name="value">       一个字符串值，由这个函数进行处理. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::string value);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 由采图线程去应用相机的属性设置. </summary>
@@ -158,7 +179,29 @@ class Camera
     ///
     /// <remarks> Dx, 2019/5/14. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    void outputAllProp();
+    std::map<std::string, std::string> outputAllProp();
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 属性字符串转成枚举，如果返回cv::CV__CAP_PROP_LATEST则表示失败了. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/18. </remarks>
+    ///
+    /// <param name="propertiesStr"> The properties string. </param>
+    ///
+    /// <returns> The cv::VideoCaptureProperties. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static cv::VideoCaptureProperties propStr2Enum(const std::string& propertiesStr);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 得到相机的属性的字符串文本map. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/18. </remarks>
+    ///
+    /// <returns>
+    /// 相机的属性的字符串文本map
+    /// </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static std::map<cv::VideoCaptureProperties, const char*> propStringMap();
 
 #pragma endregion
 

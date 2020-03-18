@@ -78,7 +78,7 @@ pStereoCamera CameraManger::getStereo(int camIndex)
     return nullptr;
 }
 
-bool CameraManger::setProp(int camIndex, int CAP_PROP, double value)
+bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, double value)
 {
     bool success = false;
     auto iter = camMap.find(camIndex);

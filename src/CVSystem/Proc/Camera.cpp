@@ -7,60 +7,16 @@
 #include <opencv2/videoio.hpp>
 
 //所有的CV_CAP_PROP的数组的长度
-#define DXLIB_CAMERA_CAP_PROP_LEN 128
+#define DXLIB_CAMERA_CAP_PROP_LEN 64
 
 namespace dxlib {
-
-/// <summary> 属性名字符串(和opencv中的枚举一致). </summary>
-const char* CAP_PROP_STR[] = {
-    "POS_MSEC",
-    "POS_FRAMES",
-    "POS_AVI_RATIO",
-    "FRAME_WIDTH",
-    "FRAME_HEIGHT",
-    "FPS",
-    "FOURCC",
-    "FRAME_COUNT",
-    "FORMAT",
-    "MODE",
-    "BRIGHTNESS",
-    "CONTRAST",
-    "SATURATION",
-    "HUE",
-    "GAIN",
-    "EXPOSURE",
-    "CONVERT_RGB",
-    "WHITE_BALANCE_BLUE_U",
-    "RECTIFICATION",
-    "MONOCHROME",
-    "SHARPNESS",
-    "AUTO_EXPOSURE",
-    "GAMMA",
-    "TEMPERATURE",
-    "TRIGGER",
-    "TRIGGER_DELAY",
-    "WHITE_BALANCE_RED_V",
-    "ZOOM",
-    "FOCUS",
-    "GUID",
-    "ISO_SPEED",
-    "MAX_DC1394",
-    "BACKLIGHT",
-    "PAN",
-    "TILT",
-    "ROLL",
-    "IRIS",
-    "SETTINGS",
-    "BUFFERSIZE",
-    "AUTOFOCUS",
-    "SAR_NUM",
-    "SAR_DEN",
-};
 
 class Camera::Impl
 {
   public:
-    Impl() {}
+    Impl()
+    {
+    }
     ~Impl() {}
 
     /// <summary> 暂存的读取的上次设置的实际结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
@@ -68,10 +24,62 @@ class Camera::Impl
 
     /// <summary> 用来做状态的记录，好触发设置动作，执行过设置属性之后会把它置为FLT_MIN. </summary>
     double _setCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
+
+    /// <summary> 相机属性和字符串对应的map. </summary>
+    static std::map<cv::VideoCaptureProperties, const char*> mPropStr;
 };
 
+std::map<cv::VideoCaptureProperties, const char*> Camera::Impl::mPropStr = {
+    {cv::CAP_PROP_POS_MSEC, "CAP_PROP_POS_MSEC"},
+    {cv::CAP_PROP_POS_FRAMES, "CAP_PROP_POS_FRAMES"},
+    {cv::CAP_PROP_POS_AVI_RATIO, "CAP_PROP_POS_AVI_RATIO"},
+    {cv::CAP_PROP_FRAME_WIDTH, "CAP_PROP_FRAME_WIDTH"},
+    {cv::CAP_PROP_FRAME_HEIGHT, "CAP_PROP_FRAME_HEIGHT"},
+    {cv::CAP_PROP_FPS, "CAP_PROP_FPS"},
+    {cv::CAP_PROP_FOURCC, "CAP_PROP_FOURCC"},
+    {cv::CAP_PROP_FRAME_COUNT, "CAP_PROP_FRAME_COUNT"},
+    {cv::CAP_PROP_FORMAT, "CAP_PROP_FORMAT"},
+    {cv::CAP_PROP_MODE, "CAP_PROP_MODE"},
+    {cv::CAP_PROP_BRIGHTNESS, "CAP_PROP_BRIGHTNESS"},
+    {cv::CAP_PROP_CONTRAST, "CAP_PROP_CONTRAST"},
+    {cv::CAP_PROP_SATURATION, "CAP_PROP_SATURATION"},
+    {cv::CAP_PROP_HUE, "CAP_PROP_HUE"},
+    {cv::CAP_PROP_GAIN, "CAP_PROP_GAIN"},
+    {cv::CAP_PROP_EXPOSURE, "CAP_PROP_EXPOSURE"},
+    {cv::CAP_PROP_CONVERT_RGB, "CAP_PROP_CONVERT_RGB"},
+    {cv::CAP_PROP_WHITE_BALANCE_BLUE_U, "CAP_PROP_WHITE_BALANCE_BLUE_U"},
+    {cv::CAP_PROP_RECTIFICATION, "CAP_PROP_RECTIFICATION"},
+    {cv::CAP_PROP_MONOCHROME, "CAP_PROP_MONOCHROME"},
+    {cv::CAP_PROP_SHARPNESS, "CAP_PROP_SHARPNESS"},
+    {cv::CAP_PROP_AUTO_EXPOSURE, "CAP_PROP_AUTO_EXPOSURE"},
+    {cv::CAP_PROP_GAMMA, "CAP_PROP_GAMMA"},
+    {cv::CAP_PROP_TEMPERATURE, "CAP_PROP_TEMPERATURE"},
+    {cv::CAP_PROP_TRIGGER, "CAP_PROP_TRIGGER"},
+    {cv::CAP_PROP_TRIGGER_DELAY, "CAP_PROP_TRIGGER_DELAY"},
+    {cv::CAP_PROP_WHITE_BALANCE_RED_V, "CAP_PROP_WHITE_BALANCE_RED_V"},
+    {cv::CAP_PROP_ZOOM, "CAP_PROP_ZOOM"},
+    {cv::CAP_PROP_FOCUS, "CAP_PROP_FOCUS"},
+    {cv::CAP_PROP_GUID, "CAP_PROP_GUID"},
+    {cv::CAP_PROP_ISO_SPEED, "CAP_PROP_ISO_SPEED"},
+    {cv::CAP_PROP_BACKLIGHT, "CAP_PROP_BACKLIGHT"},
+    {cv::CAP_PROP_PAN, "CAP_PROP_PAN"},
+    {cv::CAP_PROP_TILT, "CAP_PROP_TILT"},
+    {cv::CAP_PROP_ROLL, "CAP_PROP_ROLL"},
+    {cv::CAP_PROP_IRIS, "CAP_PROP_IRIS"},
+    {cv::CAP_PROP_SETTINGS, "CAP_PROP_SETTINGS"},
+    {cv::CAP_PROP_BUFFERSIZE, "CAP_PROP_BUFFERSIZE"},
+    {cv::CAP_PROP_AUTOFOCUS, "CAP_PROP_AUTOFOCUS"},
+    {cv::CAP_PROP_SAR_NUM, "CAP_PROP_SAR_NUM"},
+    {cv::CAP_PROP_SAR_DEN, "CAP_PROP_SAR_DEN"},
+    {cv::CAP_PROP_BACKEND, "CAP_PROP_BACKEND"},
+    {cv::CAP_PROP_CHANNEL, "CAP_PROP_CHANNEL"},
+    {cv::CAP_PROP_AUTO_WB, "CAP_PROP_AUTO_WB"},
+    {cv::CAP_PROP_WB_TEMPERATURE, "CAP_PROP_WB_TEMPERATURE"},
+    {cv::CAP_PROP_CODEC_PIXEL_FORMAT, "CAP_PROP_CODEC_PIXEL_FORMAT"}};
+
 Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBrightness)
-    : camIndex(aCamIndex), devName(aDevName), size(aSize)
+    : camIndex(aCamIndex),
+      devName(aDevName), size(aSize)
 {
     //构造成员
     _impl = new Impl();
@@ -193,6 +201,11 @@ bool Camera::open()
     return true;
 }
 
+bool Camera::read(cv::Mat& image)
+{
+    return capture->read(image);
+}
+
 void Camera::release()
 {
     if (capture != nullptr) {
@@ -206,9 +219,22 @@ void Camera::release()
     FPS = 0;
 }
 
-void Camera::setProp(int CV_CAP_PROP, double value)
+#pragma region 相机属性
+
+void Camera::setProp(cv::VideoCaptureProperties CV_CAP_PROP, double value)
 {
-    _impl->_setCapProp[CV_CAP_PROP] = value;
+    _impl->_setCapProp[(int)CV_CAP_PROP] = value;
+}
+
+void Camera::setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::string value)
+{
+    //如果这是fourcc
+    if (CV_CAP_PROP == cv::CAP_PROP_FOURCC) {
+        _impl->_setCapProp[(int)CV_CAP_PROP] = cv::VideoWriter::fourcc(value[0], value[1], value[2], value[3]);
+    }
+    else {
+        _impl->_setCapProp[(int)CV_CAP_PROP] = std::stod(value);
+    }
 }
 
 bool Camera::applyCapProp()
@@ -222,22 +248,22 @@ bool Camera::applyCapProp()
     }
 
     for (int i = 0; i < DXLIB_CAMERA_CAP_PROP_LEN; i++) {
-        if (_impl->_setCapProp[i] != FLT_MIN) {      //不等于表示有用户设置过了
-            const char* str = CAP_PROP_STR[i];       //这个属性的字符串
-            double setValue = _impl->_setCapProp[i]; //用户想设置的值
+        if (_impl->_setCapProp[i] != FLT_MIN) {                                        //不等于FLT_MIN表示有用户设置过了
+            const char* sProp = Camera::Impl::mPropStr[(cv::VideoCaptureProperties)i]; //这个属性的字符串
+            double setValue = _impl->_setCapProp[i];                                   //用户想设置的值
 
             //输出用户想设置的值
             if (i == cv::VideoCaptureProperties::CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
                 std::string fourcc = toFOURCC(setValue);
-                LogI("Camera.applyCapProp():设置相机%d -> %s = %s", camIndex, str, fourcc.c_str());
+                LogI("Camera.applyCapProp():设置相机%d -> %s = %s", camIndex, sProp, fourcc.c_str());
             }
             else {
-                LogI("Camera.applyCapProp():设置相机%d -> %s = %d", camIndex, str, (int)setValue);
+                LogI("Camera.applyCapProp():设置相机%d -> %s = %d", camIndex, sProp, (int)setValue);
             }
 
             //进行设置
             if (!capture->set(i, setValue)) {
-                LogW("Camera.applyCapProp():设置%s失败.", str);
+                LogW("Camera.applyCapProp():设置%s失败.", sProp);
             }
             _impl->_setCapProp[i] = FLT_MIN; //重新标记为默认值
 
@@ -245,10 +271,10 @@ bool Camera::applyCapProp()
             _impl->lastCapProp[i] = capture->get(i);
             if (i == cv::VideoCaptureProperties::CAP_PROP_FOURCC) { //fourcc这个值得转一下才能log
                 std::string fourcc = toFOURCC(_impl->lastCapProp[i]);
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %s", camIndex, str, fourcc.c_str());
+                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %s", camIndex, sProp, fourcc.c_str());
             }
             else {
-                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %d", camIndex, str, (int)_impl->lastCapProp[i]);
+                LogI("Camera.applyCapProp():当前相机%d实际值 -> %s = %d", camIndex, sProp, (int)_impl->lastCapProp[i]);
             }
         }
     }
@@ -294,16 +320,49 @@ std::map<std::string, std::string> Camera::outputProp()
     return mprops;
 }
 
-void Camera::outputAllProp()
+std::map<std::string, std::string> Camera::outputAllProp()
 {
+    std::map<std::string, std::string> mprops;
     if (capture == nullptr || !capture->isOpened()) {
-        return;
+        return mprops;
     }
     for (int i = 0; i <= 41; i++) {
-        int w = static_cast<int>(capture->get(i));
-        LogI("Camera.outputAllProp(): %d = %d", i, w);
+        //31在VideoCaptureProperties里没有定义
+        if (i == 31) {
+            continue;
+        }
+        int v = static_cast<int>(capture->get(i));
+        LogI("Camera.outputAllProp(): %s = %d", Camera::Impl::mPropStr[(cv::VideoCaptureProperties)i], v);
+        if ((cv::VideoCaptureProperties)i == cv::CAP_PROP_FOURCC) {
+            char fourcc[] = {(char)(v & 0XFF), (char)((v & 0XFF00) >> 8), (char)((v & 0XFF0000) >> 16), (char)((v & 0XFF000000) >> 24), 0};
+            mprops[Camera::Impl::mPropStr[(cv::VideoCaptureProperties)i]] = fourcc;
+        }
+        else {
+            mprops[Camera::Impl::mPropStr[(cv::VideoCaptureProperties)i]] = std::to_string(v);
+        }
     }
+    return mprops;
 }
+
+cv::VideoCaptureProperties Camera::propStr2Enum(const std::string& str)
+{
+    auto& map = Camera::Impl::mPropStr;
+    auto& itr = std::find_if(map.begin(), map.end(),
+                             [str](const auto& itr) { return itr.second == str; });
+
+    if (itr != map.end()) {
+        return itr->first;
+    }
+    //如果上面的判断都没进那么随便返回一个最后一个不用的值算了
+    return cv::CV__CAP_PROP_LATEST;
+}
+
+std::map<cv::VideoCaptureProperties, const char*> Camera::propStringMap()
+{
+    return Camera::Impl::mPropStr;
+}
+
+#pragma endregion
 
 std::string Camera::toFOURCC(double FOURCC)
 {

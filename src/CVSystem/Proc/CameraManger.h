@@ -105,7 +105,7 @@ class CameraManger
     ///
     /// <returns> 如果存在这个相机就进行设置并且返回true. </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool setProp(int camIndex, int CAP_PROP, double value);
+    bool setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, double value);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 是否所有的相机都已经打开. </summary>
