@@ -43,6 +43,19 @@ struct ImageItem
 class CameraImage
 {
   public:
+    CameraImage(std::vector<pCamera>& vCameras, std::vector<pCamera>& vCameraAssist)
+    {
+        vImage.resize(vCameras.size());            //先直接创建算了
+        vImageAssist.resize(vCameraAssist.size()); //先直接创建算了
+        //记录所有的camera
+        for (size_t i = 0; i < vCameras.size(); i++) {
+            vImage[i].camera = vCameras[i].get();
+        }
+        for (size_t i = 0; i < vCameraAssist.size(); i++) {
+            vImageAssist[i].camera = vCameraAssist[i].get();
+        }
+    }
+
     /// <summary> 相机帧序号. </summary>
     unsigned int fnum = 0;
 

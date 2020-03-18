@@ -77,11 +77,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
     ++fnumber;
 
     //构造采图结果：一个结构体包含4个相机的图
-    cimg = pCameraImage(new CameraImage());
+    cimg = pCameraImage(new CameraImage(vCameras, vCameraAssist));
     cimg->fnum = fnumber;
     cimg->grabStartTime = clock();
-    cimg->vImage.resize(vCameras.size());            //先直接创建算了
-    cimg->vImageAssist.resize(vCameraAssist.size()); //先直接创建算了
 
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
@@ -139,15 +137,11 @@ bool CameraGrab::grab(pCameraImage& cimg)
 void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
 {
     int camIndex = curCamera->camIndex;
-    ImageItem* pitem = nullptr;
-    if (!curCamera->isAssist) {
-        pitem = &(cimg->vImage[camIndex]);
+
+    ImageItem& item = cimg->vImage[camIndex];
+    if (curCamera->isAssist) {
+        item = cimg->vImageAssist[camIndex];
     }
-    else {
-        pitem = &(cimg->vImageAssist[camIndex]);
-    }
-    ImageItem& item = *pitem;
-    item.camera = curCamera; //标记camera来源
 
     //如果不是stereo相机这样
     if (!curCamera->isStereoCamera) {
@@ -217,11 +211,9 @@ bool CameraGrab::startGrabImage(pCameraImage& cimg)
     ++fnumber;
 
     //构造采图结果：一个结构体包含4个相机的图
-    cimg = pCameraImage(new CameraImage());
+    cimg = pCameraImage(new CameraImage(vCameras, vCameraAssist));
     cimg->fnum = fnumber;
     cimg->grabStartTime = clock();
-    cimg->vImage.resize(vCameras.size());            //先直接创建算了
-    cimg->vImageAssist.resize(vCameraAssist.size()); //先直接创建算了
     return true;
 }
 

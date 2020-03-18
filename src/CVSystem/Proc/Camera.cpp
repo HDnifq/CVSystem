@@ -188,7 +188,7 @@ bool Camera::open()
 
         capture->release();
 
-        if (count == 1) { //失败超过5次
+        if (count == 3) { //失败超过5次
             LogE("Camera.open():打开摄像头失败!");
             release(); //去把capture置为null
             return false;
