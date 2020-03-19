@@ -75,7 +75,7 @@ class CameraGrab
     /// True if it succeeds, false if it fails.
     /// </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool startGrabImage(pCameraImage& result);
+    //bool startGrabImage(pCameraImage& result);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 采图拆解的3步(对一个相机抓图). </summary>
@@ -89,7 +89,7 @@ class CameraGrab
     /// True if it succeeds, false if it fails.
     /// </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool grabWithCamIndex(pCameraImage& result, int camIndex);
+    //bool grabWithCamIndex(pCameraImage& result, int camIndex);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 采图拆解的3步(结束这次抓图). </summary>
@@ -102,7 +102,7 @@ class CameraGrab
     /// True if it succeeds, false if it fails.
     /// </returns>
     ///-------------------------------------------------------------------------------------------------
-    bool endGrabImage(pCameraImage& result);
+    //bool endGrabImage(pCameraImage& result);
 
 #pragma endregion
 

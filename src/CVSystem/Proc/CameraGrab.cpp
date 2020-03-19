@@ -84,18 +84,6 @@ bool CameraGrab::grab(pCameraImage& cimg)
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
-            if (vCameras[camIndex] == nullptr) {
-                continue;
-            }
-            Camera* curCamera = vCameras[camIndex].get();
-            if (curCamera->isVirtualCamera) {
-                continue;
-            }
-
-            if (!curCamera->isOpened()) {
-                //LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
-                continue;
-            }
             grabOneCamra(cimg, vCameras[camIndex].get());
         }
         catch (const std::exception& e) {
@@ -107,18 +95,6 @@ bool CameraGrab::grab(pCameraImage& cimg)
     //对所有辅助相机采图
     for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
         try {
-            if (vCameraAssist[camIndex] == nullptr) {
-                continue;
-            }
-            Camera* curCamera = vCameraAssist[camIndex].get();
-            if (curCamera->isVirtualCamera) {
-                continue;
-            }
-
-            if (!curCamera->isOpened()) {
-                //LogE("CameraGrab.grab():cam %d 相机没有打开！", camIndex);
-                continue;
-            }
             grabOneCamra(cimg, vCameraAssist[camIndex].get());
         }
         catch (const std::exception& e) {
@@ -136,11 +112,24 @@ bool CameraGrab::grab(pCameraImage& cimg)
 
 void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
 {
+    if (curCamera == nullptr) {
+        return;
+    }
     int camIndex = curCamera->camIndex;
-
+    //当前要写入的[相机-图像]
     ImageItem& item = cimg->vImage[camIndex];
     if (curCamera->isAssist) {
         item = cimg->vImageAssist[camIndex];
+    }
+
+    if (curCamera->isVirtualCamera) {
+        //item.isSuccess = false;//(这个失败是默认值)
+        return;
+    }
+
+    if (!curCamera->isOpened()) {
+        //item.isSuccess = false;//标记采图失败
+        return;
     }
 
     //如果不是stereo相机这样
@@ -205,62 +194,62 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
     }
 }
 
-bool CameraGrab::startGrabImage(pCameraImage& cimg)
-{
-    //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
-    ++fnumber;
+//bool CameraGrab::startGrabImage(pCameraImage& cimg)
+//{
+//    //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
+//    ++fnumber;
+//
+//    //构造采图结果：一个结构体包含4个相机的图
+//    cimg = pCameraImage(new CameraImage(vCameras, vCameraAssist));
+//    cimg->fnum = fnumber;
+//    cimg->grabStartTime = clock();
+//    return true;
+//}
 
-    //构造采图结果：一个结构体包含4个相机的图
-    cimg = pCameraImage(new CameraImage(vCameras, vCameraAssist));
-    cimg->fnum = fnumber;
-    cimg->grabStartTime = clock();
-    return true;
-}
+//bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
+//{
+//    if (camIndex >= vCameras.size()) {
+//        LogE("CameraGrab.grabWithCamIndex():输入camIndex不正确 camIndex=%d！", camIndex);
+//        return false;
+//    }
+//    try {
+//        if (vCameras[camIndex] == nullptr) {
+//            return true;
+//        }
+//        if (!vCameras[camIndex]->isOpened()) {
+//            //LogE("CameraGrab.grabWithCamIndex():cam %d 相机没有打开！", camIndex);
+//            return false;
+//        }
+//        ImageItem& item = cimg->vImage[camIndex];
+//        item.camera = vCameras[camIndex].get(); //标记camera来源
+//
+//        item.grabStartTime = clock();
+//        if (vCameras[camIndex]->capture->read(item.image)) {
+//
+//            item.isSuccess = true;
+//            item.grabEndTime = clock();
+//            LogD("CameraGrab.grabWithCamIndex():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
+//            return true;
+//        }
+//        else {
+//            item.isSuccess = false;
+//            item.grabEndTime = clock();
+//            LogE("CameraGrab.grabWithCamIndex():cam %d 采图read失败！", camIndex);
+//            return false;
+//        }
+//    }
+//    catch (const std::exception& e) {
+//        LogE("CameraGrab.grabWithCamIndex():异常 %s", e.what());
+//    }
+//    return false;
+//}
 
-bool CameraGrab::grabWithCamIndex(pCameraImage& cimg, int camIndex)
-{
-    if (camIndex >= vCameras.size()) {
-        LogE("CameraGrab.grabWithCamIndex():输入camIndex不正确 camIndex=%d！", camIndex);
-        return false;
-    }
-    try {
-        if (vCameras[camIndex] == nullptr) {
-            return true;
-        }
-        if (!vCameras[camIndex]->isOpened()) {
-            //LogE("CameraGrab.grabWithCamIndex():cam %d 相机没有打开！", camIndex);
-            return false;
-        }
-        ImageItem& item = cimg->vImage[camIndex];
-        item.camera = vCameras[camIndex].get(); //标记camera来源
-
-        item.grabStartTime = clock();
-        if (vCameras[camIndex]->capture->read(item.image)) {
-
-            item.isSuccess = true;
-            item.grabEndTime = clock();
-            LogD("CameraGrab.grabWithCamIndex():cam %d 采图完成！fnumber=%d", vCameras[camIndex]->camIndex, fnumber);
-            return true;
-        }
-        else {
-            item.isSuccess = false;
-            item.grabEndTime = clock();
-            LogE("CameraGrab.grabWithCamIndex():cam %d 采图read失败！", camIndex);
-            return false;
-        }
-    }
-    catch (const std::exception& e) {
-        LogE("CameraGrab.grabWithCamIndex():异常 %s", e.what());
-    }
-    return false;
-}
-
-bool CameraGrab::endGrabImage(pCameraImage& result)
-{
-    result->grabEndTime = clock();
-    updateFPS();
-    return true;
-}
+//bool CameraGrab::endGrabImage(pCameraImage& result)
+//{
+//    result->grabEndTime = clock();
+//    updateFPS();
+//    return true;
+//}
 
 bool CameraGrab::open()
 {
