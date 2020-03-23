@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "../CVSystem/CVSystem.h"
+#include "CVSystem/CVSystem.h"
 #include <regex>
 #include <string>
 #include "Poco/File.h"

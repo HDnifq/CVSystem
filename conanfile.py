@@ -1,9 +1,11 @@
-# coding: utf-8
-from conans import ConanFile, CMake, tools
+#!/usr/bin/env python3
+# coding=utf-8
 
 import os
 import sys
 import io
+from conans import ConanFile, CMake, tools
+
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='gbk')
 
 os.system("chcp 65001")
@@ -11,16 +13,15 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.0.3"
+    version = "3.0.4"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
     description = "基础的opencv采图系统"
     topics = ("opencv", "daixian")
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "build_test": [True, False]}
+    options = {"shared": [True, False]}
     default_options = {"shared": False,
-                       "build_test": True,
                        "dlog:shared": True,
                        "opencv:shared": True,
                        "boost:without_test": True}
@@ -35,16 +36,13 @@ class CVSystemConan(ConanFile):
         self.requires("dlog/2.5.0@daixian/stable")
         self.requires("poco/1.9.4")
 
-    def build_requirements(self):
-        self.build_requires("gtest/1.8.1@bincrafters/stable")
-
     def _configure_cmake(self):
         '''
         转换python的设置到CMake
         '''
         cmake = CMake(self)
+        # 目前没有写导出类,所以实际上不能支持BUILD_SHARED
         cmake.definitions["CVSYSTEM_BUILD_SHARED"] = self.options.shared
-        cmake.definitions["CVSYSTEM_BUILD_TESTS"] = self.options.build_test
         return cmake
 
     def build(self):

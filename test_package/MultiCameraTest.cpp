@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/CVSystem.h"
+#include "CVSystem/CVSystem.h"
 #include <thread>
 
 using namespace dxlib;

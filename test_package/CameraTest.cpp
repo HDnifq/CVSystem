@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #pragma execution_character_set("utf-8")
-#include "../CVSystem/CVSystem.h"
+#include "CVSystem/CVSystem.h"
 #include "time.h"
 
 //用来测试s2ws_ws2s

@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
 
-#include "../CVSystem/CVSystem.h"
-#include "../CVSystem/Algorithm/LightPoint.hpp"
-#include "../CVSystem/Algorithm/Project3DTo2D.hpp"
+#include "CVSystem/CVSystem.h"
+#include "CVSystem/Algorithm/LightPoint.hpp"
+#include "CVSystem/Algorithm/Project3DTo2D.hpp"
 
 using namespace dxlib;
 //using namespace Eigen;

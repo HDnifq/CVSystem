@@ -5,5 +5,6 @@ REM python ./tools/DownloadLib.py -d "C:/dxlib/download" -l "C:/dxlib/lib" "conc
 
 mkdir build
 cd build
-conan install .. -s compiler.runtime=MD -s arch=x86_64 -s build_type=Release --build missing
-cmake ../src -G "Visual Studio 15 Win64" -DCVSYSTEM_BUILD_SHARED:BOOL="0" -DCVSYSTEM_BUILD_TESTS:BOOL="1" -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release;RelWithDebInfo"
+REM 现在这个命令只是为了装依赖库,而依赖库最全的是test_package工程
+conan install ../test_package -s compiler.runtime=MD -s arch=x86_64 -s build_type=Release --build missing
+REM cmake ../src -G "Visual Studio 15 Win64" -DCVSYSTEM_BUILD_SHARED:BOOL="0" -DCVSYSTEM_BUILD_TESTS:BOOL="1" -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release;RelWithDebInfo"
