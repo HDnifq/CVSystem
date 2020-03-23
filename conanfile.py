@@ -30,7 +30,7 @@ class CVSystemConan(ConanFile):
     def requirements(self):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
-        self.requires("xuexuejson/1.1.0@daixian/stable")
+        self.requires("xuexuejson/1.1.1@daixian/stable")
         self.requires("opencv/4.2.0@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
         self.requires("poco/1.9.4")
@@ -61,7 +61,7 @@ class CVSystemConan(ConanFile):
     def package(self):
         self.copy("*.h", dst="include", src="src")
         self.copy("*.hpp", dst="include", src="src")
-        
+
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.dylib*", dst="lib", keep_path=False)
