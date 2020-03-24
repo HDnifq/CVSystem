@@ -15,7 +15,7 @@ class CVSystemTestConan(ConanFile):
 
         self.requires("eigen/3.3.7")
         self.requires("opencv/4.2.0@daixian/stable")
-        self.requires("xuexuejson/1.1.1@daixian/stable")
+        self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
         self.requires("boost/1.71.0")
         self.requires("poco/1.9.4")

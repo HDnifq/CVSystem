@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.0.4"
+    version = "3.0.6"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -31,7 +31,7 @@ class CVSystemConan(ConanFile):
     def requirements(self):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
-        self.requires("xuexuejson/1.1.1@daixian/stable")
+        self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("opencv/4.2.0@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
         self.requires("poco/1.9.4")

@@ -45,5 +45,5 @@ class StringHelper
     ///-------------------------------------------------------------------------------------------------
     static std::string byte2str(const void* data, int length);
 };
-
+typedef StringHelper S;
 } // namespace dxlib
