@@ -66,16 +66,13 @@ class FrameProcRunnable : public Poco::Runnable
             if (_isGrab.load()) {
                 //提取图片组帧
                 pCameraImage cimg;
-                if (_cameraGrab != nullptr && _cameraGrab->grab(cimg)) {
-                    //如果采图成功了
+                if (_cameraGrab != nullptr) {
+                    _cameraGrab->grab(cimg);
+
+                    cimg->fnum = frameCount;
                     cimg->procStartTime = clock(); //标记处理开始时间
 
                     fps = _fpsCalc.update(++frameCount);
-
-                    if (frameCount != cimg->fnum) {
-                        LogD("MultiCamera.run():有丢失帧，处理速度跟不上采图速度，frameCount=%d", frameCount);
-                        frameCount = cimg->fnum; //还是让两个帧号保持一致
-                    }
 
                     LogD("MultiCamera.run():执行proc!");
                     int ckey = -1; //让proc去自己想检测keydown就keydown
@@ -89,11 +86,10 @@ class FrameProcRunnable : public Poco::Runnable
                     cimg->procEndTime = clock(); //标记处理结束时间
                 }
                 else {
-                    LogE("MultiCamera.run():采图失败了！");
-                    if (_cameraGrab == nullptr) {
-                        LogE("MultiCamera.run():_cameraGrab为NULL!");
-                        _isGrab.exchange(false); //那就不采图了算了
-                    }
+
+                    LogE("MultiCamera.run():_cameraGrab为NULL!");
+                    _isGrab.exchange(false); //那就不采图了算了
+
                     //break;
                 }
             }

@@ -65,7 +65,8 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 //传递进来的参数是nullptr
 bool CameraGrab::grab(pCameraImage& cimg)
 {
-    bool isSuccess = true;
+    int success = 0;
+    int fail = 0;
     cimg = nullptr;
 
     //执行完毕之后就更新相机的属性状态
@@ -74,36 +75,49 @@ bool CameraGrab::grab(pCameraImage& cimg)
             vCameras[camIndex]->applyCapProp();
         }
     }
-
-    //递增帧序号（首先上来就递增，所以出图的第一帧从1开始）
-    ++fnumber;
-
     //构造采图结果：一个结构体包含4个相机的图
     cimg = pCameraImage(new CameraImage(vCameras));
-    cimg->fnum = fnumber;
+    //cimg->fnum = fnumber;//这个帧号在这个函数外面标记
     cimg->grabStartTime = clock();
 
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
             grabOneCamra(cimg, vCameras[camIndex].get());
+            success++;
         }
         catch (const std::exception& e) {
             LogE("CameraGrab.grab():异常 %s", e.what());
-            isSuccess = false;
+            fail++;
         }
     }
 
-    //如果不传图到后面的处理,那么直接干掉这个
-    while (cimg->vImage.back().camera->isNoSendToProc) {
-        cimg->vImage.pop_back();
+    //统计采图成功和失败的
+    for (size_t i = 0; i < cimg->vImage.size(); i++) {
+        if (cimg->vImage[i].isSuccess) {
+            success++;
+        }
+        else {
+            fail++;
+        }
+    }
+
+    if (cimg->vImage.size() > 0) {
+        //如果不传图到后面的处理,那么直接干掉这个
+        while (cimg->vImage.back().camera->isNoSendToProc) {
+            cimg->vImage.pop_back();
+        }
     }
 
     cimg->grabEndTime = clock();
 
-    updateFPS();
-
-    return isSuccess;
+    //如果所有的采图都成功才返回true
+    if (success > 0 && fail == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
@@ -138,12 +152,12 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             }
             item.isSuccess = true;
             item.grabEndTime = clock();
-            LogD("CameraGrab.grabOneCamra():cam %d 采图完成！fnumber=%d", curCamera->camIndex, fnumber);
+            LogD("CameraGrab.grabOneCamra():相机%s采图完成！", curCamera->devNameA.c_str());
         }
         else {
             item.isSuccess = false;
             item.grabEndTime = clock();
-            LogE("CameraGrab.grabOneCamra():cam %d 采图read失败！", camIndex);
+            LogE("CameraGrab.grabOneCamra():相机%s采图read失败！", curCamera->devNameA.c_str());
         }
     }
     else {
@@ -167,20 +181,25 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             int w = imgNew.cols;
             int h = imgNew.rows;
             if (w != curCamera->size.width || h != curCamera->size.height) {
-                LogE("CameraGrab.grabOneCamra():cam %d 采图分辨率错误(%d,%d)", curCamera->camIndex, w, h);
+                LogE("CameraGrab.grabOneCamra():相机%s采图分辨率错误!设定值(%d,%d)=>(%d,%d)",
+                     curCamera->devNameA.c_str(),
+                     curCamera->size.width,
+                     curCamera->size.height,
+                     w,
+                     h);
             }
 
             item.image = imgNew;
             //这里实际上没有拷贝的
             itemL.image = cv::Mat(imgNew, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
             itemR.image = cv::Mat(imgNew, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
-            LogD("CameraGrab.grabOneCamra():cam %d 采图完成！fnumber=%d", curCamera->camIndex, fnumber);
+            LogD("CameraGrab.grabOneCamra():Stereo相机%s采图完成！", curCamera->devNameA.c_str());
         }
         else {
             item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
             item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
 
-            LogE("CameraGrab.grabOneCamra():cam %d 采图read失败！", camIndex);
+            LogE("CameraGrab.grabOneCamra():Stereo相机%s采图read失败！", curCamera->devNameA.c_str());
         }
     }
 }
@@ -293,33 +312,6 @@ bool CameraGrab::close()
 
 void CameraGrab::clear()
 {
-    fnumber = 0;
-    _lastTime = 0;
-    _lastfnumber = 0;
     vCameras.clear();
 }
-
-void CameraGrab::updateFPS()
-{
-    clock_t now = clock();
-    double costTime = (double)(now - _lastTime) / CLOCKS_PER_SEC;
-    if (costTime > 1.0) { //如果经过了1秒
-        //FPS写入到了camera
-        for (size_t i = 0; i < vCameras.size(); i++) {
-            if (vCameras[i] != nullptr)
-                vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
-        }
-
-        _lastTime = now;        //记录现在的最近一次的时间
-        _lastfnumber = fnumber; //记录现在最近的帧数
-    }
-    else if (costTime > 0.5) { //在0.5秒之后可以开始计算了
-        //FPS写入到了camera
-        for (size_t i = 0; i < vCameras.size(); i++) {
-            if (vCameras[i] != nullptr)
-                vCameras[i]->FPS = ((int)(((fnumber - _lastfnumber) / costTime) * 100)) / 100.0f; //这里把float截断后两位
-        }
-    }
-}
-
 } // namespace dxlib

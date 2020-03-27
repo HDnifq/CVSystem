@@ -109,8 +109,8 @@ TEST(MultiCamera, AddVirtualCamera)
     MultiCamera::GetInst()->clearProc();
 
     CameraManger::GetInst()->clear();
-    CameraManger::GetInst()->add(pCamera(new Camera(0, L"VirtualCamera0")), true);
-    CameraManger::GetInst()->add(pCamera(new Camera(1, L"VirtualCamera0")), true);
+    CameraManger::GetInst()->addVirtual(pCamera(new Camera(0, L"VirtualCamera0")));
+    CameraManger::GetInst()->addVirtual(pCamera(new Camera(1, L"VirtualCamera0")));
 
     bool result = MultiCamera::GetInst()->openCamera(); //打开相机
     //EXPECT_FALSE(result);
@@ -120,6 +120,27 @@ TEST(MultiCamera, AddVirtualCamera)
 
     MultiCamera::GetInst()->clearProc();
     CameraManger::GetInst()->clear();
+}
+
+//测试实际上没有相机设备的时候
+TEST(MultiCamera, NoCamera)
+{
+    LogI("测试没有符合的相机的时候");
+    MultiCamera::GetInst()->closeCamera();
+
+    CameraManger::GetInst()->add(pCamera(new Camera(0, L"cam1")));
+    CameraManger::GetInst()->add(pCamera(new Camera(1, L"cam2")));
+
+    MultiCamera::GetInst()->clearProc();
+    MultiCamera::GetInst()->addProc(pFrameProc(new CamImageProc()));
+
+    MultiCamera::GetInst()->openCamera();
+    MultiCamera::GetInst()->start();
+    while (MultiCamera::GetInst()->frameCount() < 100) {
+        this_thread::sleep_for(chrono::milliseconds(10));
+    }
+    MultiCamera::GetInst()->closeCamera();
+    MultiCamera::GetInst()->stop();
 }
 
 //测试MultiCamera的release是否正常，加入的proc是 TestProcRelease

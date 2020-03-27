@@ -39,10 +39,22 @@ class CameraManger
     ///
     /// <remarks> Dx, 2018/11/29. </remarks>
     ///
-    /// <param name="cp">              要添加的相机. </param>
-    /// <param name="isVirtualCamera"> (Optional) 是否这是一个虚拟相机. </param>
+    /// <param name="cp"> 要添加的相机. </param>
+    ///
+    /// <returns> A pCamera. </returns>
     ///-------------------------------------------------------------------------------------------------
-    pCamera add(pCamera cp, bool isVirtualCamera = false);
+    pCamera add(pCamera cp);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 添加一个虚拟相机,虚拟相机参与计算逻辑. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/27. </remarks>
+    ///
+    /// <param name="cp"> 要添加的相机. </param>
+    ///
+    /// <returns> A pCamera. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    pCamera addVirtual(pCamera cp);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

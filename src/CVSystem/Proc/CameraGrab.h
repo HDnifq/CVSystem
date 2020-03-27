@@ -24,9 +24,6 @@ class CameraGrab
     /// <summary> 是否忽略失败的相机. </summary>
     //bool isIgnoreFailureCamera = true;
 
-    /// <summary> 已采集的帧数. </summary>
-    long fnumber = 0;
-
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置相机,这里就保证了输入map然后改成了正确的vector的index. </summary>
     ///
@@ -35,15 +32,6 @@ class CameraGrab
     /// <param name="camMap"> [in] The camera map. </param>
     ///-------------------------------------------------------------------------------------------------
     void setCameras(const std::map<int, pCamera>& camMap);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置相机,这里就保证了输入map然后改成了正确的vector的index. </summary>
-    ///
-    /// <remarks> Dx, 2019/3/5. </remarks>
-    ///
-    /// <param name="camMap"> [in] The camera map. </param>
-    ///-------------------------------------------------------------------------------------------------
-    void setCamerasAssist(const std::map<int, pCamera>& camMap);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
@@ -58,50 +46,6 @@ class CameraGrab
     /// <returns> A pCameraImage. </returns>
     ///-------------------------------------------------------------------------------------------------
     bool grab(pCameraImage& result);
-
-#pragma region 拆解的单个相机的采图(为了实现多线程)
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 采图拆解的3步(第一步开始采图,构造结果对象). </summary>
-    ///
-    /// <remarks> Dx, 2019/8/7. </remarks>
-    ///
-    /// <param name="result"> [out] The result. </param>
-    ///
-    /// <returns>
-    /// True if it succeeds, false if it fails.
-    /// </returns>
-    ///-------------------------------------------------------------------------------------------------
-    //bool startGrabImage(pCameraImage& result);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 采图拆解的3步(对一个相机抓图). </summary>
-    ///
-    /// <remarks> Dx, 2019/8/7. </remarks>
-    ///
-    /// <param name="result">   [out] The result. </param>
-    /// <param name="camIndex"> 相机的index. </param>
-    ///
-    /// <returns>
-    /// True if it succeeds, false if it fails.
-    /// </returns>
-    ///-------------------------------------------------------------------------------------------------
-    //bool grabWithCamIndex(pCameraImage& result, int camIndex);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 采图拆解的3步(结束这次抓图). </summary>
-    ///
-    /// <remarks> Dx, 2019/8/7. </remarks>
-    ///
-    /// <param name="result"> [out] The result. </param>
-    ///
-    /// <returns>
-    /// True if it succeeds, false if it fails.
-    /// </returns>
-    ///-------------------------------------------------------------------------------------------------
-    //bool endGrabImage(pCameraImage& result);
-
-#pragma endregion
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
@@ -126,15 +70,6 @@ class CameraGrab
     bool close();
 
   private:
-    /// <summary> 统计FPS需要的变量. </summary>
-    clock_t _lastTime = 0;
-
-    /// <summary> 统计FPS需要的变量. </summary>
-    long _lastfnumber = 0;
-
-    /// <summary> 统计一下当前的FPS. </summary>
-    void updateFPS();
-
     /// <summary> 清空,close的时候会自动调用. </summary>
     void clear();
 

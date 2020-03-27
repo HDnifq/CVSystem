@@ -13,7 +13,7 @@ CameraManger::~CameraManger()
 
 CameraManger* CameraManger::m_pInstance = NULL;
 
-pCamera CameraManger::add(pCamera cp, bool isVirtualCamera)
+pCamera CameraManger::add(pCamera cp)
 {
     if (camMap.find(cp->camIndex) != camMap.end()) {
         LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
@@ -21,22 +21,20 @@ pCamera CameraManger::add(pCamera cp, bool isVirtualCamera)
     }
 
     camMap[cp->camIndex] = cp;
-    cp->isVirtualCamera = isVirtualCamera;
     LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
     return camMap[cp->camIndex];
 }
 
+pCamera CameraManger::addVirtual(pCamera cp)
+{
+    cp->isVirtualCamera = true;
+    return add(cp);
+}
+
 pCamera CameraManger::addAssist(pCamera cp)
 {
-    if (camMap.find(cp->camIndex) != camMap.end()) {
-        LogE("CameraManger.addAssist():添加辅助相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
-        return nullptr;
-    }
-
-    camMap[cp->camIndex] = cp;
-    cp->isAssist = true; //标记它是辅助相机
-    LogI("CameraManger.addAssist():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
-    return camMap[cp->camIndex];
+    cp->isAssist = true;
+    return add(cp);
 }
 
 void CameraManger::add(pStereoCamera sc)
