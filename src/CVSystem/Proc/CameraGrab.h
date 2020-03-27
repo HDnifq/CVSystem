@@ -21,9 +21,6 @@ class CameraGrab
     /// <summary> 相机参数(其中camIndex就等于这个vector的index). </summary>
     std::vector<pCamera> vCameras;
 
-    /// <summary> 辅助相机. </summary>
-    std::vector<pCamera> vCameraAssist;
-
     /// <summary> 是否忽略失败的相机. </summary>
     //bool isIgnoreFailureCamera = true;
 

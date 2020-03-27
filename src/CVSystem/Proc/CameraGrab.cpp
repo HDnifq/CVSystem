@@ -24,12 +24,21 @@ CameraGrab::~CameraGrab()
 void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
 {
     vCameras.clear();
-    int size = 0;
+    std::size_t size = 0;
     for (auto& kvp : camMap) {
         if (kvp.second->camIndex + 1 > size) {
             size = kvp.second->camIndex + 1;
         }
     }
+
+    //检察相机的camMap中的key是否是按照数字顺序排列的
+    if (size != camMap.size()) {
+        LogW("CameraGrab::setCameras():注意!录入的camMap的index有跳跃,因此CameraGrab中有空相机,camMap.size()= %zu ,size= %zu", camMap.size(), size);
+    }
+    else {
+        LogI("CameraGrab::setCameras():camMap记录相机的个数和CameraGrab一致,count=%d", size);
+    }
+
     //保证resize
     vCameras.resize(size);
 
@@ -37,39 +46,32 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
         CV_Assert(kvp.first == kvp.second->camIndex);
         vCameras[kvp.second->camIndex] = kvp.second;
     }
-}
 
-void CameraGrab::setCamerasAssist(const std::map<int, pCamera>& camMap)
-{
-    vCameraAssist.clear();
-
-    int size = 0;
-    for (auto& kvp : camMap) {
-        if (kvp.second->camIndex + 1 > size) {
-            size = kvp.second->camIndex + 1;
+    //检察isNoSendToProc的设置情况
+    int index = vCameras.size();
+    for (size_t i = 0; i < vCameras.size(); i++) {
+        if (vCameras[i]->isNoSendToProc) {
+            index = i;
+            LogI("CameraGrab::setCameras():注意:相机%s设置了不发送处理(isNoSendToProc=true)!", vCameras[i]->devNameA.c_str());
+        }
+        else {
+            if (i > index) {
+                LogE("CameraGrab::setCameras():相机%s的index在某个isNoSendToProc的相机之后!", vCameras[i]->devNameA.c_str());
+            }
         }
     }
-    //保证resize
-    vCameraAssist.resize(size);
-
-    for (auto& kvp : camMap) {
-        CV_Assert(kvp.first == kvp.second->camIndex);
-        vCameraAssist[kvp.second->camIndex] = kvp.second;
-    }
 }
 
+//传递进来的参数是nullptr
 bool CameraGrab::grab(pCameraImage& cimg)
 {
     bool isSuccess = true;
+    cimg = nullptr;
+
     //执行完毕之后就更新相机的属性状态
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         if (vCameras[camIndex] != nullptr) {
             vCameras[camIndex]->applyCapProp();
-        }
-    }
-    for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
-        if (vCameraAssist[camIndex] != nullptr) {
-            vCameraAssist[camIndex]->applyCapProp();
         }
     }
 
@@ -77,7 +79,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
     ++fnumber;
 
     //构造采图结果：一个结构体包含4个相机的图
-    cimg = pCameraImage(new CameraImage(vCameras, vCameraAssist));
+    cimg = pCameraImage(new CameraImage(vCameras));
     cimg->fnum = fnumber;
     cimg->grabStartTime = clock();
 
@@ -92,15 +94,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
         }
     }
 
-    //对所有辅助相机采图
-    for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
-        try {
-            grabOneCamra(cimg, vCameraAssist[camIndex].get());
-        }
-        catch (const std::exception& e) {
-            LogE("CameraGrab.grab():异常 %s", e.what());
-            isSuccess = false;
-        }
+    //如果不传图到后面的处理,那么直接干掉这个
+    while (cimg->vImage.back().camera->isNoSendToProc) {
+        cimg->vImage.pop_back();
     }
 
     cimg->grabEndTime = clock();
@@ -118,9 +114,6 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
     int camIndex = curCamera->camIndex;
     //当前要写入的[相机-图像]
     ImageItem& item = cimg->vImage[camIndex];
-    if (curCamera->isAssist) {
-        item = cimg->vImageAssist[camIndex];
-    }
 
     if (curCamera->isVirtualCamera) {
         //item.isSuccess = false;//(这个失败是默认值)
@@ -158,6 +151,7 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
         int camIndexL = curCamera->stereoCamIndexL;
         int camIndexR = curCamera->stereoCamIndexR;
         CV_Assert(camIndexL >= 0 && camIndexR >= 0);
+        CV_Assert(camIndexL < cimg->vImage.size() && camIndexR < cimg->vImage.size());
 
         ImageItem& itemL = cimg->vImage[camIndexL];
         ImageItem& itemR = cimg->vImage[camIndexR];
@@ -165,25 +159,22 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
         itemR.camera = vCameras[camIndexR].get(); //标记camera来源(这里规定只能是vCameras来源)
         item.grabStartTime = itemL.grabStartTime = itemR.grabStartTime = clock();
 
-        if (curCamera->capture->read(item.image)) {
+        cv::Mat imgNew;
+        if (curCamera->capture->read(imgNew)) {
             item.isSuccess = itemL.isSuccess = itemR.isSuccess = true;
             item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
 
-            int w = item.image.cols;
-            int h = item.image.rows;
+            int w = imgNew.cols;
+            int h = imgNew.rows;
             if (w != curCamera->size.width || h != curCamera->size.height) {
                 LogE("CameraGrab.grabOneCamra():cam %d 采图分辨率错误(%d,%d)", curCamera->camIndex, w, h);
             }
 
-            itemL.image = cv::Mat(item.image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
-            itemR.image = cv::Mat(item.image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
+            item.image = imgNew;
+            //这里实际上没有拷贝的
+            itemL.image = cv::Mat(imgNew, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
+            itemR.image = cv::Mat(imgNew, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
             LogD("CameraGrab.grabOneCamra():cam %d 采图完成！fnumber=%d", curCamera->camIndex, fnumber);
-
-            //如果不传图到后面的处理,那么直接干掉这个
-            if (curCamera->isNoSendToProc) {
-                item.image.release();
-                item.isSuccess = false;
-            }
         }
         else {
             item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
@@ -253,7 +244,7 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
 
 bool CameraGrab::open()
 {
-    if (vCameras.size() == 0 && vCameraAssist.size() == 0) {
+    if (vCameras.size() == 0) {
         LogW("CameraGrab.open():事先没有录入有效的相机（vCameras.size()=0），不做操作直接返回！");
         return false;
     }
@@ -284,31 +275,6 @@ bool CameraGrab::open()
         }
     }
 
-    for (size_t camIndex = 0; camIndex < vCameraAssist.size(); camIndex++) {
-        auto& camera = vCameraAssist[camIndex];
-        if (camera == nullptr) {
-            LogI("CameraGrab.open():Assist相机index%d 为null", camIndex);
-            continue;
-        }
-        if (camera->isVirtualCamera) {
-            LogI("CameraGrab.open():相机 %s 是虚拟相机，不需要打开...", camera->devNameA.c_str());
-            continue;
-        }
-        LogI("CameraGrab.open():尝试打开Assist相机 %s ...", camera->devNameA.c_str());
-        boost::timer t;
-        //打开相机
-        if (camera->open()) {
-            double costTime = t.elapsed();
-            //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
-            cv::Mat img;
-            camera->capture->read(img);
-            LogI("CameraGrab.open():成功打开一个Assist相机%s，耗时%.2f秒", camera->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
-        }
-        else {
-            isSuccess = false;
-        }
-    }
-
     return isSuccess;
 }
 
@@ -320,12 +286,7 @@ bool CameraGrab::close()
             vCameras[i]->release();
         }
     }
-    for (size_t i = 0; i < vCameraAssist.size(); i++) {
-        if (vCameraAssist[i] != nullptr) {
-            LogI("CameraGrab.close():释放相机%s ...", vCameraAssist[i]->devNameA.c_str());
-            vCameraAssist[i]->release();
-        }
-    }
+
     clear();
     return true;
 }
@@ -336,7 +297,6 @@ void CameraGrab::clear()
     _lastTime = 0;
     _lastfnumber = 0;
     vCameras.clear();
-    vCameraAssist.clear();
 }
 
 void CameraGrab::updateFPS()

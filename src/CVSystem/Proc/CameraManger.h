@@ -24,9 +24,6 @@ class CameraManger
     /// <summary> 所有相机的map，以camIndex为key. </summary>
     std::map<int, pCamera> camMap;
 
-    /// <summary> 辅助的相机的map如同帧双目相机,通常不直接参与计算. </summary>
-    std::map<int, pCamera> camMapAssist;
-
     /// <summary> 立体相机对. </summary>
     std::vector<pStereoCamera> vStereo;
 
@@ -48,11 +45,15 @@ class CameraManger
     pCamera add(pCamera cp, bool isVirtualCamera = false);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 添加一个辅助相机. </summary>
+    /// <summary>
+    /// 添加一个辅助相机,辅助相机的camIndex和非辅助相机的camIndex不能重复.
+    /// </summary>
     ///
     /// <remarks> Dx, 2019/11/16. </remarks>
     ///
     /// <param name="cp"> The cp. </param>
+    ///
+    /// <returns> A pCamera. </returns>
     ///-------------------------------------------------------------------------------------------------
     pCamera addAssist(pCamera cp);
 
@@ -64,6 +65,17 @@ class CameraManger
     /// <param name="sc"> The Screen to add. </param>
     ///-------------------------------------------------------------------------------------------------
     void add(pStereoCamera sc);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 通过camIndex得到一个相机. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/17. </remarks>
+    ///
+    /// <param name="name"> The name. </param>
+    ///
+    /// <returns> 如果相机不存在那么返回null. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    pCamera getCamera(const int camIndex);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 通过相机名得到一个相机. </summary>

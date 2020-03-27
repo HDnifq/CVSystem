@@ -15,6 +15,11 @@ CameraManger* CameraManger::m_pInstance = NULL;
 
 pCamera CameraManger::add(pCamera cp, bool isVirtualCamera)
 {
+    if (camMap.find(cp->camIndex) != camMap.end()) {
+        LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
+        return nullptr;
+    }
+
     camMap[cp->camIndex] = cp;
     cp->isVirtualCamera = isVirtualCamera;
     LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
@@ -23,16 +28,29 @@ pCamera CameraManger::add(pCamera cp, bool isVirtualCamera)
 
 pCamera CameraManger::addAssist(pCamera cp)
 {
-    camMapAssist[cp->camIndex] = cp;
-    cp->isAssist = true;
-    LogI("CameraManger.addAssist():添加了一个相机%s,当前Assist相机个数%d！", cp->devNameA.c_str(), camMapAssist.size());
-    return camMapAssist[cp->camIndex];
+    if (camMap.find(cp->camIndex) != camMap.end()) {
+        LogE("CameraManger.addAssist():添加辅助相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
+        return nullptr;
+    }
+
+    camMap[cp->camIndex] = cp;
+    cp->isAssist = true; //标记它是辅助相机
+    LogI("CameraManger.addAssist():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
+    return camMap[cp->camIndex];
 }
 
 void CameraManger::add(pStereoCamera sc)
 {
     sc->scID = vStereo.size(); //这个id就是vStereo里的index
     this->vStereo.push_back(sc);
+}
+
+pCamera CameraManger::getCamera(const int camIndex)
+{
+    if (camMap.find(camIndex) != camMap.end()) {
+        return camMap[camIndex];
+    }
+    return nullptr;
 }
 
 pCamera CameraManger::getCamera(const std::string& devName)
@@ -48,7 +66,6 @@ pCamera CameraManger::getCamera(const std::string& devName)
 void CameraManger::clear()
 {
     this->camMap.clear();
-    this->camMapAssist.clear();
     this->vStereo.clear();
 }
 
@@ -86,12 +103,6 @@ bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, do
         iter->second->setProp(CAP_PROP, value);
         success = true;
     }
-
-    auto iter2 = camMapAssist.find(camIndex);
-    if (iter2 != camMapAssist.end()) {
-        iter2->second->setProp(CAP_PROP, value);
-        success = true;
-    }
     return success;
 }
 
@@ -103,14 +114,6 @@ bool CameraManger::isAllCameraIsOpen()
         if (!camera->isVirtualCamera && !camera->isOpened()) {
             isAllOpen = false;
             LogW("CameraManger.isAllCameraIsOpen():相机 %s 没有打开！", camera->devNameA.c_str());
-        }
-    }
-
-    for (auto& kvp : this->camMapAssist) {
-        pCamera& camera = kvp.second;
-        if (!camera->isVirtualCamera && !camera->isOpened()) {
-            isAllOpen = false;
-            LogW("CameraManger.isAllCameraIsOpen():Assist相机 %s 没有打开！", camera->devNameA.c_str());
         }
     }
     return isAllOpen;

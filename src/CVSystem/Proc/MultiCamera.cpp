@@ -266,7 +266,6 @@ bool MultiCamera::openCamera()
 
     //根据当前录入的相机的东西里的设置来打开相机
     _impl->_cameraGrab.setCameras(CameraManger::GetInst()->camMap);
-    _impl->_cameraGrab.setCamerasAssist(CameraManger::GetInst()->camMapAssist);
 
     bool isSuccess = _impl->_cameraGrab.open();
     if (isSuccess) {

@@ -17,6 +17,8 @@ if(WIN32)
     add_definitions(-D _WINDOWS)
 endif()
 
+add_definitions(-D DLOG_UTF8)
+
 #这里会搜索到build文件夹下面的一个cpp文件,所以增加一个*Test.cpp的约束
 FILE(GLOB_RECURSE SOURCE_LIST "${CMAKE_SOURCE_DIR}/*Test.cpp" "pch.h" "pch.cpp")
 message(STATUS "SOURCE_LIST = ${SOURCE_LIST}")

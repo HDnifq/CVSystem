@@ -274,7 +274,7 @@ class Camera
     /// <summary> 这个相机是否是一个立体相机，它标记着会去自动切割这个立体相机的图像，将它们转到对应的逻辑相机. </summary>
     bool isStereoCamera = false;
 
-    /// <summary> 是否不要传图到后面给Proc. </summary>
+    /// <summary> 是否不要传图到后面给Proc,如果设置它为true,那么需要把这个相机的index放到后面. </summary>
     bool isNoSendToProc = false;
 
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>

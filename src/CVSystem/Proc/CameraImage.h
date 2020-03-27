@@ -43,16 +43,12 @@ struct ImageItem
 class CameraImage
 {
   public:
-    CameraImage(std::vector<pCamera>& vCameras, std::vector<pCamera>& vCameraAssist)
+    CameraImage(std::vector<pCamera>& vCameras)
     {
-        vImage.resize(vCameras.size());            //先直接创建算了
-        vImageAssist.resize(vCameraAssist.size()); //先直接创建算了
+        vImage.resize(vCameras.size()); //先直接创建算了
         //记录所有的camera
         for (size_t i = 0; i < vCameras.size(); i++) {
             vImage[i].camera = vCameras[i].get();
-        }
-        for (size_t i = 0; i < vCameraAssist.size(); i++) {
-            vImageAssist[i].camera = vCameraAssist[i].get();
         }
     }
 
@@ -61,9 +57,6 @@ class CameraImage
 
     /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
     std::vector<ImageItem> vImage;
-
-    /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
-    std::vector<ImageItem> vImageAssist;
 
     /// <summary> 这一帧的采集开始时间戳. </summary>
     clock_t grabStartTime = 0;
@@ -106,21 +99,20 @@ class CameraImage
     ///
     /// <returns> 如果没有找到那么就返回null. </returns>
     ///-------------------------------------------------------------------------------------------------
-    const ImageItem* getItem(int camIndex) const
+    ImageItem getItem(int camIndex) const
     {
         //如果vector的index是能够对应上的，那么就直接返回这一项
         if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
-            return &vImage[camIndex];
+            return vImage[camIndex];
         }
-
         //如果对应不上那么只能遍历搜索
-        for (size_t i = 0; i < vImage.size(); i++) {
+        for (int i = 0; i < vImage.size(); i++) {
             if (vImage[i].camera->camIndex == camIndex) {
-                return &vImage[i];
+                return vImage[i];
             }
         }
-        LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
-        return nullptr;
+        LogE("CameraImage.getItem():输入的camIndex未能查找到!camIndex=%d", camIndex);
+        return ImageItem();
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -145,13 +137,13 @@ class CameraImage
         }
 
         //如果对应不上那么只能遍历搜索
-        for (size_t i = 0; i < vImage.size(); i++) {
+        for (int i = 0; i < vImage.size(); i++) {
             if (vImage[i].camera->camIndex == camIndex) {
                 item = vImage[camIndex];
                 return true;
             }
         }
-        LogE("CameraImage.getItem():输入的camIndex %d 未能查找到!", camIndex);
+        LogE("CameraImage.getItem():输入的camIndex未能查找到!camIndex=%d", camIndex);
         return false;
     }
 };
