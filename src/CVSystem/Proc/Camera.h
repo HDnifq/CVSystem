@@ -341,6 +341,22 @@ class StereoCamera
 
     /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配. </summary>
     bool LYisAbove = true;
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置左右相机. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/27. </remarks>
+    ///
+    /// <param name="camL"> [in] The camera l. </param>
+    /// <param name="camR"> [in] The camera r. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setCameraLR(pCamera& camL, pCamera& camR)
+    {
+        this->camL = camL;
+        this->camR = camR;
+        this->camL->stereoOther = this->camR;
+        this->camR->stereoOther = this->camL;
+    }
 };
 typedef std::shared_ptr<StereoCamera> pStereoCamera;
 
