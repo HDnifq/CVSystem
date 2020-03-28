@@ -62,7 +62,7 @@ class FrameProcRunnable : public Poco::Runnable
                 break;
             }
 
-            LogD("MultiCamera.run():相机采图并处理！");
+            LogD("MultiCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
             if (_isGrab.load()) {
                 //提取图片组帧
                 pCameraImage cimg;
@@ -84,6 +84,7 @@ class FrameProcRunnable : public Poco::Runnable
                     //干脆用这个线程来驱动检查事件
                     Event::GetInst()->checkMemEvent();
                     cimg->procEndTime = clock(); //标记处理结束时间
+                    LogD("MultiCamera.run():采图耗时%.0fms,处理耗时%.0fms", cimg->grabCostTime(), cimg->procCostTime());
                 }
                 else {
 

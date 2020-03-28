@@ -70,7 +70,7 @@ class CameraImage
     /// <summary> 这一帧的结束处理的时间戳. </summary>
     clock_t procEndTime = 0;
 
-    /// <summary> 这一帧的采集消耗时间. </summary>
+    /// <summary> 这一帧的采集消耗时间 ms. </summary>
     float grabCostTime()
     {
         return (float)(grabEndTime - grabStartTime) / CLOCKS_PER_SEC * 1000;

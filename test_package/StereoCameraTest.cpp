@@ -83,6 +83,7 @@ TEST(Stereo, grab)
     sc->setProp(cv::CAP_PROP_FPS, 60);
     //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
     sc->setProp(cv::CAP_PROP_EXPOSURE, -11);
+    sc->setProp(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
     //设置立体相机
     pStereoCamera sc1 = pStereoCamera(new StereoCamera());
@@ -96,6 +97,10 @@ TEST(Stereo, grab)
     MultiCamera::GetInst()->addProc(pFrameProc(new StereoTestProc()));
 
     MultiCamera::GetInst()->openCamera();
+
+    //这里关掉控制台日志,看看处理速度
+    dlog_console_log_enable(false);
+
     MultiCamera::GetInst()->start();
 
     while (true) {
@@ -106,6 +111,7 @@ TEST(Stereo, grab)
         }
     }
 
+    dlog_console_log_enable(true);
     MultiCamera::GetInst()->stop();
     MultiCamera::GetInst()->closeCamera();
 }
