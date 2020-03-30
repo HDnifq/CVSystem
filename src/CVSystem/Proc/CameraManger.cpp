@@ -117,6 +117,28 @@ bool CameraManger::isAllCameraIsOpen()
     return isAllOpen;
 }
 
+bool CameraManger::checkInputData()
+{
+    bool isRight = true;
+
+    for (auto kvp : camMap) {
+        if (kvp.first != kvp.second->camIndex) {
+            LogE("CameraManger.checkDataInput():相机的camIndex录入有错误,和map的key值不同.");
+            isRight = false;
+        }
+    }
+
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        uint scID = vStereo[i]->scID;
+        if (i != scID) {
+            LogE("CameraManger.checkDataInput():CameraManger中立体相机的scID录入有问题,和vStereo的index不一致.");
+            isRight = false;
+        }
+    }
+
+    return isRight;
+}
+
 void CameraManger::initUndistortRectifyMap(pCamera& camera)
 {
     cv::initUndistortRectifyMap(camera->camMatrix, camera->distCoeffs, camera->R, camera->P, camera->size, CV_16SC2, camera->rmap1, camera->rmap2);
