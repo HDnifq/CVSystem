@@ -237,6 +237,11 @@ void Camera::setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::stri
     }
 }
 
+void Camera::setFourcc(std::string fourcc)
+{
+    _impl->_setCapProp[(int)cv::CAP_PROP_FOURCC] = cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+}
+
 bool Camera::applyCapProp()
 {
     if (isVirtualCamera) {

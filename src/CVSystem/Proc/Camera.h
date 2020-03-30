@@ -154,6 +154,15 @@ class Camera
     void setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::string value);
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置相机的fourcc. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/30. </remarks>
+    ///
+    /// <param name="fourcc"> The fourcc. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setFourcc(const std::string fourcc);
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 由采图线程去应用相机的属性设置. </summary>
     ///
     /// <remarks> Dx, 2019/1/11. </remarks>
