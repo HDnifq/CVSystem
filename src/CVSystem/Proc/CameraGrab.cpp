@@ -171,6 +171,10 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
         ImageItem& itemR = cimg->vImage[camIndexR];
         itemL.camera = vCameras[camIndexL].get(); //标记camera来源(这里规定只能是vCameras来源)
         itemR.camera = vCameras[camIndexR].get(); //标记camera来源(这里规定只能是vCameras来源)
+
+        //加入自己的steroInfo
+        cimg->stereoInfo[curCamera->scID] = {itemL.camera, itemR.camera};
+
         item.grabStartTime = itemL.grabStartTime = itemR.grabStartTime = clock();
 
         cv::Mat imgNew;

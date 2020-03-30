@@ -26,6 +26,9 @@ class StereoTestProc : public FrameProc
         ASSERT_TRUE(!camImage->getItem(1).image.empty()); //确实能采图
 
         ASSERT_TRUE(camImage->getItem(2).camera == nullptr);
+        ASSERT_TRUE(camImage->stereoInfo.size() == 1);
+        ASSERT_TRUE(camImage->stereoInfo[0][0]->devNameA == "camL");
+        ASSERT_TRUE(camImage->stereoInfo[0][1]->devNameA == "camR");
         count++; //采图的计数加1
 
         try {

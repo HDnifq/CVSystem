@@ -58,6 +58,9 @@ class CameraImage
     /// <summary> 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). </summary>
     std::vector<ImageItem> vImage;
 
+    /// <summary> 立体相机信息. key是scId,后面是LR两个相机指针 </summary>
+    std::map<int, std::array<Camera*, 2>> stereoInfo;
+
     /// <summary> 这一帧的采集开始时间戳. </summary>
     clock_t grabStartTime = 0;
 
