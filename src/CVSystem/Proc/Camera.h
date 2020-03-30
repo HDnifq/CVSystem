@@ -357,6 +357,19 @@ class StereoCamera
         this->camL->stereoOther = this->camR;
         this->camR->stereoOther = this->camL;
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 得到一个相机的数组，index=0表示L相机，index=1表示R相机. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/30. </remarks>
+    ///
+    /// <returns> The cameras. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    std::array<pCamera, 2> getCameras()
+    {
+        std::array<pCamera, 2> arr = {camL, camR};
+        return arr;
+    }
 };
 typedef std::shared_ptr<StereoCamera> pStereoCamera;
 
