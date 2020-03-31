@@ -348,8 +348,14 @@ class StereoCamera
     /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
     std::array<double, 4> camRotate;
 
+    /// <summary> 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. </summary>
+    bool isVertical = false;
+
     /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配. </summary>
     bool LYisAbove = true;
+
+    /// <summary> 是否L相机的点值X比R相机的X值小. </summary>
+    bool isLXLessThanR = true;
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置左右相机. </summary>
