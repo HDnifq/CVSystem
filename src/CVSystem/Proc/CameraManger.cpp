@@ -129,10 +129,17 @@ bool CameraManger::checkInputData()
     }
 
     for (size_t i = 0; i < vStereo.size(); i++) {
+        auto& psc = vStereo[i];
         uint scID = vStereo[i]->scID;
         if (i != scID) {
             LogE("CameraManger.checkDataInput():CameraManger中立体相机的scID录入有问题,和vStereo的index不一致.");
             isRight = false;
+        }
+        if (psc->camL->camTR4x4.empty() && !psc->camTR4x4.empty()) {
+            LogW("CameraManger.checkDataInput():CameraManger设置了立体相机,但是没有设置camL的camTR4x4.");
+            psc->camL->camTR4x4 = psc->camTR4x4;
+            psc->camL->camPos = psc->camPos;
+            psc->camL->camRotate = psc->camRotate;
         }
     }
 

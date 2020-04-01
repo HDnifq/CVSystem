@@ -64,13 +64,13 @@ class Camera
     //cv::Mat camMatrix_new;
 
     /// <summary> 相机3d空间到某世界空间的变换矩阵. </summary>
-    cv::Mat camRT4x4;
+    cv::Mat camTR4x4;
 
     /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 3> camPos;
+    cv::Vec3d camPos;
 
-    /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 4> camRotate;
+    /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    cv::Vec4d camRotate;
 
     /// <summary> 双目相机里的另一对相机. </summary>
     std::shared_ptr<Camera> stereoOther = nullptr;
@@ -339,14 +339,14 @@ class StereoCamera
     /// <summary> 参数Q. </summary>
     cv::Mat Q;
 
-    /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camRT4x4. </summary>
-    cv::Mat camRT4x4;
+    /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
+    cv::Mat camTR4x4;
 
     /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 3> camPos;
+    cv::Vec3d camPos;
 
-    /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 4> camRotate;
+    /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    cv::Vec4d camRotate;
 
     /// <summary> 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. </summary>
     bool isVertical = false;

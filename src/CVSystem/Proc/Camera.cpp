@@ -400,7 +400,7 @@ cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
 
     //世界坐标
     cv::Mat mp = (cv::Mat_<double>(4, 1) << (screenPoint.x - cx) / fx * z, (screenPoint.y - cy) / fy * z, z, 1);
-    cv::Mat p = this->camRT4x4 * mp;
+    cv::Mat p = this->camTR4x4 * mp;
     return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
 } // namespace dxlib
