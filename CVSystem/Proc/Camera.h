@@ -47,6 +47,9 @@ class Camera
     /// <summary> The distance coeffs. </summary>
     cv::Mat distCoeffs;
 
+    /// <summary> 相机的投影矩阵,可由立体相机的RT得到. </summary>
+    cv::Mat projection;
+
     /// <summary> 校正畸变的参数R. </summary>
     cv::Mat R;
 
@@ -281,17 +284,61 @@ class StereoCamera
     /// <summary> 参数Q. </summary>
     cv::Mat Q;
 
+    /// <summary> 左相机的投影矩阵. </summary>
+    cv::Mat LP;
+
+    /// <summary> 右相机的投影矩阵. </summary>
+    cv::Mat RP;
+
     /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camRT4x4. </summary>
     cv::Mat camRT4x4;
 
     /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 3> camPos;
+    cv::Vec3d camPos;
 
-    /// <summary> 相机在世界空间的旋转(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
-    std::array<double, 4> camRotate;
+    /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    cv::Vec4d camRotate;
+
+    /// <summary> 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. </summary>
+    bool isVertical = true;
 
     /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配. </summary>
     bool LYisAbove = true;
+
+    /// <summary> 是否L相机的点值X比R相机的X值小. </summary>
+    bool isLXLessThanR = true;
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置左右相机. </summary>
+    ///
+    /// <remarks> Dx, 2020/3/27. </remarks>
+    ///
+    /// <param name="camL"> [in] The camera l. </param>
+    /// <param name="camR"> [in] The camera r. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setCameraLR(pCamera& camL, pCamera& camR)
+    {
+        this->camL = camL;
+        this->camR = camR;
+        this->camL->stereoOther = this->camR;
+        this->camR->stereoOther = this->camL;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置投影矩阵. </summary>
+    ///
+    /// <remarks> Dx, 2020/4/14. </remarks>
+    ///
+    /// <param name="LP"> L相机的投影矩阵. </param>
+    /// <param name="RP"> R相机的投影矩阵. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setProjection(const cv::Mat& LP, const cv::Mat& RP)
+    {
+        this->LP = LP;
+        this->RP = RP;
+        this->camL->projection = LP;
+        this->camR->projection = RP;
+    }
 };
 typedef std::shared_ptr<StereoCamera> pStereoCamera;
 
