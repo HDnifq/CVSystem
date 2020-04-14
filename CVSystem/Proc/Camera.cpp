@@ -152,7 +152,7 @@ bool Camera::open()
             isSuccess = capture->open(StringHelper::ws2s(devName), cv::CAP_V4L);
 #else
             //这个open函数可能会弹窗,导致一直卡死在这里
-            isSuccess = capture->open(devID);
+            isSuccess = capture->open(devID, cv::CAP_DSHOW);
 #endif
 
             if (isSuccess) {
