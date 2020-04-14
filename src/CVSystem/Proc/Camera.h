@@ -48,6 +48,9 @@ class Camera
     /// <summary> The distance coeffs. </summary>
     cv::Mat distCoeffs;
 
+    /// <summary> 相机的投影矩阵,可由立体相机的RT得到. </summary>
+    cv::Mat projection;
+
     /// <summary> 校正畸变的参数R. </summary>
     cv::Mat R;
 
@@ -339,6 +342,12 @@ class StereoCamera
     /// <summary> 参数Q. </summary>
     cv::Mat Q;
 
+    /// <summary> 左相机的投影矩阵. </summary>
+    cv::Mat LP;
+
+    /// <summary> 右相机的投影矩阵. </summary>
+    cv::Mat RP;
+
     /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
     cv::Mat camTR4x4;
 
@@ -371,6 +380,22 @@ class StereoCamera
         this->camR = camR;
         this->camL->stereoOther = this->camR;
         this->camR->stereoOther = this->camL;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 设置投影矩阵. </summary>
+    ///
+    /// <remarks> Dx, 2020/4/14. </remarks>
+    ///
+    /// <param name="LP"> L相机的投影矩阵. </param>
+    /// <param name="RP"> R相机的投影矩阵. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setProjection(const cv::Mat& LP, const cv::Mat& RP)
+    {
+        this->LP = LP;
+        this->RP = RP;
+        this->camL->projection = LP;
+        this->camR->projection = RP;
     }
 
     ///-------------------------------------------------------------------------------------------------
