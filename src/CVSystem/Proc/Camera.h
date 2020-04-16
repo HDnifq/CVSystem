@@ -327,7 +327,7 @@ class StereoCamera
 {
   public:
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
-    size_t scID = 0;
+    int scID = -1;
 
     /// <summary> The camera l. </summary>
     pCamera camL;
@@ -404,21 +404,7 @@ class StereoCamera
     /// <param name="camL">   [in] The camera l. </param>
     /// <param name="camR">   [in] The camera r. </param>
     ///-------------------------------------------------------------------------------------------------
-    void setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
-    {
-        this->camPhy = camPhy;
-        this->camL = camL;
-        this->camR = camR;
-
-        this->camL->physicalDevName = camPhy->devNameA;
-        this->camR->physicalDevName = camPhy->devNameA;
-
-        this->camL->physicalCamera = camPhy;
-        this->camR->physicalCamera = camPhy;
-
-        this->camL->stereoOther = this->camR;
-        this->camR->stereoOther = this->camL;
-    }
+    void setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置投影矩阵. </summary>

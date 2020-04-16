@@ -37,10 +37,19 @@ pCamera CameraManger::addAssist(pCamera cp)
     return add(cp);
 }
 
-void CameraManger::add(pStereoCamera sc)
+pStereoCamera CameraManger::add(pStereoCamera sc)
 {
-    sc->scID = vStereo.size(); //这个id就是vStereo里的index
+    if (sc->scID < 0) {
+        sc->scID = vStereo.size(); //这个id就是vStereo里的index
+    }
+    else {
+        if (sc->scID != vStereo.size()) {
+            LogE("CameraManger.add():添加立体相机逻辑scID有错误,已经修改scId为%d", vStereo.size());
+            sc->scID = vStereo.size();
+        }
+    }
     this->vStereo.push_back(sc);
+    return sc;
 }
 
 pCamera CameraManger::getCamera(const int camIndex)

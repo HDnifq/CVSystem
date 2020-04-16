@@ -403,4 +403,34 @@ cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
     cv::Mat p = this->camTR4x4 * mp;
     return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
+
+void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
+{
+    this->camPhy = camPhy;
+    this->camL = camL;
+    this->camR = camR;
+
+    this->camL->physicalDevName = camPhy->devNameA;
+    this->camR->physicalDevName = camPhy->devNameA;
+
+    this->camL->physicalCamera = camPhy;
+    this->camR->physicalCamera = camPhy;
+
+    this->camL->stereoOther = this->camR;
+    this->camR->stereoOther = this->camL;
+
+    //这是否应该直接用相机指针替代
+    this->camPhy->stereoCamIndexL = camL->camIndex;
+    this->camPhy->stereoCamIndexR = camR->camIndex;
+
+    if (this->scID >= 0) {
+        this->camPhy->scID = this->scID;
+        this->camL->scID = this->scID;
+        this->camR->scID = this->scID;
+    }
+    else {
+        LogE("StereoCamera.setCameraPhyLR():未分配scID, 应该先把StereoCamera添加进CameraManger中分配scID!");
+    }
+}
+
 } // namespace dxlib

@@ -149,6 +149,23 @@ class CameraImage
         LogE("CameraImage.getItem():输入的camIndex未能查找到!camIndex=%d", camIndex);
         return false;
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 第一张有内容的图片的大小. </summary>
+    ///
+    /// <remarks> Dx, 2020/4/16. </remarks>
+    ///
+    /// <returns> A cv::Size. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    cv::Size firstImageSize()
+    {
+        for (int i = 0; i < vImage.size(); i++) {
+            if (vImage[i].isSuccess && !vImage[i].image.empty()) {
+                return cv::Size(vImage[i].image.cols, vImage[i].image.rows);
+            }
+        }
+        return cv::Size(0, 0);
+    }
 };
 /// <summary>定义这个智能指针类型. </summary>
 typedef std::shared_ptr<CameraImage> pCameraImage;

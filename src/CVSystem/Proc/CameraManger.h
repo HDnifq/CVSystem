@@ -76,7 +76,7 @@ class CameraManger
     ///
     /// <param name="sc"> The Screen to add. </param>
     ///-------------------------------------------------------------------------------------------------
-    void add(pStereoCamera sc);
+    pStereoCamera add(pStereoCamera sc);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 通过camIndex得到一个相机. </summary>
