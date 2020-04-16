@@ -33,6 +33,11 @@ class Camera
     /// </summary>
     bool isVirtualCamera = false;
 
+    /// <summary>
+    /// 如果它是一个虚拟相机,那么它可能是一个立体相机的一半,这里则记录它的实际物理相机的名字.
+    /// </summary>
+    std::string physicalDevName;
+
     /// <summary> 设备的id顺序，硬件上的index. </summary>
     int devID = -1;
 
@@ -77,6 +82,9 @@ class Camera
 
     /// <summary> 双目相机里的另一对相机. </summary>
     std::shared_ptr<Camera> stereoOther = nullptr;
+
+    /// <summary> 实际的物理相机. </summary>
+    std::shared_ptr<Camera> physicalCamera = nullptr;
 
     /// <summary> 这是相机采图的帧率. </summary>
     float FPS = 0;
@@ -327,6 +335,9 @@ class StereoCamera
     /// <summary> The camera r. </summary>
     pCamera camR;
 
+    /// <summary> 实际的物理双目相机. </summary>
+    pCamera camPhy;
+
     /// <summary> 参数R. </summary>
     cv::Mat R;
 
@@ -367,7 +378,9 @@ class StereoCamera
     bool isLXLessThanR = true;
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置左右相机. </summary>
+    /// <summary>
+    /// 设置左右相机，当没有物理相机或者。两个全是真实相机的时候就可以用这个.
+    /// </summary>
     ///
     /// <remarks> Dx, 2020/3/27. </remarks>
     ///
@@ -378,6 +391,31 @@ class StereoCamera
     {
         this->camL = camL;
         this->camR = camR;
+        this->camL->stereoOther = this->camR;
+        this->camR->stereoOther = this->camL;
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 使用一个实际的物理相机和LR相机一起设置个stereo信息. </summary>
+    ///
+    /// <remarks> Dx, 2020/4/16. </remarks>
+    ///
+    /// <param name="camPhy"> [in] The camera phy. </param>
+    /// <param name="camL">   [in] The camera l. </param>
+    /// <param name="camR">   [in] The camera r. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
+    {
+        this->camPhy = camPhy;
+        this->camL = camL;
+        this->camR = camR;
+
+        this->camL->physicalDevName = camPhy->devNameA;
+        this->camR->physicalDevName = camPhy->devNameA;
+
+        this->camL->physicalCamera = camPhy;
+        this->camR->physicalCamera = camPhy;
+
         this->camL->stereoOther = this->camR;
         this->camR->stereoOther = this->camL;
     }

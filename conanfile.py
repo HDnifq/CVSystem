@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.0.11"
+    version = "3.0.12"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
