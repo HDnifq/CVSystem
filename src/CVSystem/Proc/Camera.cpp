@@ -427,10 +427,6 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     this->camPhy->stereoCamIndexL = camL->camIndex;
     this->camPhy->stereoCamIndexR = camR->camIndex;
 
-    indexL = camL->camIndex;
-    indexR = camR->camIndex;
-    indexPhy = camPhy->camIndex;
-
     if (this->scID >= 0) {
         this->camPhy->scID = this->scID;
         this->camL->scID = this->scID;
@@ -439,30 +435,6 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     else {
         LogE("StereoCamera.setCameraPhyLR():未分配scID, 应该先把StereoCamera添加进CameraManger中分配scID!");
     }
-}
-
-//在读取了json之后初始化
-void StereoCamera::initAfterJson()
-{
-    if (indexL != -1) {
-        camL = CameraManger::GetInst()->camMap[indexL];
-    }
-    if (indexR != -1) {
-        camR = CameraManger::GetInst()->camMap[indexR];
-    }
-    //如果是有一个物理相机的立体相机
-    if (indexPhy != -1) {
-        camPhy = CameraManger::GetInst()->camMap[indexPhy];
-        setCameraPhyLR(camPhy, camL, camR);
-    }
-    else {
-        setCameraLR(camL, camR);
-    }
-
-    setProjection(LP, RP);
-
-    //设置矩阵
-    camL->camTR4x4 = camTR4x4;
 }
 
 } // namespace dxlib

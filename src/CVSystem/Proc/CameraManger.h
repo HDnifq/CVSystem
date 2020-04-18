@@ -27,6 +27,9 @@ class CameraManger
     /// <summary> 立体相机对. </summary>
     std::vector<pStereoCamera> vStereo;
 
+    /// <summary> 所有相机对的数据. </summary>
+    std::vector<pCameraPair> vCameraPair;
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 清空记录. </summary>
     ///
@@ -115,6 +118,20 @@ class CameraManger
     pStereoCamera getStereo(int camIndex);
 
     ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数.
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2020/4/19. </remarks>
+    ///
+    /// <param name="cameraL"> The camera l. </param>
+    /// <param name="cameraR"> The camera r. </param>
+    ///
+    /// <returns> The camera pair. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    pCameraPair getCameraPair(pCamera cameraL, pCamera cameraR);
+
+    ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置某一个相机的属性. </summary>
     ///
     /// <remarks> Dx, 2019/1/13. </remarks>
@@ -144,6 +161,15 @@ class CameraManger
     /// <returns> 检察相机的录入是否有问题. </returns>
     ///-------------------------------------------------------------------------------------------------
     bool checkInputData();
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> Loads a JSON. </summary>
+    ///
+    /// <remarks> Surface, 2020/4/19. </remarks>
+    ///
+    /// <param name="path"> Full pathname of the file. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void loadJson(std::string path);
 
   private:
     /// <summary> 单例. </summary>

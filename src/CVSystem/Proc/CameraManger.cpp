@@ -1,6 +1,9 @@
 ﻿#include "CameraManger.h"
 #include "dlog/dlog.h"
 
+#define XUEXUE_JSON_SUPPORT_OPENCV
+#include "xuexuejson/Serialize.hpp"
+
 namespace dxlib {
 
 CameraManger::CameraManger()
@@ -114,6 +117,17 @@ pStereoCamera CameraManger::getStereo(int camIndex)
     return nullptr;
 }
 
+pCameraPair CameraManger::getCameraPair(pCamera cameraL, pCamera cameraR)
+{
+    for (size_t i = 0; i < vCameraPair.size(); i++) {
+        if (vCameraPair[i]->camL == cameraL &&
+            vCameraPair[i]->camR == cameraR) {
+            return vCameraPair[i];
+        }
+    }
+    return nullptr;
+}
+
 bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, double value)
 {
     bool success = false;
@@ -170,5 +184,10 @@ bool CameraManger::checkInputData()
 void CameraManger::initUndistortRectifyMap(pCamera& camera)
 {
     cv::initUndistortRectifyMap(camera->camMatrix, camera->distCoeffs, camera->R, camera->P, camera->size, CV_16SC2, camera->rmap1, camera->rmap2);
+}
+
+void CameraManger::loadJson(std::string path)
+{
+    //使用dto对象来载入
 }
 } // namespace dxlib
