@@ -59,14 +59,15 @@ class TestProcRelease : public FrameProc
 //测试MultiCamera的open是否正常
 TEST(MultiCamera, open)
 {
+    CameraManger::GetInst()->clear();
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
     if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
+    string camName = DevicesHelper::GetInst()->devList.begin()->second;
 
-    CameraManger::GetInst()->add(pCamera(new Camera(0, camName)));
+    CameraManger::GetInst()->add(pCamera(new Camera(camName)));
     CameraManger::GetInst()->camMap[0]->setProp(cv::CAP_PROP_AUTO_EXPOSURE, 0);
 
     MultiCamera::GetInst()->addProc(new TestProc());
@@ -109,8 +110,8 @@ TEST(MultiCamera, AddVirtualCamera)
     MultiCamera::GetInst()->clearProc();
 
     CameraManger::GetInst()->clear();
-    CameraManger::GetInst()->addVirtual(pCamera(new Camera(0, L"VirtualCamera0")));
-    CameraManger::GetInst()->addVirtual(pCamera(new Camera(1, L"VirtualCamera0")));
+    ASSERT_TRUE(CameraManger::GetInst()->addVirtual(pCamera(new Camera("VirtualCamera0"))) != nullptr);
+    ASSERT_TRUE(CameraManger::GetInst()->addVirtual(pCamera(new Camera("VirtualCamera1"))) != nullptr);
 
     bool result = MultiCamera::GetInst()->openCamera(); //打开相机
     //EXPECT_FALSE(result);
@@ -126,10 +127,11 @@ TEST(MultiCamera, AddVirtualCamera)
 TEST(MultiCamera, NoCamera)
 {
     LogI("测试没有符合的相机的时候");
+    CameraManger::GetInst()->clear();
     MultiCamera::GetInst()->closeCamera();
 
-    CameraManger::GetInst()->add(pCamera(new Camera(0, L"cam1")));
-    CameraManger::GetInst()->add(pCamera(new Camera(1, L"cam2")));
+    CameraManger::GetInst()->add(pCamera(new Camera("cam1")));
+    CameraManger::GetInst()->add(pCamera(new Camera("cam2")));
 
     MultiCamera::GetInst()->clearProc();
     MultiCamera::GetInst()->addProc(pFrameProc(new CamImageProc()));
@@ -141,6 +143,7 @@ TEST(MultiCamera, NoCamera)
     }
     MultiCamera::GetInst()->closeCamera();
     MultiCamera::GetInst()->stop();
+    CameraManger::GetInst()->clear();
 }
 
 //测试MultiCamera的release是否正常，加入的proc是 TestProcRelease

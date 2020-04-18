@@ -1,8 +1,5 @@
 ﻿#include "DevicesHelper.h"
 
-#pragma comment(lib, "Strmiids.lib")
-#pragma comment(lib, "Quartz.lib")
-
 #if defined _MSC_VER && _MSC_VER >= 100
 //'sprintf': name was marked as #pragma deprecated
 #    pragma warning(disable : 4995)
@@ -28,6 +25,10 @@
 //#include "Aviriff.h"
 //#include "dvdmedia.h"
 //#include "bdaiface.h"
+
+#    pragma comment(lib, "Strmiids.lib")
+#    pragma comment(lib, "Quartz.lib")
+
 #else
 #    include <boost/filesystem.hpp>
 #endif
@@ -35,9 +36,11 @@
 #include <map>
 #include <iostream>
 #include <regex>
+#include <mutex>
 
 #include "../Common/StringHelper.h"
 #include "dlog/dlog.h"
+#include "xuexuejson/Serialize.hpp"
 
 namespace dxlib {
 
@@ -45,7 +48,6 @@ DevicesHelper* DevicesHelper::m_pInstance = NULL;
 
 DevicesHelper::DevicesHelper()
 {
-    memset(deviceNames, 0, 20 * 255);
 }
 
 DevicesHelper::~DevicesHelper()
@@ -96,13 +98,13 @@ bool comUnInit()
 }
 #endif
 
-int DevicesHelper::getIndexWithName(std::wstring name, bool isRegex)
+int DevicesHelper::getIndexWithName(std::string name, bool isRegex)
 {
 
     for (int i = 0; i < devList.size(); i++) {
         if (isRegex) {
-            const std::wregex pattern(name);
-            if (std::regex_match(devList.at(i), pattern)) {
+            const std::regex pattern(name);
+            if (std::regex_search(devList.at(i), pattern)) {
                 return i;
             }
         }
@@ -112,18 +114,18 @@ int DevicesHelper::getIndexWithName(std::wstring name, bool isRegex)
             }
         }
     }
-    LogW("DevicesHelper.getIndexWithName() :未能找到摄像机 %s ,当前系统相机个数%d!", StringHelper::ws2s(name).c_str(), devList.size());
+    LogW("DevicesHelper.getIndexWithName():未能找到摄像机 %s ,当前系统相机个数%d!", name.c_str(), devList.size());
     return -1;
 }
 
-std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstring name[], int length)
+std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::string name[], int length)
 {
     //要打开的设备列表
-    std::map<int, std::wstring> openDevList;
+    std::map<int, std::string> openDevList;
     for (int i = 0; i < length; i++) {
         int index = getIndexWithName(name[i]);
         if (index < 0) {
-            LogW("DevicesHelper.getDevListWithNames() :未能找到摄像机 %s!", StringHelper::ws2s(name[i]).c_str());
+            LogW("DevicesHelper.getDevListWithNames():未能找到摄像机 %s!", name[i].c_str());
         }
         else {
             openDevList[index] = name[i];
@@ -131,9 +133,16 @@ std::map<int, std::wstring> DevicesHelper::getDevListWithNames(const std::wstrin
     }
     return openDevList;
 }
+
 #if defined(_WIN32) || defined(_WIN64)
+/// <summary> 设备名. </summary>
+char deviceNames[20][255];
+std::mutex mut;
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
+    mut.lock();
+
+    memset(deviceNames, 0, 20 * 255);
     devListout.clear();
     //COM Library Intialization
     comInit();
@@ -210,6 +219,7 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 
     comUnInit();
 
+    mut.unlock();
     return deviceCounter;
 }
 #elif __linux
@@ -243,6 +253,12 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 int DevicesHelper::listDevices()
 {
     this->devList.clear();
-    return listDevices(devList);
+    std::map<int, std::wstring> wDevListout;
+    listDevices(wDevListout);
+
+    for (auto& kvp : wDevListout) {
+        devList[kvp.first] = xuexue::json::JsonHelper::utf16To8(kvp.second);
+    }
+    return devList.size();
 }
 } // namespace dxlib

@@ -2,6 +2,9 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 
+#define XUEXUE_JSON_SUPPORT_OPENCV
+#include "xuexuejson/Serialize.hpp"
+
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -9,23 +12,20 @@ namespace dxlib {
 ///
 /// <remarks> Dx, 2018/11/6. </remarks>
 ///-------------------------------------------------------------------------------------------------
-class Camera
+class Camera : XUEXUE_JSON_OBJECT
 {
   public:
     /// <summary> 构造. </summary>
-    Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize = cv::Size(640, 360), int aBrightness = -64);
+    Camera(std::string aDevName, cv::Size aSize = cv::Size(640, 360), int aBrightness = -64);
 
     /// <summary> 析构. </summary>
     ~Camera();
 
     /// <summary> 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index. </summary>
-    int camIndex = -2;
+    int camIndex = -1;
 
     /// <summary> 这个相机的设备名. </summary>
-    std::wstring devName;
-
-    /// <summary> 非宽字符的设备名. </summary>
-    std::string devNameA;
+    std::string devName;
 
     /// <summary>
     /// 是否是一个不存在的虚拟的相机（参数计算相机），仅仅只是利用这个录入参数，然后载入图像计算.
@@ -38,7 +38,7 @@ class Camera
     /// </summary>
     std::string physicalDevName;
 
-    /// <summary> 设备的id顺序，硬件上的index. </summary>
+    /// <summary> (这个是用户只读的)设备的id顺序，物理硬件上的index. </summary>
     int devID = -1;
 
     /// <summary> 相机的分辨率size，打开相机之后会按照这个设置来尝试设置相机分辨率. </summary>
@@ -79,6 +79,9 @@ class Camera
 
     /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
     cv::Vec4d camRotate;
+
+    //相机基本信息的josn序列化
+    XUEXUE_JSON_OBJECT_M7(camIndex, devName, size, paramSize, camMatrix, distCoeffs, camTR4x4);
 
     /// <summary> 双目相机里的另一对相机. </summary>
     std::shared_ptr<Camera> stereoOther = nullptr;
@@ -287,10 +290,6 @@ class Camera
     /*
      * 当这个相机是一个硬件上的双目相机的时候,那么先录入所有的逻辑相机,然后再创建这个立体相机
      */
-
-    /// <summary> 是否是辅助相机，这个相机会加入在辅助相机列表，CameraImage中也对应的区分了图像和辅助相机图像. </summary>
-    bool isAssist = false;
-
     /// <summary> 这个相机是否是一个立体相机，它标记着会去自动切割这个立体相机的图像，将它们转到对应的逻辑相机. </summary>
     bool isStereoCamera = false;
 
@@ -319,24 +318,27 @@ class Camera
 typedef std::shared_ptr<Camera> pCamera;
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 立体相机. </summary>
+/// <summary> 立体相机(实际上它叫StereoCameraInfo更贴切). </summary>
 ///
 /// <remarks> Dx, 2018/11/23. </remarks>
 ///-------------------------------------------------------------------------------------------------
-class StereoCamera
+class StereoCamera : XUEXUE_JSON_OBJECT
 {
   public:
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
     int scID = -1;
 
-    /// <summary> The camera l. </summary>
-    pCamera camL;
+    /// <summary> 这个立体相机组的名字. </summary>
+    std::string name;
 
-    /// <summary> The camera r. </summary>
-    pCamera camR;
+    /// <summary> L相机的index. </summary>
+    int indexL = -1;
 
-    /// <summary> 实际的物理双目相机. </summary>
-    pCamera camPhy;
+    /// <summary> R相机的index. </summary>
+    int indexR = -1;
+
+    /// <summary> 物理相机的index. </summary>
+    int indexPhy = -1;
 
     /// <summary> 参数R. </summary>
     cv::Mat R;
@@ -359,7 +361,7 @@ class StereoCamera
     /// <summary> 右相机的投影矩阵. </summary>
     cv::Mat RP;
 
-    /// <summary> 相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
+    /// <summary> 这组相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
     cv::Mat camTR4x4;
 
     /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
@@ -371,11 +373,23 @@ class StereoCamera
     /// <summary> 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. </summary>
     bool isVertical = false;
 
-    /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配. </summary>
+    //json序列化的基本信息
+    XUEXUE_JSON_OBJECT_M14(scID, name, indexL, indexR, indexPhy, R, T, E, F, Q, LP, RP, camTR4x4, isVertical);
+
+    /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配(这个属性实际不是绝对可靠). </summary>
     bool LYisAbove = true;
 
-    /// <summary> 是否L相机的点值X比R相机的X值小. </summary>
+    /// <summary> 是否L相机的点值X比R相机的X值小(这个属性实际不是绝对可靠). </summary>
     bool isLXLessThanR = true;
+
+    /// <summary> The camera l. </summary>
+    pCamera camL;
+
+    /// <summary> The camera r. </summary>
+    pCamera camR;
+
+    /// <summary> 实际的物理双目相机. </summary>
+    pCamera camPhy;
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
@@ -391,6 +405,8 @@ class StereoCamera
     {
         this->camL = camL;
         this->camR = camR;
+        indexL = camL->camIndex;
+        indexR = camR->camIndex;
         this->camL->stereoOther = this->camR;
         this->camR->stereoOther = this->camL;
     }
@@ -421,6 +437,13 @@ class StereoCamera
         this->camL->projection = LP;
         this->camR->projection = RP;
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 在读取了json之后初始化. </summary>
+    ///
+    /// <remarks> Surface, 2020/4/18. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    void initAfterJson();
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 得到一个相机的数组，index=0表示L相机，index=1表示R相机. </summary>

@@ -1,9 +1,12 @@
 ﻿#include "dlog/dlog.h"
-#include "../Common/StringHelper.h"
-#include "DevicesHelper.h"
 #include <chrono>
 #include <thread>
+
+#include "../Common/StringHelper.h"
 #include "Camera.h"
+#include "DevicesHelper.h"
+#include "CameraManger.h"
+
 #include <opencv2/videoio.hpp>
 
 //所有的CV_CAP_PROP的数组的长度
@@ -77,9 +80,8 @@ std::map<cv::VideoCaptureProperties, const char*> Camera::Impl::mPropStr = {
     {cv::CAP_PROP_WB_TEMPERATURE, "CAP_PROP_WB_TEMPERATURE"},
     {cv::CAP_PROP_CODEC_PIXEL_FORMAT, "CAP_PROP_CODEC_PIXEL_FORMAT"}};
 
-Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBrightness)
-    : camIndex(aCamIndex),
-      devName(aDevName), size(aSize)
+Camera::Camera(std::string aDevName, cv::Size aSize, int aBrightness)
+    : devName(aDevName), size(aSize)
 {
     //构造成员
     _impl = new Impl();
@@ -94,8 +96,6 @@ Camera::Camera(int aCamIndex, std::wstring aDevName, cv::Size aSize, int aBright
     //因为没有成员变量,所以只能设置一下
     _impl->_setCapProp[cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS] = aBrightness;
 
-    devNameA = StringHelper::ws2s(aDevName);
-
     //默认的参数size等于画面size
     paramSize = aSize;
 }
@@ -109,7 +109,7 @@ bool Camera::open()
 {
     if (isVirtualCamera) {
         //虚拟相机不应该打开,但是如果调用了,那么也不会报错.
-        LogW("Camera.open():该相机%s是虚拟相机,不应该调用open()函数，直接返回true！", this->devNameA.c_str());
+        LogW("Camera.open():该相机%s是虚拟相机,不应该调用open()函数，直接返回true！", this->devName.c_str());
         return true;
     }
 
@@ -143,9 +143,9 @@ bool Camera::open()
 
     //如果获取ID失败会返回-1
     if (devID == -1) {
-        LogE("Camera.open():未找到该名称的相机%s!", this->devNameA.c_str());
+        LogE("Camera.open():未找到该名称的相机%s!", this->devName.c_str());
         for (auto& kvp : DevicesHelper::GetInst()->devList) {
-            LogE("Camera.open():当前相机有:%s", StringHelper::ws2s(kvp.second).c_str());
+            LogE("Camera.open():当前相机有:%s", kvp.second.c_str());
         }
 
         release(); //去把capture置为null
@@ -410,8 +410,13 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     this->camL = camL;
     this->camR = camR;
 
-    this->camL->physicalDevName = camPhy->devNameA;
-    this->camR->physicalDevName = camPhy->devNameA;
+    //这是否应该直接用相机指针替代
+    camPhy->isStereoCamera = true;
+    camL->isVirtualCamera = true;
+    camR->isVirtualCamera = true;
+
+    this->camL->physicalDevName = camPhy->devName;
+    this->camR->physicalDevName = camPhy->devName;
 
     this->camL->physicalCamera = camPhy;
     this->camR->physicalCamera = camPhy;
@@ -419,9 +424,12 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     this->camL->stereoOther = this->camR;
     this->camR->stereoOther = this->camL;
 
-    //这是否应该直接用相机指针替代
     this->camPhy->stereoCamIndexL = camL->camIndex;
     this->camPhy->stereoCamIndexR = camR->camIndex;
+
+    indexL = camL->camIndex;
+    indexR = camR->camIndex;
+    indexPhy = camPhy->camIndex;
 
     if (this->scID >= 0) {
         this->camPhy->scID = this->scID;
@@ -431,6 +439,30 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     else {
         LogE("StereoCamera.setCameraPhyLR():未分配scID, 应该先把StereoCamera添加进CameraManger中分配scID!");
     }
+}
+
+//在读取了json之后初始化
+void StereoCamera::initAfterJson()
+{
+    if (indexL != -1) {
+        camL = CameraManger::GetInst()->camMap[indexL];
+    }
+    if (indexR != -1) {
+        camR = CameraManger::GetInst()->camMap[indexR];
+    }
+    //如果是有一个物理相机的立体相机
+    if (indexPhy != -1) {
+        camPhy = CameraManger::GetInst()->camMap[indexPhy];
+        setCameraPhyLR(camPhy, camL, camR);
+    }
+    else {
+        setCameraLR(camL, camR);
+    }
+
+    setProjection(LP, RP);
+
+    //设置矩阵
+    camL->camTR4x4 = camTR4x4;
 }
 
 } // namespace dxlib

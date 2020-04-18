@@ -41,18 +41,21 @@ TEST(ImageSave, ReadFormFile2)
 //getItem的方法,返回值改成了一个对象
 TEST(CameraImage, getItem)
 {
-    std::vector<pCamera> vCameras;
-    vCameras.push_back(pCamera(new Camera(0, L"cam1")));
-    vCameras.push_back(pCamera(new Camera(1, L"cam2")));
-    vCameras.push_back(pCamera(new Camera(2, L"cam3")));
-    vCameras.push_back(pCamera(new Camera(3, L"cam4")));
-    CameraImage item(vCameras);
+    CameraManger::GetInst()->clear();
+
+    //加进去自动分配index
+    CameraManger::GetInst()->add(pCamera(new Camera("cam1")));
+    CameraManger::GetInst()->add(pCamera(new Camera("cam2")));
+    CameraManger::GetInst()->add(pCamera(new Camera("cam3")));
+    CameraManger::GetInst()->add(pCamera(new Camera("cam4")));
+
+    CameraImage item(CameraManger::GetInst()->getCameraVec());
 
     auto it5 = item.getItem(5);
     auto it1 = item.getItem(1);
     auto it2 = item.getItem(2);
 
     EXPECT_TRUE(it5.camera == nullptr);
-    EXPECT_TRUE(it1.camera->devName == L"cam2");
-    EXPECT_TRUE(it2.camera->devName == L"cam3");
+    EXPECT_TRUE(it1.camera->devName == "cam2");
+    EXPECT_TRUE(it2.camera->devName == "cam3");
 }

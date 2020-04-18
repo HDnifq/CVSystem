@@ -21,7 +21,7 @@ class CameraManger
         return m_pInstance;
     }
 
-    /// <summary> 所有相机的map，以camIndex为key. </summary>
+    /// <summary> 所有相机的map，以camIndex为key.它实际已经等价于vCamera </summary>
     std::map<int, pCamera> camMap;
 
     /// <summary> 立体相机对. </summary>
@@ -35,7 +35,7 @@ class CameraManger
     void clear();
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 添加一个相机，添加注意camIndex搞对. </summary>
+    /// <summary> 添加一个相机，会自动递增分配一个camIndex. </summary>
     ///
     /// <remarks> Dx, 2018/11/29. </remarks>
     ///
@@ -55,19 +55,6 @@ class CameraManger
     /// <returns> A pCamera. </returns>
     ///-------------------------------------------------------------------------------------------------
     pCamera addVirtual(pCamera cp);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 添加一个辅助相机,辅助相机的camIndex和非辅助相机的camIndex不能重复.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2019/11/16. </remarks>
-    ///
-    /// <param name="cp"> The cp. </param>
-    ///
-    /// <returns> A pCamera. </returns>
-    ///-------------------------------------------------------------------------------------------------
-    pCamera addAssist(pCamera cp);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 添加立体相机对. </summary>
@@ -99,6 +86,15 @@ class CameraManger
     /// <returns> 如果相机不存在那么返回null. </returns>
     ///-------------------------------------------------------------------------------------------------
     pCamera getCamera(const std::string& devName);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 得到当前所有相机的vector数组. </summary>
+    ///
+    /// <remarks> Surface, 2020/4/18. </remarks>
+    ///
+    /// <returns> The vector camera. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    std::vector<pCamera>& getCameraVec();
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 得到一个立体相机. </summary>
@@ -155,6 +151,12 @@ class CameraManger
 
     /// <summary> 初始化一个相机的Map. </summary>
     void initUndistortRectifyMap(pCamera& camera);
+
+    /// <summary> 名字和相机指针的map. </summary>
+    std::map<std::string, pCamera> mNamePCamera;
+
+    /// <summary> 相机index的数组. </summary>
+    std::vector<pCamera> vCamera;
 };
 
 } // namespace dxlib

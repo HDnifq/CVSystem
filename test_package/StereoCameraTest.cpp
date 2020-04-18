@@ -27,8 +27,8 @@ class StereoTestProc : public FrameProc
 
         ASSERT_TRUE(camImage->getItem(2).camera == nullptr);
         ASSERT_TRUE(camImage->stereoInfo.size() == 1);
-        ASSERT_TRUE(camImage->stereoInfo[0][0]->devNameA == "camL");
-        ASSERT_TRUE(camImage->stereoInfo[0][1]->devNameA == "camR");
+        ASSERT_TRUE(camImage->stereoInfo[0][0]->devName == "camL");
+        ASSERT_TRUE(camImage->stereoInfo[0][1]->devName == "camR");
         count++; //采图的计数加1
 
         try {
@@ -51,6 +51,8 @@ int StereoTestProc::count = 0;
 //测试MultiCamera的open是否正常
 TEST(Stereo, grab)
 {
+    CameraManger::GetInst()->clear();
+
     StereoTestProc::count = 0;
 
     //得到第一个相机名
@@ -58,16 +60,15 @@ TEST(Stereo, grab)
     if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
+    string camName = DevicesHelper::GetInst()->devList.begin()->second;
 
     cv::Size scSize = cv::Size(1280, 400);
     //cv::Size scSize = cv::Size(2560, 800);
 
     LogI("初始化设置...");
 
-    CameraManger::GetInst()->clear();
-    CameraManger::GetInst()->add(std::make_shared<Camera>(0, L"camL"));
-    CameraManger::GetInst()->add(std::make_shared<Camera>(1, L"camR"));
+    CameraManger::GetInst()->add(std::make_shared<Camera>("camL"));
+    CameraManger::GetInst()->add(std::make_shared<Camera>("camR"));
 
     std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
     for (auto& kvp : camMap) {
@@ -77,7 +78,7 @@ TEST(Stereo, grab)
     }
 
     //记录一个立体相机
-    auto sc = CameraManger::GetInst()->addAssist(std::make_shared<Camera>(2, camName, scSize, 0));
+    auto sc = CameraManger::GetInst()->add(std::make_shared<Camera>(camName, scSize, 0));
     sc->isStereoCamera = true;
     sc->isNoSendToProc = true; //设置不发送到前面处理
     sc->stereoCamIndexL = CameraManger::GetInst()->getCamera("camL")->camIndex;

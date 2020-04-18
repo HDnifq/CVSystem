@@ -19,21 +19,28 @@ pCamera CameraManger::add(pCamera cp)
         LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
         return nullptr;
     }
+    if (mNamePCamera.find(cp->devName) != mNamePCamera.end()) {
+        LogE("CameraManger.add():添加相机有重复的devName=%s，添加失败!", cp->devName.c_str());
+        return nullptr;
+    }
 
+    cp->camIndex = (int)camMap.size(); //分配一个camIndex
     camMap[cp->camIndex] = cp;
-    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devNameA.c_str(), camMap.size());
+    mNamePCamera[cp->devName] = cp;
+    vCamera.push_back(cp);
+
+    //检查一下vCamera
+    for (int i = 0; i < vCamera.size(); i++) {
+        CV_Assert(vCamera[i]->camIndex == i);
+    }
+
+    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devName.c_str(), camMap.size());
     return camMap[cp->camIndex];
 }
 
 pCamera CameraManger::addVirtual(pCamera cp)
 {
     cp->isVirtualCamera = true;
-    return add(cp);
-}
-
-pCamera CameraManger::addAssist(pCamera cp)
-{
-    cp->isAssist = true;
     return add(cp);
 }
 
@@ -62,17 +69,22 @@ pCamera CameraManger::getCamera(const int camIndex)
 
 pCamera CameraManger::getCamera(const std::string& devName)
 {
-    for (auto& kvp : camMap) {
-        if (kvp.second->devNameA == devName) {
-            return kvp.second;
-        }
+    if (mNamePCamera.find(devName) != mNamePCamera.end()) {
+        return mNamePCamera[devName];
     }
     return nullptr;
+}
+
+std::vector<pCamera>& CameraManger::getCameraVec()
+{
+    return this->vCamera;
 }
 
 void CameraManger::clear()
 {
     this->camMap.clear();
+    this->vCamera.clear();
+    this->mNamePCamera.clear();
     this->vStereo.clear();
 }
 
@@ -120,7 +132,7 @@ bool CameraManger::isAllCameraIsOpen()
         pCamera& camera = kvp.second;
         if (!camera->isVirtualCamera && !camera->isOpened()) {
             isAllOpen = false;
-            LogW("CameraManger.isAllCameraIsOpen():相机 %s 没有打开！", camera->devNameA.c_str());
+            LogW("CameraManger.isAllCameraIsOpen():相机 %s 没有打开！", camera->devName.c_str());
         }
     }
     return isAllOpen;

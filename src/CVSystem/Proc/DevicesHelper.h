@@ -16,9 +16,6 @@ class DevicesHelper
     /// <summary> 单例. </summary>
     static DevicesHelper* m_pInstance;
 
-    /// <summary> 设备名. </summary>
-    char deviceNames[20][255];
-
   public:
     /// <summary> 构造. </summary>
     DevicesHelper();
@@ -41,29 +38,22 @@ class DevicesHelper
     }
 
     /// <summary> 一个设备名的列表. </summary>
-    std::map<int, std::wstring> devList;
+    std::map<int, std::string> devList;
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 列出设备列表. </summary>
-    ///
-    /// <remarks> Dx, 2017/7/16. </remarks>
-    ///
-    /// <param name="silent"> True to silent. </param>
-    ///
-    /// <returns> An int. </returns>
-    ///-------------------------------------------------------------------------------------------------
-    int listDevices(std::map<int, std::wstring>& devList);
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 通过相机的名字得到相机的index(注意调用前需要先调用一次listDevices). </summary>
+    /// <summary>
+    /// 通过相机的名字得到相机的index(注意调用前需要先调用一次listDevices),
+    /// 如果不存在相机那么返回-1.
+    /// </summary>
     ///
     /// <remarks> Dx, 2017/7/17. </remarks>
     ///
-    /// <param name="name"> The name. </param>
+    /// <param name="name">    The name. </param>
+    /// <param name="isRegex"> (Optional) 是否使用正则表达式匹配. </param>
     ///
-    /// <returns> The index with name. </returns>
+    /// <returns> 如果不存在相机那么返回-1. </returns>
     ///-------------------------------------------------------------------------------------------------
-    int getIndexWithName(std::wstring name, bool isRegex = false);
+    int getIndexWithName(std::string name, bool isRegex = false);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 输入一组需要的摄像机名字的得到一个设备列表(注意调用前需要先调用一次listDevices). </summary>
@@ -75,7 +65,7 @@ class DevicesHelper
     ///
     /// <returns> The development list with names. </returns>
     ///-------------------------------------------------------------------------------------------------
-    std::map<int, std::wstring> getDevListWithNames(const std::wstring name[], int length);
+    std::map<int, std::string> getDevListWithNames(const std::string name[], int length);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 列出设备列表,将结果写到对象成员. </summary>
@@ -85,5 +75,16 @@ class DevicesHelper
     /// <returns> An int. </returns>
     ///-------------------------------------------------------------------------------------------------
     int listDevices();
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> (静态方法)列出设备列表. </summary>
+    ///
+    /// <remarks> Dx, 2017/7/16. </remarks>
+    ///
+    /// <param name="devList"> [out] 输出的设备列表. </param>
+    ///
+    /// <returns> An int. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static int listDevices(std::map<int, std::wstring>& devList);
 };
 } // namespace dxlib

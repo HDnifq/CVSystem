@@ -36,9 +36,9 @@ TEST(Camera, setProp)
     if (DevicesHelper::GetInst()->devList.size() == 0) {
         return;
     }
-    wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
+    string camName = DevicesHelper::GetInst()->devList.begin()->second;
 
-    Camera camera(0, camName);
+    Camera camera(camName);
     camera.open();
     ASSERT_TRUE(camera.capture->isOpened());
 

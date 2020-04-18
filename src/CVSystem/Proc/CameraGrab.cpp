@@ -52,11 +52,11 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
     for (size_t i = 0; i < vCameras.size(); i++) {
         if (vCameras[i]->isNoSendToProc) {
             index = i;
-            LogI("CameraGrab::setCameras():注意:相机%s设置了不发送处理(isNoSendToProc=true)!", vCameras[i]->devNameA.c_str());
+            LogI("CameraGrab::setCameras():注意:相机%s设置了不发送处理(isNoSendToProc=true)!", vCameras[i]->devName.c_str());
         }
         else {
             if (i > index) {
-                LogE("CameraGrab::setCameras():相机%s的index在某个isNoSendToProc的相机之后!", vCameras[i]->devNameA.c_str());
+                LogE("CameraGrab::setCameras():相机%s的index在某个isNoSendToProc的相机之后!", vCameras[i]->devName.c_str());
             }
         }
     }
@@ -152,12 +152,12 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             }
             item.isSuccess = true;
             item.grabEndTime = clock();
-            LogD("CameraGrab.grabOneCamra():相机%s采图完成！", curCamera->devNameA.c_str());
+            LogD("CameraGrab.grabOneCamra():相机%s采图完成！", curCamera->devName.c_str());
         }
         else {
             item.isSuccess = false;
             item.grabEndTime = clock();
-            LogE("CameraGrab.grabOneCamra():相机%s采图read失败！", curCamera->devNameA.c_str());
+            LogE("CameraGrab.grabOneCamra():相机%s采图read失败！", curCamera->devName.c_str());
         }
     }
     else {
@@ -186,7 +186,7 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             int h = imgNew.rows;
             if (w != curCamera->size.width || h != curCamera->size.height) {
                 LogE("CameraGrab.grabOneCamra():相机%s采图分辨率错误!设定值(%d,%d)=>(%d,%d)",
-                     curCamera->devNameA.c_str(),
+                     curCamera->devName.c_str(),
                      curCamera->size.width,
                      curCamera->size.height,
                      w,
@@ -197,13 +197,13 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             //这里实际上没有拷贝的
             itemL.image = cv::Mat(imgNew, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
             itemR.image = cv::Mat(imgNew, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
-            LogD("CameraGrab.grabOneCamra():Stereo相机%s采图完成！", curCamera->devNameA.c_str());
+            LogD("CameraGrab.grabOneCamra():Stereo相机%s采图完成！", curCamera->devName.c_str());
         }
         else {
             item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
             item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
 
-            LogE("CameraGrab.grabOneCamra():Stereo相机%s采图read失败！", curCamera->devNameA.c_str());
+            LogE("CameraGrab.grabOneCamra():Stereo相机%s采图read失败！", curCamera->devName.c_str());
         }
     }
 }
@@ -280,10 +280,10 @@ bool CameraGrab::open()
             continue;
         }
         if (camera->isVirtualCamera) {
-            LogI("CameraGrab.open():相机 %s 是虚拟相机，不需要打开...", camera->devNameA.c_str());
+            LogI("CameraGrab.open():相机 %s 是虚拟相机，不需要打开...", camera->devName.c_str());
             continue;
         }
-        LogI("CameraGrab.open():尝试打开相机 %s ...", camera->devNameA.c_str());
+        LogI("CameraGrab.open():尝试打开相机 %s ...", camera->devName.c_str());
         boost::timer t;
         //打开相机
         if (camera->open()) {
@@ -291,7 +291,7 @@ bool CameraGrab::open()
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
             camera->capture->read(img);
-            LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", camera->devNameA.c_str(), costTime); //打开相机大致耗时0.2s
+            LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", camera->devName.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
             isSuccess = false;
@@ -305,7 +305,7 @@ bool CameraGrab::close()
 {
     for (size_t i = 0; i < vCameras.size(); i++) {
         if (vCameras[i] != nullptr) {
-            LogI("CameraGrab.close():释放相机%s ...", vCameras[i]->devNameA.c_str());
+            LogI("CameraGrab.close():释放相机%s ...", vCameras[i]->devName.c_str());
             vCameras[i]->release();
         }
     }

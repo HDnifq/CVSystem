@@ -29,8 +29,8 @@ class SimpleModule
         if (DevicesHelper::GetInst()->devList.size() == 0) {
             return;
         }
-        std::wstring camName = DevicesHelper::GetInst()->devList.begin()->second;
-        CameraManger::GetInst()->add(pCamera(new Camera(0, camName, cv::Size(1280, 720), 16)));
+        std::string camName = DevicesHelper::GetInst()->devList.begin()->second;
+        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 720), 16)));
 
         //加入proc
         MultiCamera::GetInst()->clearProc();
