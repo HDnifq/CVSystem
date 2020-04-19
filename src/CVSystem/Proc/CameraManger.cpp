@@ -128,6 +128,17 @@ pCameraPair CameraManger::getCameraPair(pCamera cameraL, pCamera cameraR)
     return nullptr;
 }
 
+pCameraPair CameraManger::getCameraPair(int cameraL, int cameraR)
+{
+    for (size_t i = 0; i < vCameraPair.size(); i++) {
+        if (vCameraPair[i]->camL->camIndex == cameraL &&
+            vCameraPair[i]->camR->camIndex == cameraR) {
+            return vCameraPair[i];
+        }
+    }
+    return nullptr;
+}
+
 bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, double value)
 {
     bool success = false;

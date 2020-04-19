@@ -100,7 +100,7 @@ class CameraManger
     std::vector<pCamera>& getCameraVec();
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 得到一个立体相机. </summary>
+    /// <summary> 得到一个立体相机,找不到则返回null.. </summary>
     ///
     /// <remarks> Dx, 2018/11/29. </remarks>
     ///
@@ -109,17 +109,17 @@ class CameraManger
     pStereoCamera getStereo(pCamera camera);
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 得到一个立体相机. </summary>
+    /// <summary> 得到一个立体相机,找不到则返回null. </summary>
     ///
     /// <remarks> Dx, 2018/11/29. </remarks>
     ///
-    /// <returns> The stereo. </returns>
+    /// <returns> 找不到返回null. </returns>
     ///-------------------------------------------------------------------------------------------------
     pStereoCamera getStereo(int camIndex);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    /// 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数.
+    /// 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数,找不到则返回null.
     /// </summary>
     ///
     /// <remarks> Surface, 2020/4/19. </remarks>
@@ -127,9 +127,23 @@ class CameraManger
     /// <param name="cameraL"> The camera l. </param>
     /// <param name="cameraR"> The camera r. </param>
     ///
-    /// <returns> The camera pair. </returns>
+    /// <returns> 找不到返回null. </returns>
     ///-------------------------------------------------------------------------------------------------
     pCameraPair getCameraPair(pCamera cameraL, pCamera cameraR);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数,找不到则返回null.
+    /// </summary>
+    ///
+    /// <remarks> Surface, 2020/4/19. </remarks>
+    ///
+    /// <param name="camIndexL"> The camera l. </param>
+    /// <param name="camIndexR"> The camera r. </param>
+    ///
+    /// <returns> 找不到返回null. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    pCameraPair getCameraPair(int camIndexL, int camIndexR);
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 设置某一个相机的属性. </summary>
