@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.1.2"
+    version = "3.1.3"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -34,7 +34,7 @@ class CVSystemConan(ConanFile):
         self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("opencv/4.2.0@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
-        self.requires("poco/1.9.4")
+        self.requires("poco/[>=1.10.1]")
 
     def _configure_cmake(self):
         '''

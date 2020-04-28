@@ -18,7 +18,7 @@ class CVSystemTestConan(ConanFile):
         self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
         self.requires("boost/1.71.0")
-        self.requires("poco/1.9.4")
+        self.requires("poco/[>=1.10.1]")
 
     def build_requirements(self):
         self.build_requires("gtest/1.8.1@bincrafters/stable")
