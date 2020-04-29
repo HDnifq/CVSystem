@@ -1,5 +1,6 @@
 ﻿#include "Event.h"
 #include <string>
+#include <cstring>
 
 namespace dxlib {
 
@@ -39,7 +40,7 @@ Event::~Event()
     delete _impl;
 }
 
-Event* Event::m_pInstance = NULL;
+Event* Event::m_pInstance = nullptr;
 
 //Dexode::EventBus* Event::getBus()
 //{

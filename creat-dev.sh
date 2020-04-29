@@ -6,4 +6,4 @@ python3 -V
 
 mkdir build
 cd build
-conan install .. -s build_type=Release --build missing
+conan install ../test_package -s build_type=Release --build missing

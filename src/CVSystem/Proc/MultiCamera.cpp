@@ -11,6 +11,7 @@
 #include "CameraGrab.h"
 
 #include <map>
+#include <thread>
 #include <condition_variable>
 #include <atomic>
 

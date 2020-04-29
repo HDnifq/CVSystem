@@ -18,7 +18,7 @@ struct MemEvent
 };
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 系统的公共的状态事件,使用了EventBus库. </summary>
+/// <summary> 系统的公共的状态事件,使用了EventBus库(目前没有使用了). </summary>
 ///
 /// <remarks> Dx, 2019/1/10. </remarks>
 ///-------------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ class Event
     /// <summary> 单例. </summary>
     static Event* GetInst()
     {
-        if (m_pInstance == NULL)
+        if (m_pInstance == nullptr)
             m_pInstance = new Event();
         return m_pInstance;
     }

@@ -162,7 +162,7 @@ bool Camera::open()
             //打开相机是否成功
             bool isSuccess = false;
 #if __linux
-            isSuccess = capture->open(StringHelper::ws2s(devName), cv::CAP_V4L);
+            isSuccess = capture->open(devName, cv::CAP_V4L);
 #else
             //这个open函数可能会弹窗,导致一直卡死在这里
             isSuccess = capture->open(devID, cv::CAP_DSHOW);
@@ -352,8 +352,8 @@ std::map<std::string, std::string> Camera::outputAllProp()
 cv::VideoCaptureProperties Camera::propStr2Enum(const std::string& str)
 {
     auto& map = Camera::Impl::mPropStr;
-    auto& itr = std::find_if(map.begin(), map.end(),
-                             [str](const auto& itr) { return itr.second == str; });
+    auto itr = std::find_if(map.begin(), map.end(),
+                            [str](const std::pair<cv::VideoCaptureProperties, const char*>& t) { return t.second == str; });
 
     if (itr != map.end()) {
         return itr->first;
