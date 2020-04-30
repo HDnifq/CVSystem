@@ -206,6 +206,11 @@ FrameProc* MultiCamera::getProc(uint index)
     }
 }
 
+std::vector<pFrameProc> MultiCamera::getAllProc()
+{
+    return _impl->vProc;
+}
+
 void MultiCamera::clearProc()
 {
     if (isRunning()) {
