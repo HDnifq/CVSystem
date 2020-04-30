@@ -10,7 +10,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 set(CMAKE_CXX_STANDARD 14)
-set(SUB_NAME "test")
+set(SUB_NAME "test.out")
 
 add_definitions(-D UNICODE)
 if(WIN32)
