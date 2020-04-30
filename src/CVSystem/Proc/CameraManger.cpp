@@ -50,12 +50,12 @@ pCamera CameraManger::addVirtual(pCamera cp)
 pStereoCamera CameraManger::add(pStereoCamera sc)
 {
     if (sc->scID < 0) {
-        sc->scID = vStereo.size(); //这个id就是vStereo里的index
+        sc->scID = static_cast<int>(vStereo.size()); //这个id就是vStereo里的index
     }
     else {
         if (sc->scID != vStereo.size()) {
             LogE("CameraManger.add():添加立体相机逻辑scID有错误,已经修改scId为%d", vStereo.size());
-            sc->scID = vStereo.size();
+            sc->scID = static_cast<int>(vStereo.size());
         }
     }
     this->vStereo.push_back(sc);

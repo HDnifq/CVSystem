@@ -1,6 +1,5 @@
 ﻿#include "CameraGrab.h"
 #include <chrono>
-#include <boost/timer.hpp>
 #include <memory>
 #include "dlog/dlog.h"
 
@@ -48,7 +47,7 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
     }
 
     //检察isNoSendToProc的设置情况
-    int index = vCameras.size();
+    size_t index = vCameras.size();
     for (size_t i = 0; i < vCameras.size(); i++) {
         if (vCameras[i]->isNoSendToProc) {
             index = i;
@@ -284,10 +283,10 @@ bool CameraGrab::open()
             continue;
         }
         LogI("CameraGrab.open():尝试打开相机 %s ...", camera->devName.c_str());
-        boost::timer t;
+        clock_t startTime = clock();
         //打开相机
         if (camera->open()) {
-            double costTime = t.elapsed();
+            double costTime = (clock() - startTime) / CLOCKS_PER_SEC * 1000;
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
             camera->capture->read(img);
