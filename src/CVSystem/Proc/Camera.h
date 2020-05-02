@@ -301,6 +301,20 @@ class Camera
 
 #pragma endregion
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
+    ///
+    /// <remarks> Surface, 2020/5/3. </remarks>
+    ///
+    /// <param name="path">           参数文件的完整路径. </param>
+    /// <param name="nameTargetSize"> (Optional) 参数目标分辨率的字段名. </param>
+    /// <param name="nameCamMatrix">  (Optional) 相机内参数矩阵的字段名. </param>
+    /// <param name="nameDistCoeffs"> (Optional) 相机畸变参数的字段名. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+                   const std::string& nameCamMatrix = "M",
+                   const std::string& nameDistCoeffs = "D");
+
   private:
     //隐藏成员字段
     class Impl;
@@ -429,6 +443,26 @@ class StereoCamera
         std::array<pCamera, 2> arr = {camL, camR};
         return arr;
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
+    ///
+    /// <remarks> Surface, 2020/5/3. </remarks>
+    ///
+    /// <param name="path"> 参数文件的完整路径. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+                   const std::string& nameCamMatrixL = "M1",
+                   const std::string& nameDistCoeffsL = "D1",
+                   const std::string& nameCamMatrixR = "M2",
+                   const std::string& nameDistCoeffsR = "D2",
+                   const std::string& nameR = "R",
+                   const std::string& nameT = "T",
+                   const std::string& nameE = "E",
+                   const std::string& nameF = "F",
+                   const std::string& nameQ = "Q",
+                   const std::string& nameLP = "LP",
+                   const std::string& nameRP = "RP");
 };
 typedef std::shared_ptr<StereoCamera> pStereoCamera;
 
@@ -481,6 +515,26 @@ class CameraPair
 
     /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
     cv::Vec4d camRotate;
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
+    ///
+    /// <remarks> Surface, 2020/5/3. </remarks>
+    ///
+    /// <param name="path"> 参数文件的完整路径. </param>
+    ///-------------------------------------------------------------------------------------------------
+    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+                   const std::string& nameCamMatrixL = "M1",
+                   const std::string& nameDistCoeffsL = "D1",
+                   const std::string& nameCamMatrixR = "M2",
+                   const std::string& nameDistCoeffsR = "D2",
+                   const std::string& nameR = "R",
+                   const std::string& nameT = "T",
+                   const std::string& nameE = "E",
+                   const std::string& nameF = "F",
+                   const std::string& nameQ = "Q",
+                   const std::string& nameLP = "LP",
+                   const std::string& nameRP = "RP");
 
   private:
 };

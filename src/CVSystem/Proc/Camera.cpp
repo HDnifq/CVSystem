@@ -404,6 +404,26 @@ cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
     return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
 
+void Camera::loadParam(const std::string& path, const std::string& nameTargetSize,
+                       const std::string& nameCamMatrix,
+                       const std::string& nameDistCoeffs)
+{
+    using namespace cv;
+    FileStorage fs(path, FileStorage::READ); //参数
+    if (fs.isOpened()) {
+        if (!nameTargetSize.empty())
+            fs[nameTargetSize] >> this->paramSize;
+        if (!nameCamMatrix.empty())
+            fs[nameCamMatrix] >> this->camMatrix;
+        if (!nameDistCoeffs.empty())
+            fs[nameDistCoeffs] >> this->distCoeffs;
+    }
+    else {
+        LogE("Camera.loadParam():打开参数文件失败! path=%s", path.c_str());
+    }
+    fs.release();
+}
+
 void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
 {
     this->camPhy = camPhy;
@@ -437,4 +457,119 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     }
 }
 
+void StereoCamera::loadParam(const std::string& path, const std::string& nameTargetSize,
+                             const std::string& nameCamMatrixL,
+                             const std::string& nameDistCoeffsL,
+                             const std::string& nameCamMatrixR,
+                             const std::string& nameDistCoeffsR,
+                             const std::string& nameR,
+                             const std::string& nameT,
+                             const std::string& nameE,
+                             const std::string& nameF,
+                             const std::string& nameQ,
+                             const std::string& nameLP,
+                             const std::string& nameRP)
+{
+
+    using namespace cv;
+    FileStorage fs(path, FileStorage::READ); //参数
+    if (fs.isOpened()) {
+        if (!nameTargetSize.empty()) {
+            fs[nameTargetSize] >> this->camL->paramSize;
+            fs[nameTargetSize] >> this->camR->paramSize;
+        }
+        if (!nameCamMatrixL.empty())
+            fs[nameCamMatrixL] >> this->camL->camMatrix;
+        if (!nameDistCoeffsL.empty())
+            fs[nameDistCoeffsL] >> this->camL->distCoeffs;
+
+        if (!nameCamMatrixR.empty())
+            fs[nameCamMatrixR] >> this->camR->camMatrix;
+        if (!nameDistCoeffsR.empty())
+            fs[nameDistCoeffsR] >> this->camR->distCoeffs;
+
+        if (!nameR.empty())
+            fs[nameR] >> this->R;
+
+        if (!nameT.empty())
+            fs[nameT] >> this->T;
+
+        if (!nameE.empty())
+            fs[nameE] >> this->E;
+
+        if (!nameF.empty())
+            fs[nameF] >> this->F;
+
+        if (!nameQ.empty())
+            fs[nameQ] >> this->Q;
+
+        if (!nameLP.empty())
+            fs[nameLP] >> this->LP;
+
+        if (!nameRP.empty())
+            fs[nameRP] >> this->RP;
+    }
+    else {
+        LogE("StereoCamera.loadParam():打开参数文件失败! path=%s", path.c_str());
+    }
+    fs.release();
+}
+
+void CameraPair::loadParam(const std::string& path, const std::string& nameTargetSize,
+                           const std::string& nameCamMatrixL,
+                           const std::string& nameDistCoeffsL,
+                           const std::string& nameCamMatrixR,
+                           const std::string& nameDistCoeffsR,
+                           const std::string& nameR,
+                           const std::string& nameT,
+                           const std::string& nameE,
+                           const std::string& nameF,
+                           const std::string& nameQ,
+                           const std::string& nameLP,
+                           const std::string& nameRP)
+{
+
+    using namespace cv;
+    FileStorage fs(path, FileStorage::READ); //参数
+    if (fs.isOpened()) {
+        if (!nameTargetSize.empty()) {
+            fs[nameTargetSize] >> this->camL->paramSize;
+            fs[nameTargetSize] >> this->camR->paramSize;
+        }
+        if (!nameCamMatrixL.empty())
+            fs[nameCamMatrixL] >> this->camL->camMatrix;
+        if (!nameDistCoeffsL.empty())
+            fs[nameDistCoeffsL] >> this->camL->distCoeffs;
+
+        if (!nameCamMatrixR.empty())
+            fs[nameCamMatrixR] >> this->camR->camMatrix;
+        if (!nameDistCoeffsR.empty())
+            fs[nameDistCoeffsR] >> this->camR->distCoeffs;
+
+        if (!nameR.empty())
+            fs[nameR] >> this->R;
+
+        if (!nameT.empty())
+            fs[nameT] >> this->T;
+
+        if (!nameE.empty())
+            fs[nameE] >> this->E;
+
+        if (!nameF.empty())
+            fs[nameF] >> this->F;
+
+        if (!nameQ.empty())
+            fs[nameQ] >> this->Q;
+
+        if (!nameLP.empty())
+            fs[nameLP] >> this->LP;
+
+        if (!nameRP.empty())
+            fs[nameRP] >> this->RP;
+    }
+    else {
+        LogE("StereoCamera.loadParam():打开参数文件失败! path=%s", path.c_str());
+    }
+    fs.release();
+}
 } // namespace dxlib
