@@ -38,7 +38,6 @@ MultiCameraRequestHandler::~MultiCameraRequestHandler()
 void MultiCameraRequestHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
 {
     try {
-        ParserQueryParameters querys(uri);
         switch (ev) {
         case HandlerType::none:
             break;
@@ -60,6 +59,9 @@ void MultiCameraRequestHandler::handleRequest(HTTPServerRequest& req, HTTPServer
         default:
             break;
         }
+    }
+    catch (const Poco::Exception& pe) {
+        LogE("MultiCameraRequestHandler.handleRequest():异常:%s,%s ", pe.what(), pe.message().c_str());
     }
     catch (const std::exception& e) {
         LogE("MultiCameraRequestHandler.handleRequest():异常:%s", e.what());

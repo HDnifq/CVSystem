@@ -181,91 +181,98 @@ FileHandle::~FileHandle()
 void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
 {
     using namespace std;
+    try {
+        LogI("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
 
-    LogI("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
+        //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
+        string uri;
+        URI::decode(req.getURI(), uri);
+        LogI("FileHandle::handleRequest():解码uri=%s", uri.c_str());
+        //wstring wuri = json::JsonHelper::utf8To16(uri);
 
-    //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
-    string uri;
-    URI::decode(req.getURI(), uri);
-    LogI("FileHandle::handleRequest():解码uri=%s", uri.c_str());
-    //wstring wuri = json::JsonHelper::utf8To16(uri);
-
-    //输出一下http的key
-    for (auto& kvp : req) {
-        LogI("FileHandle::handleRequest():key=%s,value=%s", kvp.first.c_str(), kvp.second.c_str());
-    }
-
-    bool hasContentLength = req.hasContentLength();
-
-    string fullPath;
-    string con_type;
-    string html;
-
-    //如果目录下存在index.html那么就使用index.html
-    if (uri.back() == '/') {
-        //如果这个目录下存在index.html
-        if (_impl->isFileExist(uri + "index.html", fullPath, con_type))
-            uri += "index.html";
-    }
-
-    if (_impl->isFileExist(uri, fullPath, con_type)) { //如果存在文件那么就返回文件流
-        //这是支持range的文件流
-        Poco::File mediaFile(fullPath);
-        Poco::Timestamp dateTime = mediaFile.getLastModified();
-        Poco::File::FileSize length = mediaFile.getSize();
-
-        if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD ||
-            req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
-            response.set("Last-Modified", Poco::DateTimeFormatter::format(dateTime, Poco::DateTimeFormat::HTTP_FORMAT));
-            response.set("Accept-Ranges", "bytes"); //表示服务器自己支持Range
-            response.setContentType(con_type);
+        //输出一下http的key
+        for (auto& kvp : req) {
+            LogI("FileHandle::handleRequest():key=%s,value=%s", kvp.first.c_str(), kvp.second.c_str());
         }
 
-        if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD) {
-            response.setContentLength64(length);
-            response.send();
+        bool hasContentLength = req.hasContentLength();
+
+        string fullPath;
+        string con_type;
+        string html;
+
+        //如果目录下存在index.html那么就使用index.html
+        if (uri.back() == '/') {
+            //如果这个目录下存在index.html
+            if (_impl->isFileExist(uri + "index.html", fullPath, con_type))
+                uri += "index.html";
         }
-        else if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
-            if (req.has("Range")) {
-                Poco::File::FileSize rangeStart = 0;
-                Poco::File::FileSize rangeLength = 0;
-                if (parseRange(req.get("Range"), length, rangeStart, rangeLength)) {
-                    LogD("FileHandle::handleRequest():解析Range是 start=%llu , len=%llu", rangeStart, rangeLength);
-                    //Range的上限是4M一次
-                    if (rangeLength > 1024 * 1024 * 4) {
-                        rangeLength = 1024 * 1024 * 4;
+
+        if (_impl->isFileExist(uri, fullPath, con_type)) { //如果存在文件那么就返回文件流
+            //这是支持range的文件流
+            Poco::File mediaFile(fullPath);
+            Poco::Timestamp dateTime = mediaFile.getLastModified();
+            Poco::File::FileSize length = mediaFile.getSize();
+
+            if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD ||
+                req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
+                response.set("Last-Modified", Poco::DateTimeFormatter::format(dateTime, Poco::DateTimeFormat::HTTP_FORMAT));
+                response.set("Accept-Ranges", "bytes"); //表示服务器自己支持Range
+                response.setContentType(con_type);
+            }
+
+            if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD) {
+                response.setContentLength64(length);
+                response.send();
+            }
+            else if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
+                if (req.has("Range")) {
+                    Poco::File::FileSize rangeStart = 0;
+                    Poco::File::FileSize rangeLength = 0;
+                    if (parseRange(req.get("Range"), length, rangeStart, rangeLength)) {
+                        LogD("FileHandle::handleRequest():解析Range是 start=%llu , len=%llu", rangeStart, rangeLength);
+                        //Range的上限是4M一次
+                        if (rangeLength > 1024 * 1024 * 4) {
+                            rangeLength = 1024 * 1024 * 4;
+                        }
+                        sendFileRange(response, fullPath, length, rangeStart, rangeLength);
                     }
-                    sendFileRange(response, fullPath, length, rangeStart, rangeLength);
+                    else {
+                        response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
+                        response.send();
+                    }
                 }
                 else {
-                    response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
-                    response.send();
+                    response.sendFile(fullPath, con_type);
                 }
             }
             else {
-                response.sendFile(fullPath, con_type);
+                response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED);
+                response.send();
             }
         }
-        else {
-            response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED);
-            response.send();
+        else if (_impl->isDirExist(uri, html)) { //如果是文件夹
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("text/html;charset=utf-8");
+            std::ostream& out = response.send();
+            out << html;
+            //out.flush();
         }
+        else { //如果不存在文件那么就404
+            response.setStatus(HTTPResponse::HTTP_NOT_FOUND);
+            response.setContentType("text/html;charset=utf-8");
+            std::ostream& out = response.send();
+            out << _impl->html404;
+            //out.flush();
+        }
+        LogI("FileHandle::handleRequest():handle处理结束!");
     }
-    else if (_impl->isDirExist(uri, html)) { //如果是文件夹
-        response.setStatus(HTTPResponse::HTTP_OK);
-        response.setContentType("text/html;charset=utf-8");
-        std::ostream& out = response.send();
-        out << html;
-        //out.flush();
+    catch (const Poco::Exception& pe) {
+        LogE("FileHandle.handleRequest():异常:%s,%s ", pe.what(), pe.message().c_str());
     }
-    else { //如果不存在文件那么就404
-        response.setStatus(HTTPResponse::HTTP_NOT_FOUND);
-        response.setContentType("text/html;charset=utf-8");
-        std::ostream& out = response.send();
-        out << _impl->html404;
-        //out.flush();
+    catch (const std::exception& e) {
+        LogE("FileHandle.handleRequest():异常:%s", e.what());
     }
-    LogI("FileHandle::handleRequest():handle处理结束!");
 }
 
 bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileSize, Poco::File::FileSize& rangeStart, Poco::File::FileSize& rangeLength)
