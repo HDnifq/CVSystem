@@ -467,8 +467,10 @@ void StereoCamera::loadParam(const std::string& path, const std::string& nameTar
                              const std::string& nameE,
                              const std::string& nameF,
                              const std::string& nameQ,
-                             const std::string& nameLP,
-                             const std::string& nameRP)
+                             const std::string& nameR1,
+                             const std::string& nameP1,
+                             const std::string& nameR2,
+                             const std::string& nameP2)
 {
 
     using namespace cv;
@@ -503,11 +505,17 @@ void StereoCamera::loadParam(const std::string& path, const std::string& nameTar
         if (!nameQ.empty())
             fs[nameQ] >> this->Q;
 
-        if (!nameLP.empty())
-            fs[nameLP] >> this->LP;
+        if (!nameR1.empty())
+            fs[nameR1] >> this->camL->R;
 
-        if (!nameRP.empty())
-            fs[nameRP] >> this->RP;
+        if (!nameP1.empty())
+            fs[nameP1] >> this->camL->P;
+
+        if (!nameR2.empty())
+            fs[nameR2] >> this->camR->R;
+
+        if (!nameP2.empty())
+            fs[nameP2] >> this->camR->P;
     }
     else {
         LogE("StereoCamera.loadParam():打开参数文件失败! path=%s", path.c_str());
@@ -525,8 +533,10 @@ void CameraPair::loadParam(const std::string& path, const std::string& nameTarge
                            const std::string& nameE,
                            const std::string& nameF,
                            const std::string& nameQ,
-                           const std::string& nameLP,
-                           const std::string& nameRP)
+                           const std::string& nameR1,
+                           const std::string& nameP1,
+                           const std::string& nameR2,
+                           const std::string& nameP2)
 {
 
     using namespace cv;
@@ -561,14 +571,20 @@ void CameraPair::loadParam(const std::string& path, const std::string& nameTarge
         if (!nameQ.empty())
             fs[nameQ] >> this->Q;
 
-        if (!nameLP.empty())
-            fs[nameLP] >> this->LP;
+        if (!nameR1.empty())
+            fs[nameR1] >> this->camL->R;
 
-        if (!nameRP.empty())
-            fs[nameRP] >> this->RP;
+        if (!nameP1.empty())
+            fs[nameP1] >> this->camL->P;
+
+        if (!nameR2.empty())
+            fs[nameR2] >> this->camR->R;
+
+        if (!nameP2.empty())
+            fs[nameP2] >> this->camR->P;
     }
     else {
-        LogE("StereoCamera.loadParam():打开参数文件失败! path=%s", path.c_str());
+        LogE("CameraPair.loadParam():打开参数文件失败! path=%s", path.c_str());
     }
     fs.release();
 }

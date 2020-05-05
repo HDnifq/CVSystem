@@ -461,8 +461,10 @@ class StereoCamera
                    const std::string& nameE = "E",
                    const std::string& nameF = "F",
                    const std::string& nameQ = "Q",
-                   const std::string& nameLP = "LP",
-                   const std::string& nameRP = "RP");
+                   const std::string& nameR1 = "R1",
+                   const std::string& nameP1 = "P1",
+                   const std::string& nameR2 = "R2",
+                   const std::string& nameP2 = "P2");
 };
 typedef std::shared_ptr<StereoCamera> pStereoCamera;
 
@@ -533,8 +535,10 @@ class CameraPair
                    const std::string& nameE = "E",
                    const std::string& nameF = "F",
                    const std::string& nameQ = "Q",
-                   const std::string& nameLP = "LP",
-                   const std::string& nameRP = "RP");
+                   const std::string& nameR1 = "R1",
+                   const std::string& nameP1 = "P1",
+                   const std::string& nameR2 = "R2",
+                   const std::string& nameP2 = "P2");
 
   private:
 };
