@@ -1,4 +1,4 @@
-#include "StereoCamera.h"
+﻿#include "StereoCamera.h"
 #include "dlog/dlog.h"
 
 namespace dxlib {
@@ -69,4 +69,35 @@ void StereoCamera::loadParam(const std::string& path, const std::string& nameTar
     fs.release();
 }
 
+bool StereoCamera::SwitchParam(cv::Size size)
+{
+    //搜索一下是否带有这个参数
+    for (size_t i = 0; i < vParams.size(); i++) {
+        //如果找到了这参数,就按当前参数设置数据
+        if (vParams[i].first == size) {
+
+            //pCameraParam param = vParams[i].second;
+            //this->camMatrix = param->camMatrix;
+            //this->distCoeffs = param->distCoeffs;
+            //this->camMatrix = param->camMatrix;
+
+            //this->projection = param->projection;
+            //this->R = param->R;
+            //this->P = param->P;
+            //this->camTR4x4 = param->camTR4x4;
+            return true;
+        }
+    }
+    return false;
 }
+
+pStereoCameraParam StereoCamera::getParam(cv::Size size)
+{
+    for (size_t i = 0; i < vParams.size(); i++) {
+        if (vParams[i].first == size) {
+            return vParams[i].second;
+        }
+    }
+}
+
+} // namespace dxlib

@@ -2,6 +2,8 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 
+#include "CameraParam.h"
+
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
@@ -302,7 +304,38 @@ class Camera
 #pragma endregion
 
     ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
+    /// <summary>
+    /// 这是相机的备用参数，一个相机可以记录多组参数.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
+    std::vector<std::pair<cv::Size, pCameraParam>> vParams;
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 切换应用这个分辨率的参数. </summary>
+    ///
+    /// <remarks> Dx, 2020/5/6. </remarks>
+    ///
+    /// <param name="size"> 分辨率. </param>
+    ///
+    /// <returns> 成功返回true. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    bool SwitchParam(cv::Size size);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 得到一个分辨率的参数. </summary>
+    ///
+    /// <remarks> Dx, 2020/5/6. </remarks>
+    ///
+    /// <param name="size"> The size. </param>
+    ///
+    /// <returns> The parameter. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    pCameraParam getParam(cv::Size size);
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 根据一个相机文件载入尝试相机参数信息,会记录到上面的vParams里.
+    /// </summary>
     ///
     /// <remarks> Surface, 2020/5/3. </remarks>
     ///
@@ -310,10 +343,12 @@ class Camera
     /// <param name="nameTargetSize"> (Optional) 参数目标分辨率的字段名. </param>
     /// <param name="nameCamMatrix">  (Optional) 相机内参数矩阵的字段名. </param>
     /// <param name="nameDistCoeffs"> (Optional) 相机畸变参数的字段名. </param>
+    /// <param name="isApply">        (Optional)
+    ///                               是否把这个参数信息应用到成员变量中. </param>
     ///-------------------------------------------------------------------------------------------------
     void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
                    const std::string& nameCamMatrix = "M",
-                   const std::string& nameDistCoeffs = "D");
+                   const std::string& nameDistCoeffs = "D", bool isApply = true);
 
   private:
     //隐藏成员字段

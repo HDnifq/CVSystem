@@ -3,9 +3,9 @@
 #include <opencv2/opencv.hpp>
 #include "dlog/dlog.h"
 
-#include "../Moudel/Camera.h"
-#include "../Moudel/StereoCamera.h"
-#include "../Moudel/CameraPair.h"
+#include "../Model/Camera.h"
+#include "../Model/StereoCamera.h"
+#include "../Model/CameraPair.h"
 
 namespace dxlib {
 

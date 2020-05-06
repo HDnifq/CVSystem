@@ -157,3 +157,12 @@ TEST(Math, cross)
     double c = d1.dot(Eigen::Vector3d{-1, 0, 0}); //-1
     double c2 = d1.dot(Eigen::Vector3d{1, 0, 0}); //1
 }
+
+//不是所有对象能用来当key的
+//TEST(Math, Type_Size)
+//{
+//    std::map<cv::Size, int> m;
+//    m[cv::Size{1, 2}] = 1;
+//    m[cv::Size{2, 2}] = 2;
+//    m[cv::Size{1, 2}] = 3;
+//}

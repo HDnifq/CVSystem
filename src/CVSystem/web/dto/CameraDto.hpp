@@ -4,7 +4,7 @@
 #define XUEXUE_JSON_SUPPORT_EIGEN
 #include "xuexuejson/Serialize.hpp"
 
-#include "../../Moudel/Camera.h"
+#include "../../Model/Camera.h"
 
 namespace dxlib {
 

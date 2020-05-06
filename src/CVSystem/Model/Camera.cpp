@@ -404,24 +404,74 @@ cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
     return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
 
+bool Camera::SwitchParam(cv::Size size)
+{
+    //搜索一下是否带有这个参数
+    for (size_t i = 0; i < vParams.size(); i++) {
+        //如果找到了这参数,就按当前参数设置数据
+        if (vParams[i].first == size) {
+            pCameraParam param = vParams[i].second;
+            this->camMatrix = param->camMatrix;
+            this->distCoeffs = param->distCoeffs;
+            this->camMatrix = param->camMatrix;
+
+            this->projection = param->projection;
+            this->R = param->R;
+            this->P = param->P;
+            this->camTR4x4 = param->camTR4x4;
+            return true;
+        }
+    }
+    return false;
+}
+
+pCameraParam Camera::getParam(cv::Size size)
+{
+    for (size_t i = 0; i < vParams.size(); i++) {
+        if (vParams[i].first == size) {
+            return vParams[i].second;
+        }
+    }
+}
+
 void Camera::loadParam(const std::string& path, const std::string& nameTargetSize,
                        const std::string& nameCamMatrix,
-                       const std::string& nameDistCoeffs)
+                       const std::string& nameDistCoeffs,
+                       bool isApply)
 {
     using namespace cv;
     FileStorage fs(path, FileStorage::READ); //参数
     if (fs.isOpened()) {
-        if (!nameTargetSize.empty())
-            fs[nameTargetSize] >> this->paramSize;
-        if (!nameCamMatrix.empty())
-            fs[nameCamMatrix] >> this->camMatrix;
-        if (!nameDistCoeffs.empty())
-            fs[nameDistCoeffs] >> this->distCoeffs;
+        Size targetSize;
+        pCameraParam pParam = nullptr;
+        if (!nameTargetSize.empty()) {
+            fs[nameTargetSize] >> targetSize;
+            //搜索一下是否带有这个参数
+            for (size_t i = 0; i < vParams.size(); i++) {
+                if (vParams[i].first == targetSize) {
+                    pParam = vParams[i].second;
+                    break;
+                }
+            }
+            //如果没有搜索到就添加这个参数的记录
+            if (pParam == nullptr) {
+                pParam = std::make_shared<CameraParam>();
+                vParams.push_back({targetSize, pParam});
+            }
+
+            if (!nameCamMatrix.empty())
+                fs[nameCamMatrix] >> pParam->camMatrix;
+            if (!nameDistCoeffs.empty())
+                fs[nameDistCoeffs] >> pParam->distCoeffs;
+        }
+        else {
+            LogE("Camera.loadParam():打开参数文件失败! path=%s", path.c_str());
+        }
+        fs.release();
+        if (isApply) {
+            SwitchParam(targetSize);
+        }
     }
-    else {
-        LogE("Camera.loadParam():打开参数文件失败! path=%s", path.c_str());
-    }
-    fs.release();
 }
 
 void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
