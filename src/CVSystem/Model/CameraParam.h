@@ -58,12 +58,18 @@ class CameraParam
     /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
     cv::Vec4d camRotate;
 
+    /// <summary> remap函数使用的. </summary>
+    cv::Mat rmap1;
+
+    /// <summary> remap函数使用的. </summary>
+    cv::Mat rmap2;
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 初始化undistort rectify map. </summary>
     ///
     /// <remarks> Dx, 2020/1/13. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    void initUndistortRectifyMap(cv::Mat& rmap1, cv::Mat& rmap2)
+    void initUndistortRectifyMap()
     {
         if (rmap1.empty() || rmap2.empty()) {
             cv::initUndistortRectifyMap(camMatrix, distCoeffs, R, P, paramSize, CV_16SC2, rmap1, rmap2);
