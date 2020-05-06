@@ -1,8 +1,11 @@
 ﻿#pragma once
 
 #include <opencv2/opencv.hpp>
-#include "Camera.h"
 #include "dlog/dlog.h"
+
+#include "../Moudel/Camera.h"
+#include "../Moudel/StereoCamera.h"
+#include "../Moudel/CameraPair.h"
 
 namespace dxlib {
 

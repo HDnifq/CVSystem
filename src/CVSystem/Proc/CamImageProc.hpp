@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "../Proc/MultiCamera.h"
-#include "CameraManger.h"
+#include "../System/MultiCamera.h"
+#include "../System/CameraManger.h"
 
 namespace dxlib {
 

@@ -6,9 +6,9 @@
 
 #    include "./Proc/Draw.h"
 #    include "./Proc/ImageSave.h"
-#    include "./Proc/CameraManger.h"
-#    include "./Proc/DevicesHelper.h"
-#    include "./Proc/MultiCamera.h"
+#    include "./System/CameraManger.h"
+#    include "./System/DevicesHelper.h"
+#    include "./System/MultiCamera.h"
 #    include "./Proc/SimpleModule.hpp"
 
 #endif // !_CVSYSTEM_H_

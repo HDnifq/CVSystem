@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "CameraDto.hpp"
-#include "../../Proc/MultiCamera.h"
-#include "../../Proc/CameraManger.h"
+#include "../../System/MultiCamera.h"
+#include "../../System/CameraManger.h"
 
 namespace dxlib {
 

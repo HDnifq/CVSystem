@@ -6,9 +6,9 @@
 #include "Poco/URI.h"
 #include <algorithm>
 #include "../extension/ParserQueryParameters.hpp"
-#include "../../Proc/MultiCamera.h"
-#include "../../Proc/CameraManger.h"
-#include "../../Proc/DevicesHelper.h"
+#include "../../System/MultiCamera.h"
+#include "../../System/CameraManger.h"
+#include "../../System/DevicesHelper.h"
 
 using namespace xuexue::json;
 using namespace Poco::Net;

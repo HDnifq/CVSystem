@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "CVSystem/Proc/DevicesHelper.h"
+#include "CVSystem/System/DevicesHelper.h"
 
 using namespace dxlib;
 

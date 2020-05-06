@@ -1,5 +1,8 @@
 ﻿#pragma once
-#include "Camera.h"
+
+#include "../Moudel/Camera.h"
+#include "../Moudel/StereoCamera.h"
+#include "../Moudel/CameraPair.h"
 
 namespace dxlib {
 

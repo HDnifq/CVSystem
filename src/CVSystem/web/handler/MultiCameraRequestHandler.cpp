@@ -5,8 +5,10 @@
 
 #include "Poco/URI.h"
 #include <algorithm>
+
+#include "../../System/MultiCamera.h"
+
 #include "../extension/ParserQueryParameters.hpp"
-#include "../../Proc/MultiCamera.h"
 #include "../dto/MCStatusDto.hpp"
 
 using namespace xuexue::json;
