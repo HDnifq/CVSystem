@@ -40,9 +40,9 @@ class CameraParam
           R(R), P(P)
     {
         CV_Assert(cameraMatrix.size() == cv::Size(3, 3));
-        CV_Assert(R.size() == cv::Size(3, 3));
-        CV_Assert(P.size() == cv::Size(3, 4));
-        CV_Assert(projection.size() == cv::Size(3, 4));
+        CV_Assert(R.empty() || R.size() == cv::Size(3, 3));
+        CV_Assert(P.empty() || P.size() == cv::Size(4, 3));
+        CV_Assert(projection.empty() || projection.size() == cv::Size(4, 3));
     }
 
     ~CameraParam() {}
