@@ -18,15 +18,31 @@ class CameraParam
   public:
     CameraParam() {}
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> Constructor. </summary>
+    ///
+    /// <remarks> Dx, 2020/5/7. </remarks>
+    ///
+    /// <param name="targetSize">   这个参数的适配分辨率. </param>
+    /// <param name="cameraMatrix"> 相机内参矩阵. </param>
+    /// <param name="distCoeffs">   相机的畸变校正. </param>
+    /// <param name="R">            (Optional)立体标定函数出来的R. </param>
+    /// <param name="P">            (Optional)立体标定函数出来的P. </param>
+    /// <param name="projection">   (Optional)3x4的三点定位计算用的投影矩阵. </param>
+    ///-------------------------------------------------------------------------------------------------
     CameraParam(const cv::Size& targetSize,
                 const cv::Mat& cameraMatrix, const cv::Mat& distCoeffs,
-                const cv::Mat& projection = cv::Mat(),
-                const cv::Mat& R = cv::Mat(), const cv::Mat& P = cv::Mat())
+                const cv::Mat& R = cv::Mat(), const cv::Mat& P = cv::Mat(),
+                const cv::Mat& projection = cv::Mat())
         : paramSize(targetSize),
           camMatrix(cameraMatrix), distCoeffs(distCoeffs),
           projection(projection),
           R(R), P(P)
     {
+        CV_Assert(cameraMatrix.size() == cv::Size(3, 3));
+        CV_Assert(R.size() == cv::Size(3, 3));
+        CV_Assert(P.size() == cv::Size(3, 4));
+        CV_Assert(projection.size() == cv::Size(3, 4));
     }
 
     ~CameraParam() {}
