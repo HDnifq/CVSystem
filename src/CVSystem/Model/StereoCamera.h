@@ -29,6 +29,9 @@ class StereoCamera
     /// <summary> 实际的物理双目相机. </summary>
     pCamera camPhy;
 
+    /// <summary> 相机的参数对应的分辨率size. </summary>
+    cv::Size paramSize;
+
     /// <summary> 参数R. </summary>
     cv::Mat R;
 
@@ -112,6 +115,13 @@ class StereoCamera
         this->camL->projection = LP;
         this->camR->projection = RP;
     }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 根据当前的RT矩阵创建投影矩阵. </summary>
+    ///
+    /// <remarks> Dx, 2020/5/8. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+    void createProjectMat();
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary> 得到一个相机的数组，index=0表示L相机，index=1表示R相机. </summary>

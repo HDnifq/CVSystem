@@ -166,3 +166,8 @@ TEST(Math, cross)
 //    m[cv::Size{2, 2}] = 2;
 //    m[cv::Size{1, 2}] = 3;
 //}
+
+TEST(Math, eye)
+{
+    cv::Mat mat44 = cv::Mat::eye(4, 4, CV_64F);
+}

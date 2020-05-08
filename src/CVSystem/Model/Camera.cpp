@@ -432,6 +432,7 @@ pCameraParam Camera::getParam(cv::Size size)
             return vParams[i].second;
         }
     }
+    return nullptr;
 }
 
 void Camera::loadParam(const std::string& path, const std::string& nameTargetSize,

@@ -1,5 +1,6 @@
 ﻿#include "StereoCamera.h"
 #include "dlog/dlog.h"
+#include "xuexue/math/math.h"
 
 namespace dxlib {
 
@@ -23,6 +24,7 @@ void StereoCamera::loadParam(const std::string& path, const std::string& nameTar
     FileStorage fs(path, FileStorage::READ); //参数
     if (fs.isOpened()) {
         if (!nameTargetSize.empty()) {
+            fs[nameTargetSize] >> paramSize;
             fs[nameTargetSize] >> this->camL->paramSize;
             fs[nameTargetSize] >> this->camR->paramSize;
         }
@@ -91,6 +93,14 @@ bool StereoCamera::SwitchParam(cv::Size size)
     return false;
 }
 
+void StereoCamera::createProjectMat()
+{
+    using namespace xuexue;
+    cv::Mat LP = camL->camMatrix * Math::Mat3x4I();
+    cv::Mat RP = camR->camMatrix * Math::TRMat3x4(R, T);
+    setProjection(LP, RP);
+}
+
 pStereoCameraParam StereoCamera::getParam(cv::Size size)
 {
     for (size_t i = 0; i < vParams.size(); i++) {
@@ -98,6 +108,7 @@ pStereoCameraParam StereoCamera::getParam(cv::Size size)
             return vParams[i].second;
         }
     }
+    return nullptr;
 }
 
 } // namespace dxlib
