@@ -119,7 +119,7 @@ void MultiCameraRequestHandler::handleRequestStatus(HTTPServerRequest& request, 
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("application/json");
     std::ostream& out = response.send();
-    out << JsonMapper::toJson(dto);
+    out << JsonMapper::toJson(dto, true);
 }
 
 } // namespace dxlib

@@ -91,6 +91,16 @@ void CameraManger::clear()
     this->vStereo.clear();
 }
 
+pStereoCamera CameraManger::getStereo(const std::string& name)
+{
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->name == name) {
+            return vStereo[i];
+        }
+    }
+    return nullptr;
+}
+
 pStereoCamera CameraManger::getStereo(pCamera camera)
 {
     for (size_t i = 0; i < vStereo.size(); i++) {
@@ -112,6 +122,16 @@ pStereoCamera CameraManger::getStereo(int camIndex)
         }
         if (vStereo[i]->camR->camIndex == camIndex) {
             return vStereo[i];
+        }
+    }
+    return nullptr;
+}
+
+pCameraPair CameraManger::getCameraPair(const std::string& name)
+{
+    for (size_t i = 0; i < vCameraPair.size(); i++) {
+        if (vCameraPair[i]->name == name) {
+            return vCameraPair[i];
         }
     }
     return nullptr;
@@ -178,11 +198,11 @@ bool CameraManger::checkInputData()
         auto& psc = vStereo[i];
         uint scID = vStereo[i]->scID;
         if (i != scID) {
-            LogE("CameraManger.checkDataInput():CameraManger中立体相机的scID录入有问题,和vStereo的index不一致.");
+            LogE("CameraManger.checkDataInput():CameraManger中立体相机的scID=%lu录入有问题,和vStereo的index不一致.", scID);
             isRight = false;
         }
         if (psc->camL->camTR4x4.empty() && !psc->camTR4x4.empty()) {
-            LogW("CameraManger.checkDataInput():CameraManger设置了立体相机,但是没有设置camL的camTR4x4.");
+            LogW("CameraManger.checkDataInput():CameraManger设置了立体相机%s,但是没有设置camL的camTR4x4.", psc->name.c_str());
             psc->camL->camTR4x4 = psc->camTR4x4;
             psc->camL->camPos = psc->camPos;
             psc->camL->camRotate = psc->camRotate;
