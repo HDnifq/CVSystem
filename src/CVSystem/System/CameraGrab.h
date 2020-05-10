@@ -73,7 +73,7 @@ class CameraGrab
     /// <summary> 清空,close的时候会自动调用. </summary>
     void clear();
 
-    void grabOneCamra(pCameraImage& result, Camera* curCamera);
+    void grabOneCamera(pCameraImage& result, Camera* curCamera);
 };
 
 } // namespace dxlib

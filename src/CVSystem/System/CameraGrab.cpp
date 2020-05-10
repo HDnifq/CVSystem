@@ -82,7 +82,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
-            grabOneCamra(cimg, vCameras[camIndex].get());
+            grabOneCamera(cimg, vCameras[camIndex].get());
             success++;
         }
         catch (const std::exception& e) {
@@ -119,7 +119,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
     }
 }
 
-void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
+void CameraGrab::grabOneCamera(pCameraImage& cimg, Camera* curCamera)
 {
     if (curCamera == nullptr) {
         return;
@@ -151,12 +151,12 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             }
             item.isSuccess = true;
             item.grabEndTime = clock();
-            LogD("CameraGrab.grabOneCamra():相机%s采图完成！", curCamera->devName.c_str());
+            LogD("CameraGrab.grabOneCamera():相机%s采图完成！", curCamera->devName.c_str());
         }
         else {
             item.isSuccess = false;
             item.grabEndTime = clock();
-            LogE("CameraGrab.grabOneCamra():相机%s采图read失败！", curCamera->devName.c_str());
+            LogE("CameraGrab.grabOneCamera():相机%s采图read失败！", curCamera->devName.c_str());
         }
     }
     else {
@@ -184,7 +184,7 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             int w = imgNew.cols;
             int h = imgNew.rows;
             if (w != curCamera->size.width || h != curCamera->size.height) {
-                LogE("CameraGrab.grabOneCamra():相机%s采图分辨率错误!设定值(%d,%d)=>(%d,%d)",
+                LogE("CameraGrab.grabOneCamera():相机%s采图分辨率错误!设定值(%d,%d)=>(%d,%d)",
                      curCamera->devName.c_str(),
                      curCamera->size.width,
                      curCamera->size.height,
@@ -196,13 +196,13 @@ void CameraGrab::grabOneCamra(pCameraImage& cimg, Camera* curCamera)
             //这里实际上没有拷贝的
             itemL.image = cv::Mat(imgNew, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
             itemR.image = cv::Mat(imgNew, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
-            LogD("CameraGrab.grabOneCamra():Stereo相机%s采图完成！", curCamera->devName.c_str());
+            LogD("CameraGrab.grabOneCamera():Stereo相机%s采图完成！", curCamera->devName.c_str());
         }
         else {
             item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
             item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
 
-            LogE("CameraGrab.grabOneCamra():Stereo相机%s采图read失败！", curCamera->devName.c_str());
+            LogE("CameraGrab.grabOneCamera():Stereo相机%s采图read失败！", curCamera->devName.c_str());
         }
     }
 }
@@ -290,7 +290,7 @@ bool CameraGrab::open()
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
             camera->capture->read(img);
-            LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f秒", camera->devName.c_str(), costTime); //打开相机大致耗时0.2s
+            LogI("CameraGrab.open():成功打开一个相机%s，耗时%.2f毫秒", camera->devName.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
             isSuccess = false;
