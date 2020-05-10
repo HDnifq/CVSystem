@@ -98,12 +98,20 @@ void Draw::set_k(const cv::Size& cameraSize)
 
 void Draw::setImageROI(const cv::Size& size, int count)
 {
+    LogI("Draw.setImageROI():设置绘图相机的个数是%d", count);
+    if (count > 6) {
+        LogE("Draw.setImageROI():设置绘图相机的个数失败,相机个数超出了设计值!");
+    }
     _impl->vImageROI.clear();
+
     _impl->vImageROI.push_back(cv::Rect(0, 1080 - 150 - size.height * 2, size.width, size.height)); //1号相机画在左上角
     _impl->vImageROI.push_back(cv::Rect(0, 1080 - 150 - size.height, size.width, size.height));     //2号相机画在左下角
 
+    _impl->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height * 2, size.width, size.height)); //4号相机画在右上角(已经不再颠倒了)
     _impl->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height, size.width, size.height));     //3号相机画在右下角
-    _impl->vImageROI.push_back(cv::Rect(size.width, 1080 - 150 - size.height * 2, size.width, size.height)); //4号相机画在右上角
+
+    _impl->vImageROI.push_back(cv::Rect(size.width * 2, 1080 - 150 - size.height * 2, size.width, size.height));
+    _impl->vImageROI.push_back(cv::Rect(size.width * 2, 1080 - 150 - size.height, size.width, size.height));
 }
 
 cv::Scalar Draw::getColor(unsigned int seed)
@@ -112,7 +120,7 @@ cv::Scalar Draw::getColor(unsigned int seed)
         return _impl->vColor[seed];
     }
     else {
-       return _impl->vColor.back();
+        return _impl->vColor.back();
     }
 }
 
