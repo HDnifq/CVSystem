@@ -2,6 +2,7 @@
 
 #include "CVSystem/CVSystem.h"
 #include "CVSystem/ALGO.hpp"
+#include "dlog/dlog.h"
 
 using namespace dxlib;
 using namespace std;
