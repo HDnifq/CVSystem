@@ -1,11 +1,12 @@
 ﻿#pragma once
-#include "../Model/StereoCamera.h"
-#include "../Model/StereoCameraParam.h"
+
+#include <vector>
+#include <string>
 
 namespace dxlib {
 
 ///-------------------------------------------------------------------------------------------------
-/// <summary> 系统相机参数的数据库. </summary>
+/// <summary> 公共的数据库. </summary>
 ///
 /// <remarks> Dx, 2020/5/18. </remarks>
 ///-------------------------------------------------------------------------------------------------
@@ -32,9 +33,7 @@ class DBCommon
     ///
     /// <remarks> Dx, 2019/3/12. </remarks>
     ///
-    /// <returns>
-    /// True if database file exists, false if not.
-    /// </returns>
+    /// <returns> 是否数据库已经打开了. </returns>
     ///-------------------------------------------------------------------------------------------------
     bool isOpened();
 
@@ -61,7 +60,7 @@ class DBCommon
     ///
     /// <remarks> Dx, 2019/3/12. </remarks>
     ///
-    /// <param name="path">  数据库路径. </param>
+    /// <param name="path">  数据库路径(内存中 :memory: ). </param>
     /// <param name="isKey"> (Optional) 是否加密. </param>
     ///
     /// <returns> 成功返回0,不成功返回-1. </returns>

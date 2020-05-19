@@ -38,7 +38,7 @@ DBCommon::DBCommon()
 {
     _impl = new Impl();
 
-    key = "xx--xuexue--xx";
+    key = "xX--xuexue--Xx";
 }
 
 DBCommon::~DBCommon()
@@ -48,7 +48,10 @@ DBCommon::~DBCommon()
 
 void DBCommon::setPtr(void* db)
 {
-    _impl->db = (SQLite::Database*)db;
+    if (db != nullptr)
+        _impl->db = (SQLite::Database*)db;
+    else
+        LogE("DBCommon.setPtr():传入指针不能为null!");
 }
 
 void* DBCommon::getPtr()

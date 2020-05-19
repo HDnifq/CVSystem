@@ -20,6 +20,9 @@ TEST(DBCommon, creatNewDB)
 
     ASSERT_TRUE(DBCommon::GetInst()->isOpened());
 
+    void* ptr = DBCommon::GetInst()->getPtr();
+    ASSERT_TRUE(ptr != nullptr);
+
     DBCommon::GetInst()->createTable();
 
     int res = DBCommon::GetInst()->write(0, "dev_id", "1234567", data.data(), data.size());
