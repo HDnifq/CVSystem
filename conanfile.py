@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.3.1"
+    version = "3.3.2"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -24,19 +24,20 @@ class CVSystemConan(ConanFile):
     default_options = {"shared": False,
                        "dlog:shared": True,
                        "opencv:shared": True,
-                       "boost:without_test": True}
+                       "boost:without_test": True,
+                       "poco:enable_data_sqlite": False}
     generators = "cmake"
     exports_sources = "src/*"
 
     def requirements(self):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
-        self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("opencv/4.2.0@daixian/stable")
         self.requires("dlog/2.5.0@daixian/stable")
-        self.requires("poco/[>=1.10.1]")
+        self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
         self.requires("sqlitecpp/2.5.0@daixian/stable")  # 使用加密数据库的版本
+        self.requires("poco/[>=1.10.1]")
 
     def _configure_cmake(self):
         '''
