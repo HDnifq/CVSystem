@@ -21,7 +21,7 @@ class FrameProc
      * @date 2019/3/19
      *
      * @param          camImage 采集的处理图像.
-     * @param [in,out] key      这里waitkey()得到的key值.
+     * @param [in,out] key      这里waitkey()得到的按键key值.
      */
     virtual void process(pCameraImage camImage, int& key) = 0;
 

@@ -3,46 +3,50 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 字符串辅助类. </summary>
-///
-/// <remarks> Dx, 2019/4/10. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 字符串辅助类.
+ *
+ * @author daixian
+ * @date 2019/4/10
+ */
 class StringHelper
 {
   public:
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> wstring2string. </summary>
-    ///
-    /// <remarks> Dx, 2017/7/18. </remarks>
-    ///
-    /// <param name="ws"> The ws. </param>
-    ///
-    /// <returns> A string. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * wstring转成string.
+     *
+     * @author daixian
+     * @date 2017/7/18
+     *
+     * @param  ws 要处理的宽字符串.
+     *
+     * @returns string结果.
+     */
     static std::string ws2s(const std::wstring& ws);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> string2wstring. </summary>
-    ///
-    /// <remarks> Dx, 2017/7/18. </remarks>
-    ///
-    /// <param name="s"> The string to process. </param>
-    ///
-    /// <returns> A wstring. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * string转成wstring.
+     *
+     * @author daixian
+     * @date 2017/7/18
+     *
+     * @param  s 要处理的字符串.
+     *
+     * @returns wstring结果.
+     */
     static std::wstring s2ws(const std::string& s);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Byte数据转成文本. </summary>
-    ///
-    /// <remarks> Dx, 2018/1/8. </remarks>
-    ///
-    /// <param name="data">   字节数组起始位置. </param>
-    /// <param name="length"> 长度. </param>
-    ///
-    /// <returns> 十六进制字符串. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * Byte数据转成文本.
+     *
+     * @author daixian
+     * @date 2018/1/8
+     *
+     * @param  data   字节数组起始位置.
+     * @param  length 长度.
+     *
+     * @returns 十六进制字符串.
+     */
     static std::string byte2str(const void* data, int length);
 };
 typedef StringHelper S;

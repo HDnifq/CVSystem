@@ -38,29 +38,27 @@ class FileHandle::Impl
     }
     ~Impl() {}
 
-    /// <summary> 文件资源根目录，构造的时候设置. </summary>
+    /** 文件资源根目录，构造的时候设置. */
     std::wstring dirRoot;
 
-    /// <summary> 文件扩展名对应的关联类型（静态类型）. </summary>
+    /** 文件扩展名对应的关联类型（静态类型）. */
     static std::map<std::string, std::string> content_type;
 
-    /// <summary> The HTML 404. </summary>
+    /** The HTML 404. */
     const char* html404 = "<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>poco/1.10.1 - dx's server</center></body></html>";
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 输入相对路径,判断文件是否存在。
-    /// 输入relativePath(uri)，返回fullPath和content_type文本.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2019/2/19. </remarks>
-    ///
-    /// <param name="relativePath"> [in] 相对路径(UTF8). </param>
-    /// <param name="fullPath">     [out] 输入完整路径. </param>
-    /// <param name="content_type"> [out] content_type文本. </param>
-    ///
-    /// <returns> 如果文件存在返回true. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 输入相对路径,判断文件是否存在。 输入relativePath(uri)，返回fullPath和content_type文本.
+     *
+     * @author daixian
+     * @date 2019/2/19
+     *
+     * @param [in]  relativePath 相对路径(UTF8).
+     * @param [out] fullPath     输入完整路径.
+     * @param [out] content_type content_type文本.
+     *
+     * @returns 如果文件存在返回true.
+     */
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
         std::wstring wuri = JsonHelper::utf8To16(relativePath);
@@ -85,18 +83,17 @@ class FileHandle::Impl
         return false;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 输入相对路径,判断文件夹是否存在，如果存在会生成一段文件夹的HTML文本.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2019/2/19. </remarks>
-    ///
-    /// <param name="relativePath"> 相对路径(UTF8). </param>
-    /// <param name="html">         [out] HTML文本. </param>
-    ///
-    /// <returns> 文件夹存在返回true. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 输入相对路径,判断文件夹是否存在，如果存在会生成一段文件夹的HTML文本.
+     *
+     * @author daixian
+     * @date 2019/2/19
+     *
+     * @param       relativePath 相对路径(UTF8).
+     * @param [out] html         HTML文本.
+     *
+     * @returns 文件夹存在返回true.
+     */
     bool isDirExist(const std::string& relativePath, std::string& html)
     {
         std::wstring wRelativePath = JsonHelper::utf8To16(relativePath);
@@ -168,11 +165,11 @@ std::map<std::string, std::string> FileHandle::Impl::content_type = {{".html", "
                                                                      {".tiff", "image/tiff"},
                                                                      {".ico", "image/x-icon"}};
 
-//构造
 FileHandle::FileHandle(const std::string& rootDir)
 {
     _impl = new Impl(rootDir);
 }
+
 FileHandle::~FileHandle()
 {
     delete _impl;

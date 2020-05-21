@@ -24,46 +24,40 @@ using Poco::Net::ServerSocket;
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 处理相机的http消息. </summary>
-///
-/// <remarks> Dx, 2020/3/13. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 处理相机的http消息.
+ *
+ * @author daixian
+ * @date 2020/3/13
+ */
 class CameraRequestHandler : public HTTPRequestHandler
 {
   public:
     enum class HandlerType
     {
-        /// <summary>
-        /// 没有支持的处理.
-        /// </summary>
+        // 没有支持的处理.
         none,
 
-        /// <summary>
-        /// 列出当前相机名
-        /// </summary>
+        // 列出当前相机名.
         listCamera,
 
-        /// <summary>
-        /// 得到当前相机的属性.
-        /// </summary>
+        // 得到当前相机的属性.
         getCapProp,
 
-        /// <summary>
-        /// 设置相机的属性.
-        /// </summary>
+        // 设置相机的属性.
         setCapProp,
     };
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 判断是否有支持的Path处理. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/18. </remarks>
-    ///
-    /// <param name="path"> Full pathname of the file. </param>
-    ///
-    /// <returns> 解析出来的处理类型. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 判断是否有支持的Path处理.
+     *
+     * @author daixian
+     * @date 2020/3/18
+     *
+     * @param  path 解码之后的path.
+     *
+     * @returns 解析出来的处理类型.
+     */
     static HandlerType ParsePath(const std::string& path)
     {
         if (path == "/camera/list") {
@@ -78,19 +72,17 @@ class CameraRequestHandler : public HTTPRequestHandler
         return HandlerType::none;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 如果能够包含支持的path就成功创建对象,否则返回null. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/18. </remarks>
-    ///
-    /// <param name="uri">  URI of the resource. </param>
-    /// <param name="path"> Full pathname of the file. </param>
-    ///
-    /// <returns>
-    /// Null if it fails, else a pointer to a
-    /// HTTPRequestHandler.
-    /// </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 工厂方法，如果能够包含支持的path就成功创建对象,否则返回null.
+     *
+     * @author daixian
+     * @date 2020/3/18
+     *
+     * @param  uri  完整uri.
+     * @param  path 解码之后的path.
+     *
+     * @returns 返回null表示不支持的path.
+     */
     static HTTPRequestHandler* creat(const URI& uri, const std::string& path)
     {
         auto ev = ParsePath(path);
@@ -100,45 +92,48 @@ class CameraRequestHandler : public HTTPRequestHandler
         return nullptr;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Constructor. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/18. </remarks>
-    ///
-    /// <param name="uri"> URI of the resource. </param>
-    /// <param name="ev">  The ev. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 构造.
+     *
+     * @author daixian
+     * @date 2020/3/18
+     *
+     * @param  uri 请求的rui.
+     * @param  ev  Handler处理类型.
+     */
     CameraRequestHandler(const Poco::URI& uri, const CameraRequestHandler::HandlerType& ev);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Destructor. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/18. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 析构.
+     *
+     * @author daixian
+     * @date 2020/3/18
+     */
     virtual ~CameraRequestHandler();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Handles the request. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/18. </remarks>
-    ///
-    /// <param name="request">  [in,out] The request. </param>
-    /// <param name="response"> [in,out] The response. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * override处理.
+     *
+     * @author daixian
+     * @date 2020/4/30
+     *
+     * @param [in,out] request  http请求.
+     * @param [in,out] response http响应.
+     */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
-    /// <summary> 传递过来的当前实际事件. </summary>
+    /** 传递过来的当前实际Handler事件. */
     HandlerType ev;
 
   private:
-    /// <summary> 当前的uri. </summary>
+    /** 当前的uri. */
     Poco::URI uri;
 
     void handleRequestListCamera(HTTPServerRequest& request, HTTPServerResponse& response);
     void handleRequestGetCapProp(HTTPServerRequest& request, HTTPServerResponse& response);
     void handleRequestSetCapProp(HTTPServerRequest& request, HTTPServerResponse& response);
 
-    //隐藏成员
+    // 隐藏成员.
     class Impl;
     Impl* _impl;
 };

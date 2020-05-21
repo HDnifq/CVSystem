@@ -44,15 +44,6 @@ std::string StringHelper::ws2s(const std::wstring& ws)
     return result;
 }
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> string2wstring. </summary>
-///
-/// <remarks> Dx, 2017/7/18. </remarks>
-///
-/// <param name="s"> The string to process. </param>
-///
-/// <returns> A wstring. </returns>
-///-------------------------------------------------------------------------------------------------
 std::wstring StringHelper::s2ws(const std::string& s)
 {
     setlocale(LC_ALL, "chs");
@@ -74,16 +65,6 @@ std::wstring StringHelper::s2ws(const std::string& s)
     return result;
 }
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> Byte数据转成十六进制文本. </summary>
-///
-/// <remarks> Dx, 2018/1/8. </remarks>
-///
-/// <param name="data">   字节数组起始位置. </param>
-/// <param name="length"> 长度. </param>
-///
-/// <returns> 十六进制字符串. </returns>
-///-------------------------------------------------------------------------------------------------
 std::string StringHelper::byte2str(const void* data, int length)
 {
     unsigned char* pChar = (unsigned char*)data;

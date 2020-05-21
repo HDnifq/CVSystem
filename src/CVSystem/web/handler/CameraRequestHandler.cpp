@@ -84,7 +84,7 @@ void CameraRequestHandler::handleRequestGetCapProp(HTTPServerRequest& request, H
     LogI("CameraRequestHandler.handleRequestGetCapProp():执行查询相机状态");
     ParserQueryParameters querys(uri);
 
-    //检察querys
+    // 检察querys.
     if (!querys.checkKey("name", &response)) {
         LogI("CameraRequestHandler.handleRequestGetCapProp():querys缺少必须参数!");
         return;
@@ -112,7 +112,7 @@ void CameraRequestHandler::handleRequestSetCapProp(HTTPServerRequest& request, H
     LogI("CameraRequestHandler.handleRequestSetCapProp():设置相机属性");
     ParserQueryParameters querys(uri);
 
-    //检察querys
+    // 检察querys.
     if (!querys.checkKey({"name", "prop", "value"}, &response)) {
         LogI("CameraRequestHandler.handleRequestSetCapProp():querys缺少必须参数!");
         return;

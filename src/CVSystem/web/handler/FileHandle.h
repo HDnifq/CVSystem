@@ -24,61 +24,72 @@ using Poco::Net::ServerSocket;
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 一个小的支持Range的文件服务器.. </summary>
-///
-/// <remarks> Dx, 2020/3/14. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 一个小的支持Range的文件服务器.
+ *
+ * @author daixian
+ * @date 2020/3/14
+ */
 class FileHandle : public HTTPRequestHandler
 {
   public:
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Constructor. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/30. </remarks>
-    ///
-    /// <param name="rootDir"> 文件资源的路径. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 构造.
+     *
+     * @author daixian
+     * @date 2020/4/30
+     *
+     * @param  rootDir 文件资源的路径.
+     */
     FileHandle(const std::string& rootDir);
+
+    /**
+     * 析构
+     *
+     * @author daixian
+     * @date 2020/4/30
+     */
     ~FileHandle();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> override处理. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/30. </remarks>
-    ///
-    /// <param name="request">  [in,out] The request. </param>
-    /// <param name="response"> [in,out] The response. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * override处理.
+     *
+     * @author daixian
+     * @date 2020/4/30
+     *
+     * @param [in,out] request  http请求.
+     * @param [in,out] response http响应.
+     */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
   private:
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 解析范围. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/30. </remarks>
-    ///
-    /// <param name="range">       range文本. </param>
-    /// <param name="fileSize">    资源文件大小. </param>
-    /// <param name="rangeStart">  [out] range的起始. </param>
-    /// <param name="rangeLength"> [out] range的长度. </param>
-    ///
-    /// <returns> 成功的解析出了range. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 解析范围.
+     *
+     * @author daixian
+     * @date 2020/4/30
+     *
+     * @param       range       range文本.
+     * @param       fileSize    资源文件大小.
+     * @param [out] rangeStart  range的起始.
+     * @param [out] rangeLength range的长度.
+     *
+     * @returns 成功的解析出了range.
+     */
     bool parseRange(const std::string& range, Poco::File::FileSize fileSize, Poco::File::FileSize& rangeStart, Poco::File::FileSize& rangeLength);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 按Range发送这个文件. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/30. </remarks>
-    ///
-    /// <param name="response">    [in,out] The response. </param>
-    /// <param name="path">        Full pathname of the
-    ///                            file. </param>
-    /// <param name="length">      The length. </param>
-    /// <param name="rangeStart">  The range start. </param>
-    /// <param name="rangeLength"> Length of the range. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 按Range发送这个文件.
+     *
+     * @author daixian
+     * @date 2020/4/30
+     *
+     * @param [in,out] response    The response.
+     * @param          path        Full pathname of the file.
+     * @param          length      The length.
+     * @param          rangeStart  The range start.
+     * @param          rangeLength Length of the range.
+     */
     void sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path,
                        Poco::File::FileSize length, Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength);
 
