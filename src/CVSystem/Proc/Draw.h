@@ -4,55 +4,66 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 用来在调试的时候画图表 . </summary>
-///
-/// <remarks> Dx, 2017/7/26. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 用来在调试的时候画图表 .
+ *
+ * @author daixian
+ * @date  2017/7/26
+ */
 class Draw
 {
   private:
-    /// <summary> The instance. </summary>
+    /** The instance. */
     static Draw* m_pInstance;
 
-    /// <summary> 机画面是640x360的时候,合适的k值是2.95. </summary>
+    /** 机画面是640x360的时候,合适的k值是2.95. */
     float k;
 
-    /// <summary> 画面宽度. </summary>
+    /** 画面宽度. */
     int width;
 
-    /// <summary> 画面高度. </summary>
+    /** 画面高度. */
     int height;
 
-    /// <summary> 保存图片到硬盘时的名字计数. </summary>
+    /** 保存图片到硬盘时的名字计数. */
     int nameCount;
 
-    //隐藏成员字段
+    // 隐藏成员字段.
     class Impl;
 
-    /// <summary> 数据成员. </summary>
+    /** 数据成员. */
     Impl* _impl = nullptr;
 
   public:
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 构造函数. </summary>
-    ///
-    /// <remarks> Dx, 2017/7/26. </remarks>
-    ///
-    /// <param name="width">  画布宽. </param>
-    /// <param name="height"> 画布高. </param>
-    /// <param name="k">      比例k值. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 构造函数.
+     *
+     * @author daixian
+     * @date 2017/7/26
+     *
+     * @param  width  画布宽.
+     * @param  height 画布高.
+     * @param  k      比例k值.
+     */
     Draw(int width, int height, float k);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Destructor. </summary>
-    ///
-    /// <remarks> Dx, 2019/1/10. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * Destructor
+     *
+     * @author daixian
+     * @date 2019/1/10
+     */
     ~Draw();
 
-    /// <summary> 单例. </summary>
+    /**
+     * 单例.
+     *
+     * @author daixian
+     * @date 2020/5/21
+     *
+     * @returns 指针.
+     */
+
     static Draw* GetInst()
     {
         if (m_pInstance == nullptr) { //判断是否第一次调用
@@ -62,296 +73,344 @@ class Draw
         return m_pInstance;
     }
 
-    /// <summary> 当前图片. </summary>
+    /**
+     * 当前图片.
+     *
+     * @author daixian
+     * @date 2020/5/21
+     *
+     * @returns 当前图片的Mat.
+     */
     cv::Mat& diagram();
 
-    /// <summary> 内存保存图像上限. </summary>
+    /** 内存保存图像上限. */
     int memSavelimit = 4;
 
-    /// <summary> 预设的用来画相机的图像的roi. </summary>
+    /**
+     * 预设的用来画相机的图像的roi.
+     *
+     * @author daixian
+     * @date 2020/5/21
+     *
+     * @returns std::vector<cv::Rect>
+     */
     std::vector<cv::Rect>& vImageROI();
 
-    /// <summary> 获得roi. </summary>
+    /**
+     * 获得roi.
+     *
+     * @author daixian
+     * @date 2020/5/21
+     *
+     * @param  index 一个相机的index.
+     *
+     * @returns A cv::Rect.
+     */
     cv::Rect imageROI(int index);
 
-    /// <summary> 是否使能画图. </summary>
+    /** 是否使能画图. */
     bool isEnableDraw = true;
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 得到k的值. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <returns> The k. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 得到k的值.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @returns The k.
+     */
     float get_k();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据一个相机的图像size来设置合适的k. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="cameraSize"> Size of the camera. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 根据一个相机的图像size来设置合适的k.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  cameraSize 相机的图像size.
+     */
     void set_k(const cv::Size& cameraSize);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置画图片用的roi. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/27. </remarks>
-    ///
-    /// <param name="size">  画面大小. </param>
-    /// <param name="count"> 预备的数量. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 设置画图片用的roi.
+     *
+     * @author daixian
+     * @date 2018/11/27
+     *
+     * @param  size  画面大小.
+     * @param  count (Optional) 预备的数量.
+     */
     void setImageROI(const cv::Size& size, int count = 4);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据一个int去得到一个颜色. </summary>
-    ///
-    /// <remarks> Dx, 2019/8/23. </remarks>
-    ///
-    /// <param name="seed"> The seed. </param>
-    ///
-    /// <returns> The color. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 根据一个int去得到一个颜色.
+     *
+     * @author daixian
+     * @date 2019/8/23
+     *
+     * @param  seed The seed.
+     *
+     * @returns 颜色.
+     */
     cv::Scalar getColor(unsigned int seed);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个矩形. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="rect">  The rectangle. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个矩形.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  rect  The rectangle.
+     * @param  color (Optional) The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawRectangle(const cv::Rect2f& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个旋转矩形. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/27. </remarks>
-    ///
-    /// <param name="rect">  The rectangle. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个旋转矩形.
+     *
+     * @author daixian
+     * @date 2018/11/27
+     *
+     * @param  rect  The rectangle.
+     * @param  color (Optional) The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawRectangle(const cv::RotatedRect& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画线. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="point1"> The first point. </param>
-    /// <param name="point2"> The second point. </param>
-    /// <param name="color">  (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画线.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  point1 The first point.
+     * @param  point2 The second point.
+     * @param  color  (Optional) The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawLine(const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个点. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/28. </remarks>
-    ///
-    /// <param name="point1"> The first point. </param>
-    /// <param name="color">  (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个点.
+     *
+     * @author daixian
+     * @date 2018/11/28
+     *
+     * @param  point The point.
+     * @param  color (Optional) The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawPoint(const cv::Point2f& point, const cv::Scalar& color = cv::Scalar(0, 0, 255));
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画十字线. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="point1"> The first point. </param>
-    /// <param name="color">  (Optional) The color. </param>
-    /// <param name="size">   (Optional) 十字线的长度(5像素*size长). </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画十字线.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  point 十字线中心.
+     * @param  color (Optional) The color.
+     * @param  size  (Optional) 十字线的长度(5像素*size长).
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawCross(const cv::Point2f& point, const cv::Scalar& color = cv::Scalar(0, 0, 255), float size = 1);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> Draw text. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="text">  The text. </param>
-    /// <param name="org">   [in] 起始点原点. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画文本.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param      text      The text.
+     * @param [in] org       起始点原点.
+     * @param      color     (Optional) The color.
+     * @param      fontScale (Optional) The font scale.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawText(const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.4);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 在图上另起一行画一行文本，通常使用这个函数. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="text">  The text. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 在图上另起一行画一行文本，通常使用这个函数.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  text      The text.
+     * @param  color     (Optional) The color.
+     * @param  fontScale (Optional) The font scale.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawTextLine(const std::string& text, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.5);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个图片. </summary>
-    ///
-    /// <remarks> Dx, 2017/8/17. </remarks>
-    ///
-    /// <param name="src"> [in] 源图片. </param>
-    /// <param name="roi"> 目标的roi. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个图片.
+     *
+     * @author daixian
+     * @date 2017/8/17
+     *
+     * @param [in] src 源图片.
+     * @param      roi 目标的roi.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawMat(const cv::Mat& src, const cv::Rect& roi);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个图片，输入两个roi. </summary>
-    ///
-    /// <remarks> Dx, 2017/8/17. </remarks>
-    ///
-    /// <param name="src">     [in] 源图片. </param>
-    /// <param name="roi_src"> The roi. </param>
-    /// <param name="roi_dst"> The roi. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个图片，输入两个roi.
+     *
+     * @author daixian
+     * @date 2017/8/17
+     *
+     * @param [in] src     源图片.
+     * @param      roi_src The roi.
+     * @param      roi_dst The roi.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawMat(const cv::Mat& src, const cv::Rect& roi_src, const cv::Rect& roi_dst);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画一个图片，输入一个目标区域的index就可以了. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/27. </remarks>
-    ///
-    /// <param name="src">   [in] 源图片. </param>
-    /// <param name="index"> 目标区域的index. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画一个图片，输入一个目标区域的index就可以了.
+     *
+     * @author daixian
+     * @date 2018/11/27
+     *
+     * @param [in] src   源图片.
+     * @param      index 目标区域的index.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawMat(const cv::Mat& src, int index);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 对相机图像上画一个矩形. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="rect">  The rectangle. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 对相机图像上画一个矩形.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  index ROI的index,通常应该等于camIndex.
+     * @param  rect  要画的矩形,相对坐标就是小roi中的坐标.
+     * @param  color (Optional) The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawRectangleROI(int index, const cv::Rect2f& rect, const cv::Scalar& color = cv::Scalar(0, 255, 0));
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 对相机图像上画线. </summary>
-    ///
-    /// <remarks> Dx, 2019/3/13. </remarks>
-    ///
-    /// <param name="index">  ROI的index,通常应该等于camIndex. </param>
-    /// <param name="point1"> The first point. </param>
-    /// <param name="point2"> The second point. </param>
-    /// <param name="color">  The color. </param>
-    ///
-    /// <returns> A cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 对相机图像上画线.
+     *
+     * @author daixian
+     * @date 2019/3/13
+     *
+     * @param  index  ROI的index,通常应该等于camIndex.
+     * @param  point1 The first point.
+     * @param  point2 The second point.
+     * @param  color  The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawLineROI(int index, const cv::Point2f& point1, const cv::Point2f& point2, const cv::Scalar& color);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 对相机图像上画多边形. </summary>
-    ///
-    /// <remarks> Dx, 2019/3/13. </remarks>
-    ///
-    /// <param name="index">   Zero-based index of the. </param>
-    /// <param name="polygon"> [in,out] The polygon. </param>
-    /// <param name="color">   The color. </param>
-    ///
-    /// <returns> A reference to a cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 对相机图像上画多边形.
+     *
+     * @author daixian
+     * @date 2019/3/13
+     *
+     * @param  index   ROI的index,通常应该等于camIndex.
+     * @param  polygon The polygon.
+     * @param  color   The color.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 画文本. </summary>
-    ///
-    /// <remarks> Dx, 2019/3/13. </remarks>
-    ///
-    /// <param name="index"> Zero-based index of the. </param>
-    /// <param name="text">  The text. </param>
-    /// <param name="org">   The organisation. </param>
-    /// <param name="color"> (Optional) The color. </param>
-    ///
-    /// <returns> A reference to a cv::Mat. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 画文本.
+     *
+     * @author daixian
+     * @date 2019/3/13
+     *
+     * @param  index     ROI的index,通常应该等于camIndex.
+     * @param  text      文本.
+     * @param  org       文本起始点.
+     * @param  color     (Optional) The color.
+     * @param  fontScale (Optional) The font scale.
+     *
+     * @returns 当前图片.
+     */
     cv::Mat& drawTextROI(int index, const std::string& text, const cv::Point& org, const cv::Scalar& color = cv::Scalar(0, 0, 255), double fontScale = 0.3);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 显示窗口. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="winName"> 窗口名字. </param>
-    /// <param name="x">       窗口位置x. </param>
-    /// <param name="y">       窗口位置y. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 显示窗口.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  winName 窗口名字.
+     * @param  x       (Optional) 窗口位置x.
+     * @param  y       (Optional) 窗口位置y.
+     */
     void showWin(const std::string& winName, int x = 800, int y = 0);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 关闭窗口. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 关闭窗口.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     */
     void closeWin();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 保存当前帧在内存. </summary>
-    ///
-    /// <remarks> dx, 2017/10/2. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 保存当前帧在内存.
+     *
+     * @author daixian
+     * @date 2017/10/2
+     */
     void saveToMemory();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 保存内存图片到文件夹. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="dirPath"> 要保存的文件夹路径. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 保存内存图片到文件夹.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param  dirPath 要保存的文件夹路径.
+     */
     void saveMemImgToFile(const std::string& dirPath);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 写当前图片像素Raw到内存的某个位置.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///
-    /// <param name="buff"> [in] 内存的目标位置. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 写当前图片像素Raw到内存的某个位置.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     *
+     * @param [in] buff 内存的目标位置.
+     */
     void writeMemImgToMem(void* buff);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// Clears this object to its blank/initial state.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2018/11/26. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 清空成黑色背景.
+     *
+     * @author daixian
+     * @date 2018/11/26
+     */
     void clear();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 清空内存里保存的图片. </summary>
-    ///
-    /// <remarks> Dx, 2018/12/4. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 清空内存里保存的图片.
+     *
+     * @author daixian
+     * @date 2018/12/4
+     */
     void clearMemory();
 };
 } // namespace dxlib

@@ -5,63 +5,79 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 一个相机对. </summary>
-///
-/// <remarks> Surface, 2020/4/19. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 一个相机对.
+ *
+ * @author daixian
+ * @date 2020/4/19
+ */
 class CameraPair
 {
   public:
-    /// <summary> 相机的序号. </summary>
+    /** 相机的序号. */
     int cpID = -1;
 
-    /// <summary> 这个立体相机组的名字. </summary>
+    /** 这个立体相机组的名字. */
     std::string name;
 
-    /// <summary> The camera l. </summary>
+    /** L相机. */
     pCamera camL;
 
-    /// <summary> The camera r. </summary>
+    /** R相机. */
     pCamera camR;
 
-    /// <summary> 参数R. </summary>
+    /** 参数R. */
     cv::Mat R;
 
-    /// <summary> 参数T. </summary>
+    /** 参数T. */
     cv::Mat T;
 
-    /// <summary> 参数E. </summary>
+    /** 参数E. */
     cv::Mat E;
 
-    /// <summary> 参数F. </summary>
+    /** 参数F. */
     cv::Mat F;
 
-    /// <summary> 参数Q. </summary>
+    /** 参数Q. */
     cv::Mat Q;
 
-    /// <summary> 左相机的投影矩阵. </summary>
+    /** 左相机的投影矩阵. */
     cv::Mat LP;
 
-    /// <summary> 右相机的投影矩阵. </summary>
+    /** 右相机的投影矩阵. */
     cv::Mat RP;
 
-    /// <summary> 这组相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
+    /** 这组相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. */
     cv::Mat camTR4x4;
 
-    /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    /** 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). */
     cv::Vec3d camPos;
 
-    /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    /** 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). */
     cv::Vec4d camRotate;
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
-    ///
-    /// <remarks> Surface, 2020/5/3. </remarks>
-    ///
-    /// <param name="path"> 参数文件的完整路径. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 根据一个相机文件载入尝试相机参数信息.
+     *
+     * @author daixian
+     * @date 2020/5/3
+     *
+     * @param  path            参数文件的完整路径.
+     * @param  nameTargetSize  (Optional) Size of the name target.
+     * @param  nameCamMatrixL  (Optional) The name camera matrix l.
+     * @param  nameDistCoeffsL (Optional) The name distance coeffs l.
+     * @param  nameCamMatrixR  (Optional) The name camera matrix r.
+     * @param  nameDistCoeffsR (Optional) The name distance coeffs r.
+     * @param  nameR           (Optional) The name r.
+     * @param  nameT           (Optional) The name t.
+     * @param  nameE           (Optional) The name.
+     * @param  nameF           (Optional) The name f.
+     * @param  nameQ           (Optional) The name q.
+     * @param  nameR1          (Optional) The first name r.
+     * @param  nameP1          (Optional) The first name p.
+     * @param  nameR2          (Optional) The second name r.
+     * @param  nameP2          (Optional) The second name p.
+     */
     void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
                    const std::string& nameCamMatrixL = "M1",
                    const std::string& nameDistCoeffsL = "D1",

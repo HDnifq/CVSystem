@@ -6,81 +6,81 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 立体相机(实际上它叫StereoCameraInfo更贴切). </summary>
-///
-/// <remarks> Dx, 2018/11/23. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 立体相机(实际上它叫StereoCameraInfo更贴切).
+ *
+ * @author daixian
+ * @date 2018/11/23
+ */
 class StereoCamera
 {
   public:
-    /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
+    /** 立体相机对的序号(区分多组立体相机). */
     int scID = -1;
 
-    /// <summary> 这个立体相机组的名字. </summary>
+    /** 这个立体相机组的名字. */
     std::string name;
 
-    /// <summary> The camera l. </summary>
+    /** L相机. */
     pCamera camL;
 
-    /// <summary> The camera r. </summary>
+    /** R相机. */
     pCamera camR;
 
-    /// <summary> 实际的物理双目相机. </summary>
+    /** 实际的物理双目相机. */
     pCamera camPhy;
 
-    /// <summary> 相机的参数对应的分辨率size. </summary>
+    /** 相机的参数对应的分辨率size. */
     cv::Size paramSize;
 
-    /// <summary> 参数R. </summary>
+    /** 参数R. */
     cv::Mat R;
 
-    /// <summary> 参数T. </summary>
+    /** 参数T. */
     cv::Mat T;
 
-    /// <summary> 参数E. </summary>
+    /** 参数E. */
     cv::Mat E;
 
-    /// <summary> 参数F. </summary>
+    /** 参数F. */
     cv::Mat F;
 
-    /// <summary> 参数Q. </summary>
+    /** 参数Q. */
     cv::Mat Q;
 
-    /// <summary> 左相机的投影矩阵. </summary>
+    /** 左相机的投影矩阵. */
     cv::Mat LP;
 
-    /// <summary> 右相机的投影矩阵. </summary>
+    /** 右相机的投影矩阵. */
     cv::Mat RP;
 
-    /// <summary> 这组相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. </summary>
+    /** 这组相机3d空间到某世界空间的变换矩阵,它应该等于camL里的的相机camTR4x4. */
     cv::Mat camTR4x4;
 
-    /// <summary> 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    /** 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). */
     cv::Vec3d camPos;
 
-    /// <summary> 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). </summary>
+    /** 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). */
     cv::Vec4d camRotate;
 
-    /// <summary> 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. </summary>
+    /** 是否是垂直的立体相机,如果它为false则默认它是水平的立体相机. */
     bool isVertical = false;
 
-    /// <summary> 是否L相机的点的Y值在上面（更小）用于匹配(这个属性实际不是绝对可靠). </summary>
+    /** 是否L相机的点的Y值在上面（更小）用于匹配(这个属性实际不是绝对可靠). */
     bool LYisAbove = true;
 
-    /// <summary> 是否L相机的点值X比R相机的X值小(这个属性实际不是绝对可靠). </summary>
+    /** 是否L相机的点值X比R相机的X值小(这个属性实际不是绝对可靠). */
     bool isLXLessThanR = true;
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 设置左右相机，当没有物理相机或者。两个全是真实相机的时候就可以用这个.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2020/3/27. </remarks>
-    ///
-    /// <param name="camL"> [in] The camera l. </param>
-    /// <param name="camR"> [in] The camera r. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 设置左右相机，当没有物理相机或者。两个全是真实相机的时候就可以用这个.
+     *
+     * @author daixian
+     * @date 2020/3/27
+     *
+     * @param [in] camL The camera l.
+     * @param [in] camR The camera r.
+     */
     void setCameraLR(pCamera& camL, pCamera& camR)
     {
         this->camL = camL;
@@ -89,25 +89,27 @@ class StereoCamera
         this->camR->stereoOther = this->camL;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 使用一个实际的物理相机和LR相机一起设置个stereo信息. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/16. </remarks>
-    ///
-    /// <param name="camPhy"> [in] The camera phy. </param>
-    /// <param name="camL">   [in] The camera l. </param>
-    /// <param name="camR">   [in] The camera r. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 使用一个实际的物理相机和LR相机一起设置个stereo信息.
+     *
+     * @author daixian
+     * @date 2020/4/16
+     *
+     * @param [in] camPhy The camera phy.
+     * @param [in] camL   The camera l.
+     * @param [in] camR   The camera r.
+     */
     void setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 设置投影矩阵. </summary>
-    ///
-    /// <remarks> Dx, 2020/4/14. </remarks>
-    ///
-    /// <param name="LP"> L相机的投影矩阵. </param>
-    /// <param name="RP"> R相机的投影矩阵. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 设置投影矩阵.
+     *
+     * @author daixian
+     * @date 2020/4/14
+     *
+     * @param  LP L相机的投影矩阵.
+     * @param  RP R相机的投影矩阵.
+     */
     void setProjection(const cv::Mat& LP, const cv::Mat& RP)
     {
         this->LP = LP;
@@ -116,62 +118,79 @@ class StereoCamera
         this->camR->projection = RP;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据当前的RT矩阵创建投影矩阵. </summary>
-    ///
-    /// <remarks> Dx, 2020/5/8. </remarks>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 根据当前的RT矩阵创建投影矩阵.
+     *
+     * @author daixian
+     * @date 2020/5/8
+     */
     void createProjectMat();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 得到一个相机的数组，index=0表示L相机，index=1表示R相机. </summary>
-    ///
-    /// <remarks> Dx, 2020/3/30. </remarks>
-    ///
-    /// <returns> The cameras. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 得到一个相机的数组，index=0表示L相机，index=1表示R相机.
+     *
+     * @author daixian
+     * @date 2020/3/30
+     *
+     * @returns The cameras.
+     */
     std::array<pCamera, 2> getCameras()
     {
         std::array<pCamera, 2> arr = {camL, camR};
         return arr;
     }
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 这是相机的备用参数，一个相机可以记录多组参数.
-    /// </summary>
-    ///-------------------------------------------------------------------------------------------------
+    /** 这是相机的备用参数，一个相机可以记录多组参数. */
     std::vector<std::pair<cv::Size, pStereoCameraParam>> vParams;
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 切换应用这个分辨率的参数. </summary>
-    ///
-    /// <remarks> Dx, 2020/5/6. </remarks>
-    ///
-    /// <param name="size"> 分辨率. </param>
-    ///
-    /// <returns> 成功返回true. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 切换应用这个分辨率的参数(待定).
+     *
+     * @author daixian
+     * @date 2020/5/6
+     *
+     * @param  size 分辨率.
+     *
+     * @returns 成功返回true.
+     */
     bool SwitchParam(cv::Size size);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 得到一个分辨率的参数. </summary>
-    ///
-    /// <remarks> Dx, 2020/5/6. </remarks>
-    ///
-    /// <param name="size"> The size. </param>
-    ///
-    /// <returns> The parameter. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 得到一个分辨率的参数.
+     *
+     * @author daixian
+     * @date 2020/5/21
+     *
+     * @param  size The size.
+     *
+     * @returns The parameter.
+     *
+     * ### remarks Dx, 2020/5/6.
+     */
     pStereoCameraParam getParam(cv::Size size);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 根据一个相机文件载入尝试相机参数信息. </summary>
-    ///
-    /// <remarks> Surface, 2020/5/3. </remarks>
-    ///
-    /// <param name="path"> 参数文件的完整路径. </param>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 根据一个相机文件载入尝试相机参数信息.
+     *
+     * @author daixian
+     * @date 2020/5/3
+     *
+     * @param  path            参数文件的完整路径.
+     * @param  nameTargetSize  (Optional) Size of the name target.
+     * @param  nameCamMatrixL  (Optional) The name camera matrix l.
+     * @param  nameDistCoeffsL (Optional) The name distance coeffs l.
+     * @param  nameCamMatrixR  (Optional) The name camera matrix r.
+     * @param  nameDistCoeffsR (Optional) The name distance coeffs r.
+     * @param  nameR           (Optional) The name r.
+     * @param  nameT           (Optional) The name t.
+     * @param  nameE           (Optional) The name.
+     * @param  nameF           (Optional) The name f.
+     * @param  nameQ           (Optional) The name q.
+     * @param  nameR1          (Optional) The first name r.
+     * @param  nameP1          (Optional) The first name p.
+     * @param  nameR2          (Optional) The second name r.
+     * @param  nameP2          (Optional) The second name p.
+     */
     void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
                    const std::string& nameCamMatrixL = "M1",
                    const std::string& nameDistCoeffsL = "D1",

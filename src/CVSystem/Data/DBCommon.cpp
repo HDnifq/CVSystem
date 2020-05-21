@@ -26,7 +26,7 @@ class DBCommon::Impl
         }
     }
 
-    /// <summary> The database. </summary>
+    /** The database. */
     SQLite::Database* db = nullptr;
 
   private:

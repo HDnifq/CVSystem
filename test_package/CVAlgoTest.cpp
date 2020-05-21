@@ -170,4 +170,5 @@ TEST(Math, cross)
 TEST(Math, eye)
 {
     cv::Mat mat44 = cv::Mat::eye(4, 4, CV_64F);
+    ASSERT_TRUE(mat44.size() == cv::Size(4, 4));
 }

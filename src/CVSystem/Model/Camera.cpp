@@ -22,13 +22,13 @@ class Camera::Impl
     }
     ~Impl() {}
 
-    /// <summary> 暂存的读取的上次设置的实际结果属性值,可以供随便的查询一下,但是一般用不到. </summary>
+    /** 暂存的读取的上次设置的实际结果属性值,可以供随便的查询一下,但是一般用不到. */
     double lastCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 
-    /// <summary> 用来做状态的记录，好触发设置动作，执行过设置属性之后会把它置为FLT_MIN. </summary>
+    /** 用来做状态的记录，好触发设置动作，执行过设置属性之后会把它置为FLT_MIN. */
     double _setCapProp[DXLIB_CAMERA_CAP_PROP_LEN];
 
-    /// <summary> 相机属性和字符串对应的map. </summary>
+    /** 相机属性和字符串对应的map. */
     static std::map<cv::VideoCaptureProperties, const char*> mPropStr;
 };
 
@@ -237,7 +237,7 @@ void Camera::setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::stri
     }
 }
 
-void Camera::setFourcc(std::string fourcc)
+void Camera::setFourcc(const std::string& fourcc)
 {
     _impl->_setCapProp[(int)cv::CAP_PROP_FOURCC] = cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
 }

@@ -212,13 +212,4 @@ bool CameraManger::checkInputData()
     return isRight;
 }
 
-void CameraManger::initUndistortRectifyMap(pCamera& camera)
-{
-    cv::initUndistortRectifyMap(camera->camMatrix, camera->distCoeffs, camera->R, camera->P, camera->size, CV_16SC2, camera->rmap1, camera->rmap2);
-}
-
-void CameraManger::loadJson(std::string path)
-{
-    //使用dto对象来载入
-}
 } // namespace dxlib
