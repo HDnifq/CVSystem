@@ -243,7 +243,7 @@ int DBCommon::write(int user_id, const std::string& name, const std::string& txt
     }
     //如果没有能够更新那么就插入
     LogD("插入一条新数据%s", name.c_str());
-    SQLite::Statement queryI(db, "INSERT INTO common_tbl VALUES (NULL,?,?,?)");
+    SQLite::Statement queryI(db, "INSERT INTO common_tbl VALUES (NULL,?,?,?,NULL)");
     queryI.bind(1, user_id);
     queryI.bind(2, name);
     queryI.bind(3, txt);
