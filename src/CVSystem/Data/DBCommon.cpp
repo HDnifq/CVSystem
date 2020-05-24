@@ -213,6 +213,47 @@ int DBCommon::write(int user_id, const std::string& name, const std::string& txt
     return nb;
 }
 
+int DBCommon::write(int user_id, const std::string& name, const std::string& txt)
+{
+    if (_impl->db == nullptr) {
+        LogE("DBCommon.write():未打开数据库!");
+        return -1;
+    }
+
+    SQLite::Database& db = *_impl->db;
+    //从数据库读信息
+    SQLite::Statement queryS(db, (boost::format("SELECT * FROM common_tbl WHERE name='%s'") % name).str());
+    int updateCount = 0;
+    while (queryS.executeStep()) {
+        int id = queryS.getColumn("id").getInt(); //选到主键
+        LogD("DBCommon.write():选中了项id=%d,更新它的数据...", id);
+        SQLite::Statement queryU(db, (boost::format("UPDATE common_tbl SET user_id=?,name=?,txt=? WHERE id='%d'") % id).str());
+        queryU.bind(1, user_id);
+        queryU.bind(2, name);
+        queryU.bind(3, txt);
+        int nb = queryU.exec();
+        if (nb != 1) {
+            LogE("DBCommon.write():Update执行失败!");
+        }
+        updateCount++;
+    }
+    //如果成功的更新完成了那么直接返回
+    if (updateCount > 0) {
+        return updateCount;
+    }
+    //如果没有能够更新那么就插入
+    LogD("插入一条新数据%s", name.c_str());
+    SQLite::Statement queryI(db, "INSERT INTO common_tbl VALUES (NULL,?,?,?)");
+    queryI.bind(1, user_id);
+    queryI.bind(2, name);
+    queryI.bind(3, txt);
+    int nb = queryI.exec();
+    if (nb != 1) {
+        LogE("DBCommon.write():INSERT执行失败!");
+    }
+    return nb;
+}
+
 int DBCommon::readOne(int user_id, const std::string& name, std::string& txt, std::vector<char>& data)
 {
     if (_impl->db == nullptr) {

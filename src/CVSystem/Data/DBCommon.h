@@ -131,6 +131,20 @@ class DBCommon
     int write(int user_id, const std::string& name, const std::string& txt, const void* data, int len);
 
     /**
+     * Writes
+     *
+     * @author daixian
+     * @date 2020/5/25
+     *
+     * @param  user_id 一个自定一个userid.
+     * @param  name    这一项记录的名字,最好应该不重复.
+     * @param  txt     这项记录的文本内容.
+     *
+     * @returns 修改的项数.
+     */
+    int write(int user_id, const std::string& name, const std::string& txt);
+
+    /**
      * 从数据库里读取一项通用数据.
      *
      * @author daixian
