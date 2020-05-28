@@ -9,7 +9,7 @@ from conans import ConanFile, CMake, tools
 class CVSystemTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
-    default_options = {"dlog:shared": True,
+    default_options = {"dlog:shared": False,
                        "opencv:shared": True,
                        "boost:without_test": True,
                        "poco:enable_data_sqlite": False}
@@ -19,7 +19,7 @@ class CVSystemTestConan(ConanFile):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
         self.requires("opencv/4.2.0@daixian/stable")
-        self.requires("dlog/2.5.0@daixian/stable")
+        self.requires("dlog/[>=2.5.2]@daixian/stable")
         self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
         self.requires("sqlitecpp/2.5.0@daixian/stable")  # 使用加密数据库的版本

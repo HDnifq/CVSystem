@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.3.4"
+    version = "3.3.5"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -22,7 +22,7 @@ class CVSystemConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False,
-                       "dlog:shared": True,
+                       "dlog:shared": False,
                        "opencv:shared": True,
                        "boost:without_test": True,
                        "poco:enable_data_sqlite": False}
@@ -33,7 +33,7 @@ class CVSystemConan(ConanFile):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
         self.requires("opencv/4.2.0@daixian/stable")
-        self.requires("dlog/2.5.0@daixian/stable")
+        self.requires("dlog/[>=2.5.2]@daixian/stable")
         self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
         self.requires("sqlitecpp/2.5.0@daixian/stable")  # 使用加密数据库的版本
