@@ -18,10 +18,20 @@ class DevicesHelper
     static DevicesHelper* m_pInstance;
 
   public:
-    // 构造.
+    /**
+     * 构造
+     *
+     * @author daixian
+     * @date 2017/3/11
+     */
     DevicesHelper();
 
-    // 析构.
+    /**
+     * 析构
+     *
+     * @author daixian
+     * @date 2017/3/11
+     */
     ~DevicesHelper();
 
     /**

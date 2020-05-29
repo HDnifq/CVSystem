@@ -21,36 +21,37 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 线程函数对象，执行一个帧处理. </summary>
-///
-/// <remarks> Dx, 2020/2/26. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 线程函数对象，执行一个帧处理.
+ *
+ * @author daixian
+ * @date 2020/2/26
+ */
 class FrameProcRunnable : public Poco::Runnable
 {
   public:
     FrameProcRunnable() {}
     ~FrameProcRunnable() {}
 
-    /// <summary> proc对象. </summary>
+    // proc对象.
     pFrameProc proc;
 
-    /// <summary> 相机采图类. </summary>
+    // 相机采图类.
     CameraGrab* _cameraGrab = nullptr;
 
-    /// <summary> 是否保持运行. </summary>
+    // 是否保持运行.
     std::atomic_bool _isRun{true};
 
-    /// <summary> 是否采图. </summary>
+    // 是否采图.
     std::atomic_bool _isGrab{true};
 
-    /// <summary> 处理的fps. </summary>
+    // 处理的fps.
     float fps = 0;
 
-    /// <summary> 帧处理计数. </summary>
+    // 帧处理计数.
     uint frameCount = 0;
 
-    /// <summary> 当前按下的按键记录（看后面要不要删掉）. </summary>
+    // 当前按下的按键记录（看后面要不要删掉）.
     std::atomic_int cvKey{-1};
 
     virtual void run()
@@ -74,6 +75,13 @@ class FrameProcRunnable : public Poco::Runnable
                     cimg->procStartTime = clock(); //标记处理开始时间
 
                     fps = _fpsCalc.update(++frameCount);
+
+                    //标注一下当前工作相机的FPS
+                    for (size_t i = 0; i < cimg->vImage.size(); i++) {
+                        if (cimg->vImage[i].camera != nullptr) {
+                            cimg->vImage[i].camera->FPS = fps;
+                        }
+                    }
 
                     LogD("MultiCamera.run():执行proc!");
                     int ckey = -1; //让proc去自己想检测keydown就keydown
@@ -131,31 +139,31 @@ class MultiCamera::Impl
     {
     }
 
-    /// <summary> 一次只使能一个处理. </summary>
+    // 一次只使能一个处理.
     std::vector<pFrameProc> vProc;
 
-    /// <summary> 当前激活的处理Index. </summary>
+    // 当前激活的处理Index.
     uint _activeProcIndex = 0;
 
-    /// <summary> 相机采图类. </summary>
+    // 相机采图类.
     CameraGrab _cameraGrab;
 
-    /// <summary> 工作线程 </summary>
+    // 工作线程
     Poco::Thread* pThread = nullptr;
 
-    /// <summary> 当前的执行对象. </summary>
+    // 当前的执行对象.
     FrameProcRunnable* curRunnable = nullptr;
 
-    /// <summary> 是否相机已经打开. </summary>
+    // 是否相机已经打开.
     std::atomic_bool _isOpened{false};
 
-    /// <summary> 是否正在打开相机. </summary>
+    // 是否正在打开相机.
     std::atomic_bool _isOpening{false};
 
-    /// <summary> 是否相机正在关闭. </summary>
+    // 是否相机正在关闭.
     std::atomic_bool _isCloseing{false};
 
-    /// <summary> 是否正在停止. </summary>
+    // 是否正在停止.
     std::atomic_bool _isStopping{false};
 
   private:

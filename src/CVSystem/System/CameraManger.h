@@ -25,13 +25,13 @@ class CameraManger
         return m_pInstance;
     }
 
-    /** 所有相机的map，以camIndex为key.它实际已经等价于vCamera */
+    // 所有相机的map，以camIndex为key.它实际已经等价于vCamera
     std::map<int, pCamera> camMap;
 
-    /** 立体相机对. */
+    // 立体相机对.
     std::vector<pStereoCamera> vStereo;
 
-    /** 所有相机对的数据. */
+    // 所有相机对的数据.
     std::vector<pCameraPair> vCameraPair;
 
     /**
@@ -221,13 +221,13 @@ class CameraManger
     bool checkInputData();
 
   private:
-    /** 单例. */
+    // 单例.
     static CameraManger* m_pInstance;
 
-    /** 名字和相机指针的map. */
+    // 名字和相机指针的map.
     std::map<std::string, pCamera> mNamePCamera;
 
-    /** 相机index的数组. */
+    // 相机index的数组.
     std::vector<pCamera> vCamera;
 };
 

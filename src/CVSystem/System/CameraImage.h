@@ -17,19 +17,19 @@ namespace dxlib {
  */
 struct ImageItem
 {
-    /** 采图图片. */
+    // 采图图片.
     cv::Mat image;
 
-    /** 对应相机（如果这里为null，那么基本上应该认为这个item是无效的）. */
+    // 对应相机（如果这里为null，那么基本上应该认为这个item是无效的）.
     Camera* camera = nullptr;
 
-    /** 是否采图成功. */
+    // 是否采图成功.
     bool isSuccess = false;
 
-    /** 这一帧的采集开始时间戳. */
+    // 这一帧的采集开始时间戳.
     clock_t grabStartTime = 0;
 
-    /** 这一帧的采集结束时间戳. */
+    // 这一帧的采集结束时间戳.
     clock_t grabEndTime = 0;
 
     /**
@@ -64,25 +64,25 @@ class CameraImage
         }
     }
 
-    /** 相机帧序号. */
+    // 相机帧序号.
     unsigned int fnum = 0;
 
-    /** 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录). */
+    // 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录).
     std::vector<ImageItem> vImage;
 
-    /** 立体相机信息. key是scId,后面是LR两个相机指针 */
+    // 立体相机信息. key是scId,后面是LR两个相机指针
     std::map<int, std::array<Camera*, 2>> stereoInfo;
 
-    /** 这一帧的采集开始时间戳. */
+    // 这一帧的采集开始时间戳.
     clock_t grabStartTime = 0;
 
-    /** 这一帧的采集结束时间戳. */
+    // 这一帧的采集结束时间戳.
     clock_t grabEndTime = 0;
 
-    /** 这一帧的开始处理的时间戳. */
+    // 这一帧的开始处理的时间戳.
     clock_t procStartTime = 0;
 
-    /** 这一帧的结束处理的时间戳. */
+    // 这一帧的结束处理的时间戳.
     clock_t procEndTime = 0;
 
     /**

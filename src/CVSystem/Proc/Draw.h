@@ -13,25 +13,25 @@ namespace dxlib {
 class Draw
 {
   private:
-    /** The instance. */
+    // 单例.
     static Draw* m_pInstance;
 
-    /** 机画面是640x360的时候,合适的k值是2.95. */
+    // 机画面是640x360的时候,合适的k值是2.95.
     float k;
 
-    /** 画面宽度. */
+    // 画面宽度.
     int width;
 
-    /** 画面高度. */
+    // 画面高度.
     int height;
 
-    /** 保存图片到硬盘时的名字计数. */
+    // 保存图片到硬盘时的名字计数.
     int nameCount;
 
     // 隐藏成员字段.
     class Impl;
 
-    /** 数据成员. */
+    // 数据成员.
     Impl* _impl = nullptr;
 
   public:

@@ -35,71 +35,71 @@ class Camera
      */
     ~Camera();
 
-    /** 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index. */
+    // 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index.
     int camIndex = -1;
 
-    /** 这个相机的设备名. */
+    // 这个相机的设备名.
     std::string devName;
 
-    /** 是否是一个不存在的虚拟的相机（参数计算相机），仅仅只是利用这个录入参数，然后载入图像计算.
-    (即如果设置了它为true，那么MultiCamera在根据CameraManger里录入的内容来open相机的时候不会自动的打开它). */
+    // 是否是一个不存在的虚拟的相机（参数计算相机），仅仅只是利用这个录入参数，然后载入图像计算.
+    // (即如果设置了它为true，那么MultiCamera在根据CameraManger里录入的内容来open相机的时候不会自动的打开它).
     bool isVirtualCamera = false;
 
-    /** 如果它是一个虚拟相机,那么它可能是一个立体相机的一半,这里则记录它的实际物理相机的名字. */
+    // 如果它是一个虚拟相机,那么它可能是一个立体相机的一半,这里则记录它的实际物理相机的名字.
     std::string physicalDevName;
 
-    /** (这个是用户只读的)设备的id顺序，物理硬件上的index. */
+    // (这个是用户只读的)设备的id顺序，物理硬件上的index.
     int devID = -1;
 
-    /** 相机的分辨率size，打开相机之后会按照这个设置来尝试设置相机分辨率. */
+    // 相机的分辨率size，打开相机之后会按照这个设置来尝试设置相机分辨率.
     cv::Size size;
 
-    /** 相机的参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置. */
+    // 相机的参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置.
     cv::Size paramSize;
 
-    /** 相机的内参数矩阵. */
+    // 相机的内参数矩阵.
     cv::Mat camMatrix;
 
-    /** 畸变多项式系数. */
+    // 畸变多项式系数.
     cv::Mat distCoeffs;
 
-    /** (因为一个相机可以对应多组立体相机组,所以这个属性应该去掉)相机的投影矩阵,可由立体相机的RT得到. */
+    // (因为一个相机可以对应多组立体相机组,所以这个属性应该去掉)相机的投影矩阵,可由立体相机的RT得到.
     cv::Mat projection;
 
-    /** 校正畸变的参数R. */
+    // 校正畸变的参数R.
     cv::Mat R;
 
-    /** 校正畸变的参数P. */
+    // 校正畸变的参数P.
     cv::Mat P;
 
-    /** remap函数使用的. */
+    // remap函数使用的.
     cv::Mat rmap1;
 
-    /** remap函数使用的. */
+    // remap函数使用的.
     cv::Mat rmap2;
 
-    /** 相机3d空间到某世界空间的变换矩阵. */
+    // 相机3d空间到某世界空间的变换矩阵.
     cv::Mat camTR4x4;
 
-    /** 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用). */
+    // 相机在世界空间的坐标(可以从上面的camRT4x4求出,放在这里方便使用).
     cv::Vec3d camPos;
 
-    /** 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用). */
+    // 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用).
     cv::Vec4d camRotate;
 
-    /** 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用) */
+    // 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用)
     std::shared_ptr<Camera> stereoOther = nullptr;
 
-    /** 实际的物理相机. */
+    // 实际的物理相机.
     std::shared_ptr<Camera> physicalCamera = nullptr;
 
-    /** 这是相机采图的帧率. */
+    // 这是相机采图的帧率.
     float FPS = 0;
 
-    /** 用户使用的附加对象. */
+    // 用户使用的附加对象.
     void* userData;
 
-    /** 相机的capture，这里基本应该是只读的。 */
+    // 相机的capture，这里基本应该是只读的。 */
     std::shared_ptr<cv::VideoCapture> capture = nullptr;
 
     /**

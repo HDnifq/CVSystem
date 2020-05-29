@@ -25,7 +25,7 @@ using Poco::Net::ServerSocket;
 namespace dxlib {
 
 /**
- * 处理相机的http消息.
+ * 处理多相机的http消息.
  *
  * @author daixian
  * @date 2020/3/13
@@ -141,11 +141,11 @@ class MultiCameraRequestHandler : public HTTPRequestHandler
      */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
-    /** 传递过来的当前实际Handler事件. */
+    // 传递过来的当前实际Handler事件.
     HandlerType ev;
 
   private:
-    /** 当前的uri. */
+    // 当前的uri.
     Poco::URI uri;
 
     void handleRequestOpenCamera(HTTPServerRequest& request, HTTPServerResponse& response);

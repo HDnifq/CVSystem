@@ -122,11 +122,11 @@ class CameraRequestHandler : public HTTPRequestHandler
      */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
-    /** 传递过来的当前实际Handler事件. */
+    // 传递过来的当前实际Handler事件.
     HandlerType ev;
 
   private:
-    /** 当前的uri. */
+    // 当前的uri.
     Poco::URI uri;
 
     void handleRequestListCamera(HTTPServerRequest& request, HTTPServerResponse& response);
