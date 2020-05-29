@@ -98,9 +98,8 @@ bool comUnInit()
 }
 #endif
 
-int DevicesHelper::getIndexWithName(std::string name, bool isRegex)
+int DevicesHelper::getIndexWithName(std::string name, bool isRegex, bool isWarning)
 {
-
     for (int i = 0; i < devList.size(); i++) {
         if (isRegex) {
             const std::regex pattern(name);
@@ -114,7 +113,8 @@ int DevicesHelper::getIndexWithName(std::string name, bool isRegex)
             }
         }
     }
-    LogW("DevicesHelper.getIndexWithName():未能找到摄像机 %s ,当前系统相机个数%d!", name.c_str(), devList.size());
+    if (isWarning)
+        LogW("DevicesHelper.getIndexWithName():未能找到摄像机 %s ,当前系统相机个数%d!", name.c_str(), devList.size());
     return -1;
 }
 
