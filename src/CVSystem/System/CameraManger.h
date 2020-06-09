@@ -67,7 +67,7 @@ class CameraManger
     pCamera addVirtual(pCamera cp);
 
     /**
-     * 添加立体相机对.
+     * 添加立体相机对,会检察自动递增分配scID.
      *
      * @author daixian
      * @date 2019/2/8
@@ -77,6 +77,18 @@ class CameraManger
      * @returns A pStereoCamera.
      */
     pStereoCamera add(pStereoCamera sc);
+
+    /**
+     * 添加一个相机组,会检察自动递增分配cpID.
+     *
+     * @author daixian
+     * @date 2020/6/10
+     *
+     * @param  cp 要添加的相机组.
+     *
+     * @returns A pCameraPair.
+     */
+    pCameraPair add(pCameraPair cp);
 
     /**
      * 通过camIndex得到一个相机.

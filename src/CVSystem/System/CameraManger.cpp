@@ -62,6 +62,21 @@ pStereoCamera CameraManger::add(pStereoCamera sc)
     return sc;
 }
 
+pCameraPair CameraManger::add(pCameraPair cp)
+{
+    if (cp->cpID < 0) {
+        cp->cpID = static_cast<int>(vCameraPair.size()); //这个id就是vCameraPair里的index
+    }
+    else {
+        if (cp->cpID != vCameraPair.size()) {
+            LogE("CameraManger.add():添加相机对逻辑cpID有错误,已经修改cpID为%d", vCameraPair.size());
+            cp->cpID = static_cast<int>(vCameraPair.size());
+        }
+    }
+    this->vCameraPair.push_back(cp);
+    return cp;
+}
+
 pCamera CameraManger::getCamera(const int camIndex)
 {
     if (camMap.find(camIndex) != camMap.end()) {
