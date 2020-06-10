@@ -101,6 +101,17 @@ void StereoCamera::createProjectMat()
     setProjection(LP, RP);
 }
 
+void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4)
+{
+    CV_Assert(TRMat4x4.size() == cv::Size(4, 4));
+    using namespace xuexue;
+    this->camTR4x4 = TRMat4x4;
+    Math::toPosRot(TRMat4x4, this->camPos, this->camRotate);
+    this->camL->camTR4x4 = TRMat4x4;
+    this->camL->camPos = this->camPos;
+    this->camL->camRotate = this->camRotate;
+}
+
 pStereoCameraParam StereoCamera::getParam(cv::Size size)
 {
     for (size_t i = 0; i < vParams.size(); i++) {

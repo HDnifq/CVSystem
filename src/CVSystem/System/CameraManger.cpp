@@ -38,7 +38,7 @@ pCamera CameraManger::add(pCamera cp)
     }
 
     LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devName.c_str(), camMap.size());
-    return camMap[cp->camIndex];
+    return cp;
 }
 
 pCamera CameraManger::addVirtual(pCamera cp)

@@ -119,6 +119,16 @@ class StereoCamera
     }
 
     /**
+     * 设置相机位置矩阵4x4
+     *
+     * @author daixian
+     * @date 2020/6/11
+     *
+     * @param  TRMat4x4 4x4的TR矩阵.
+     */
+    void setTRMat4x4(const cv::Mat& TRMat4x4);
+
+    /**
      * 根据当前的RT矩阵创建投影矩阵.
      *
      * @author daixian
