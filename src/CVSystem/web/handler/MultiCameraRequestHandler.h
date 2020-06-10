@@ -91,7 +91,7 @@ class MultiCameraRequestHandler : public HTTPRequestHandler
     }
 
     /**
-     * 工厂方法，如果能够包含支持的path就成功创建对象,否则返回null.
+     * 工厂方法,如果能够包含支持的path就成功创建对象,否则返回null.
      *
      * @author daixian
      * @date 2020/3/18
