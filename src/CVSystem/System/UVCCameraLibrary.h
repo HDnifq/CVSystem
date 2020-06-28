@@ -128,6 +128,32 @@ class UVCXU // : public IKsNodeControl
         BYTE pDefault[]);
 };
 
+/**
+ * 一项UVC属性.
+ *
+ * @author daixian
+ * @date 2020/6/28
+ */
+class UVCProp
+{
+  public:
+    std::string name;
+    long Min = 0;
+    long Max = 0;
+    long Step = 0;
+    long Default = 0;
+    long Flags = 0;
+    long Val = 0;
+
+    bool isAuto()
+    {
+        if (Flags == CameraControl_Flags_Auto) {
+            return true;
+        }
+        return false;
+    }
+};
+
 class UVCCameraLibrary
 {
   public:
@@ -180,12 +206,16 @@ class UVCCameraLibrary
     bool getAutoFocus();
 
     //get camera properties
-    long getPan();
-    long getTilt();
-    long getZoom();
-    long getFocus();
+    UVCProp getPan();
+    UVCProp getTilt();
+    UVCProp getZoom();
+    UVCProp getFocus();
+    UVCProp getExposure();
 
-    /*OSD menu tool*/
+    HRESULT setFocus(long val);
+    HRESULT setExposure(long val);
+
+    /*OSD menu tool 这个可能是他们自定义的功能*/
     HRESULT osdMenuOpenClose();
     HRESULT osdMenuEnter();
     HRESULT osdMenuBack();
@@ -196,6 +226,7 @@ class UVCCameraLibrary
 
     //This function must be called after connection to use other functions for osd menu
     HRESULT checkOSDMenu(); //check if the uvc camera supports osd menu
+
   private:
     //base directshow filter
     IBaseFilter *pDeviceFilter = NULL;
@@ -213,14 +244,18 @@ class UVCCameraLibrary
     HRESULT stopControling(KSPROPERTY_VIDCAP_CAMERACONTROL prop);
 
     //get Auto/Manual status of property
-    bool getAuto(CameraControlProperty prop);
+    bool getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop);
+
     //设置auto
     HRESULT setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isAuto);
 
     //get value of the property
-    long getVal(CameraControlProperty prop);
+    UVCProp getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop);
 
-    /*OSD Menu*/
+    //设置属性值
+    HRESULT setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val);
+
+    /*OSD Menu 这个可能是他们自定义的功能*/
     UVCXU uvcxu;
     ULONG ulUvcRedSize;
     ULONG ulUvcGreenSize;

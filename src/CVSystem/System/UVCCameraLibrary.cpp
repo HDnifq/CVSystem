@@ -1,4 +1,5 @@
 ﻿#include "UVCCameraLibrary.h"
+//#include "Mtype.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -455,8 +456,62 @@ bool UVCCameraLibrary::connectDevice(const std::string &deviceName)
         if (std::string(devname).find(deviceName) != std::string::npos) {
             pMoniker->BindToObject(0, 0, IID_IBaseFilter,
                                    (void **)&pDeviceFilter);
-            if (pDeviceFilter != NULL)
-                return true;
+            if (pDeviceFilter != NULL) {
+                IAMStreamConfig *pAMStreamConfg;
+                HRESULT hr = E_FAIL;
+                //首先在filter上查找Interface
+                hr = pDeviceFilter->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
+                if (SUCCEEDED(hr)) {
+                    return true;
+                }
+                else {
+                    //如果找不到那么遍历filter的Pin来查找interface
+                    IEnumPins *pEnum = 0;
+                    if (FAILED(pDeviceFilter->EnumPins(&pEnum))) {
+                        return false;
+                    }
+                    // Query every pin for the interface.
+                    IPin *pPin = 0;
+                    while (S_OK == pEnum->Next(1, &pPin, 0)) {
+
+                        hr = pPin->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
+                        pPin->Release();
+                        if (SUCCEEDED(hr)) {
+                            break;
+                        }
+                    }
+                    pEnum->Release();
+
+                    int iCount = 0, iSize = 0;
+                    hr = pAMStreamConfg->GetNumberOfCapabilities(&iCount, &iSize);
+                    // Check the size to make sure we pass in the correct structure.
+                    if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS)) {
+                        // Use the video capabilities structure.
+                        for (int iFormat = 0; iFormat < iCount; iFormat++) {
+                            VIDEO_STREAM_CONFIG_CAPS scc; //这个是媒体信息
+                            AM_MEDIA_TYPE *pmtConfig;
+                            hr = pAMStreamConfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE *)&scc);
+                            if (SUCCEEDED(hr)) {
+                                if ((pmtConfig->majortype == MEDIATYPE_Video) &&
+                                    (pmtConfig->subtype == MEDIASUBTYPE_RGB24) &&
+                                    (pmtConfig->formattype == FORMAT_VideoInfo) &&
+                                    (pmtConfig->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
+                                    (pmtConfig->pbFormat != NULL)) {
+                                    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER *)pmtConfig->pbFormat;
+                                    pVih->bmiHeader.biWidth = 1280;
+                                    pVih->bmiHeader.biHeight = 720;
+                                    pVih->bmiHeader.biSizeImage = DIBSIZE(pVih->bmiHeader);
+                                    hr = pAMStreamConfg->SetFormat(pmtConfig);
+                                }
+
+                                //DeleteMediaType(pmtConfig);
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
         }
 
         // release
@@ -741,26 +796,50 @@ HRESULT UVCCameraLibrary::moveHome()
 
 bool UVCCameraLibrary::getAutoFocus()
 {
-    return getAuto(CameraControl_Focus);
+    return getAuto(KSPROPERTY_CAMERACONTROL_FOCUS);
 }
-long UVCCameraLibrary::getPan()
+UVCProp UVCCameraLibrary::getPan()
 {
-    return getVal(CameraControl_Pan);
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_PAN);
+    result.name = "PAN";
+    return result;
 }
-long UVCCameraLibrary::getTilt()
+UVCProp UVCCameraLibrary::getTilt()
 {
-    return getVal(CameraControl_Tilt);
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_TILT);
+    result.name = "TILT";
+    return result;
 }
-long UVCCameraLibrary::getZoom()
+UVCProp UVCCameraLibrary::getZoom()
 {
-    return getVal(CameraControl_Zoom);
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_ZOOM);
+    result.name = "ZOOM";
+    return result;
 }
-long UVCCameraLibrary::getFocus()
+UVCProp UVCCameraLibrary::getFocus()
 {
-    return getVal(CameraControl_Focus);
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_FOCUS);
+    result.name = "FOCUS";
+    return result;
+}
+UVCProp UVCCameraLibrary::getExposure()
+{
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_EXPOSURE);
+    result.name = "EXPOSURE";
+    return result;
 }
 
-bool UVCCameraLibrary::getAuto(CameraControlProperty prop)
+HRESULT UVCCameraLibrary::setFocus(long val)
+{
+    return setVal(KSPROPERTY_CAMERACONTROL_FOCUS, val);
+}
+
+HRESULT UVCCameraLibrary::setExposure(long val)
+{
+    return setVal(KSPROPERTY_CAMERACONTROL_EXPOSURE, val);
+}
+
+bool UVCCameraLibrary::getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
@@ -769,7 +848,7 @@ bool UVCCameraLibrary::getAuto(CameraControlProperty prop)
         // The device does not support IAMCameraControl
         if (pCameraControl != NULL)
             pCameraControl->Release();
-        printf("This device does not support IAMCameraControl\n");
+        printf("UVCCameraLibrary.getAuto():This device does not support IAMCameraControl\n");
         return false;
     }
     else {
@@ -786,37 +865,38 @@ bool UVCCameraLibrary::getAuto(CameraControlProperty prop)
                 return false;
         }
         else {
-            printf("This device does not support PTZControl\n");
+            printf("UVCCameraLibrary.getAuto():This device does not support PTZControl\n");
             return false;
         }
     }
 }
-long UVCCameraLibrary::getVal(CameraControlProperty prop)
+UVCProp UVCCameraLibrary::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 {
     HRESULT hr;
+    UVCProp result;
     IAMCameraControl *pCameraControl = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
         if (pCameraControl != NULL)
             pCameraControl->Release();
-        printf("This device does not support IAMCameraControl\n");
-        return 0;
+        printf("UVCCameraLibrary.getVal():This device does not support IAMCameraControl\n");
+        return result;
     }
     else {
-        long Min, Max, Step, Default, Flags, Val;
+        //long Min, Max, Step, Default, Flags, Val;
 
         // Get the range and default values
-        hr = pCameraControl->GetRange(prop, &Min, &Max, &Step, &Default, &Flags);
-        hr = pCameraControl->Get(prop, &Val, &Flags);
+        hr = pCameraControl->GetRange(prop, &result.Min, &result.Max, &result.Step, &result.Default, &result.Flags);
+        hr = pCameraControl->Get(prop, &result.Val, &result.Flags);
         if (pCameraControl != NULL)
             pCameraControl->Release();
         if (SUCCEEDED(hr)) {
-            return Val - Min;
+            return result; //这里原来是Val-Min,改成直接返回就行
         }
         else {
-            printf("This device does not support PTZControl\n");
-            return 0;
+            printf("UVCCameraLibrary.getVal():This device does not support PTZControl\n");
+            return result;
         }
     }
 }
@@ -828,7 +908,7 @@ HRESULT UVCCameraLibrary::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isA
     hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
-        printf("UVCCameraLibrary::setAuto():This device does not support IAMCameraControl\n");
+        printf("UVCCameraLibrary.setAuto():This device does not support IAMCameraControl\n");
     }
     else {
         long Min, Max, Step, Default, Flags, Val;
@@ -843,7 +923,34 @@ HRESULT UVCCameraLibrary::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isA
                 hr = pCameraControl->Set(prop, Val, CameraControl_Flags_Manual);
         }
         else {
-            printf("UVCCameraLibrary::setAuto():This device does not support PTZControl\n");
+            printf("UVCCameraLibrary.setAuto():This device does not support PTZControl\n");
+        }
+    }
+    if (pCameraControl != NULL)
+        pCameraControl->Release();
+    return hr;
+}
+
+HRESULT UVCCameraLibrary::setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val)
+{
+    HRESULT hr;
+    IAMCameraControl *pCameraControl = 0;
+    hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
+    if (FAILED(hr)) {
+        // The device does not support IAMCameraControl
+        printf("UVCCameraLibrary.setVal():This device does not support IAMCameraControl\n");
+    }
+    else {
+        long Min, Max, Step, Default, Flags, Val;
+
+        // Get the range and default values
+        hr = pCameraControl->GetRange(prop, &Min, &Max, &Step, &Default, &Flags);
+        if (SUCCEEDED(hr)) {
+            hr = pCameraControl->Get(prop, &Val, &Flags);
+            hr = pCameraControl->Set(prop, val, Flags);
+        }
+        else {
+            printf("UVCCameraLibrary.setVal():This device does not support PTZControl\n");
         }
     }
     if (pCameraControl != NULL)

@@ -20,8 +20,11 @@ TEST(UVCCameraLibrary, listDevices)
     UVCCameraLibrary uvc;
 
     if (uvc.connectDevice("C920")) {
+        UVCProp focus = uvc.getFocus();
+        UVCProp exposure = uvc.getExposure();
         uvc.setAutoFocus(false);
         uvc.setAutoExposure(false);
         uvc.setLowLightCompensation(false);
+        uvc.setExposure(-7);
     }
 }
