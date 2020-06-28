@@ -21,6 +21,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #    include <tchar.h>
 #    include "DShow.h"
+//#    include "atlstr.h"
 //#include "strmif.h"
 //#include "Aviriff.h"
 //#include "dvdmedia.h"
@@ -54,9 +55,45 @@ DevicesHelper::~DevicesHelper()
 {
 }
 
+int DevicesHelper::getIndexWithName(std::string name, bool isRegex, bool isWarning)
+{
+    for (int i = 0; i < devList.size(); i++) {
+        if (isRegex) {
+            const std::regex pattern(name);
+            if (std::regex_search(devList.at(i), pattern)) {
+                return i;
+            }
+        }
+        else {
+            if (devList.at(i) == name) {
+                return i;
+            }
+        }
+    }
+    if (isWarning)
+        LogW("DevicesHelper.getIndexWithName():未能找到摄像机 %s ,当前系统相机个数%d!", name.c_str(), devList.size());
+    return -1;
+}
+
+std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::string name[], int length)
+{
+    //要打开的设备列表
+    std::map<int, std::string> openDevList;
+    for (int i = 0; i < length; i++) {
+        int index = getIndexWithName(name[i]);
+        if (index < 0) {
+            LogW("DevicesHelper.getDevListWithNames():未能找到摄像机 %s!", name[i].c_str());
+        }
+        else {
+            openDevList[index] = name[i];
+        }
+    }
+    return openDevList;
+}
+
 #if defined(_WIN32) || defined(_WIN64)
 
-/// <summary> 用于com初始化的计数. </summary>
+// 用于com初始化的计数.
 int comInitCount = 0;
 
 bool comInit()
@@ -96,48 +133,11 @@ bool comUnInit()
 
     return false;
 }
-#endif
 
-int DevicesHelper::getIndexWithName(std::string name, bool isRegex, bool isWarning)
-{
-    for (int i = 0; i < devList.size(); i++) {
-        if (isRegex) {
-            const std::regex pattern(name);
-            if (std::regex_search(devList.at(i), pattern)) {
-                return i;
-            }
-        }
-        else {
-            if (devList.at(i) == name) {
-                return i;
-            }
-        }
-    }
-    if (isWarning)
-        LogW("DevicesHelper.getIndexWithName():未能找到摄像机 %s ,当前系统相机个数%d!", name.c_str(), devList.size());
-    return -1;
-}
-
-std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::string name[], int length)
-{
-    //要打开的设备列表
-    std::map<int, std::string> openDevList;
-    for (int i = 0; i < length; i++) {
-        int index = getIndexWithName(name[i]);
-        if (index < 0) {
-            LogW("DevicesHelper.getDevListWithNames():未能找到摄像机 %s!", name[i].c_str());
-        }
-        else {
-            openDevList[index] = name[i];
-        }
-    }
-    return openDevList;
-}
-
-#if defined(_WIN32) || defined(_WIN64)
-/// <summary> 设备名. </summary>
+//设备名.
 char deviceNames[20][255];
 std::mutex mut;
+
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
     mut.lock();
@@ -222,6 +222,11 @@ int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
     mut.unlock();
     return deviceCounter;
 }
+
+void setCameraProperties(std::string cameraName)
+{
+}
+
 #elif __linux
 
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)

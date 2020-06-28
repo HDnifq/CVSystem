@@ -33,13 +33,13 @@ class CoolTime
     {
     }
 
-    /** CD时间，以秒计算. */
+    // CD时间，以秒计算.(cooldown)
     float CD;
 
-    /** 是否开启了冷却计时. */
+    // 是否开启了冷却计时.
     bool isStart;
 
-    /** cd结束的次数. */
+    // cd结束的次数.
     int count;
 
     /**

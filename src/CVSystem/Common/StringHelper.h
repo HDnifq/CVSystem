@@ -13,7 +13,7 @@ class StringHelper
 {
   public:
     /**
-     * wstring转成string.
+     * wstring转成string.(未规定string的编码,这个函数不好)
      *
      * @author daixian
      * @date 2017/7/18
@@ -25,7 +25,7 @@ class StringHelper
     static std::string ws2s(const std::wstring& ws);
 
     /**
-     * string转成wstring.
+     * string转成wstring.(未规定string的编码,这个函数不好)
      *
      * @author daixian
      * @date 2017/7/18

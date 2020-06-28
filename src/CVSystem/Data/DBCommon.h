@@ -23,10 +23,10 @@ class DBCommon
         return m_pInstance;
     }
 
-    /** 数据库文件路径. */
+    // 数据库文件路径.
     std::string dbPath;
 
-    /** 数据库加密的key. */
+    // 数据库加密的key.
     std::string key;
 
     /**

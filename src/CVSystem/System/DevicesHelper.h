@@ -89,6 +89,7 @@ class DevicesHelper
      */
     int listDevices();
 
+  private:
     /**
      * (静态方法)列出设备列表.
      *

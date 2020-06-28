@@ -167,8 +167,29 @@ TEST(Math, cross)
 //    m[cv::Size{1, 2}] = 3;
 //}
 
+void saveToCPP(cv::Mat image)
+{
+    // 图片文件数据.
+    std::vector<unsigned char> data = {};
+    cv::imencode(".png", image, data);
+    FILE* fp = fopen("imageSave.cpp", "w");
+    fprintf(fp, " std::vector<unsigned char> data = { ");
+    for (size_t i = 0; i < data.size(); i++) {
+        fprintf(fp, "0x%02X,", data[i]);
+        if (i % 100 == 0) {
+            fprintf(fp, "\\\n");
+        }
+    }
+    fseek(fp, -1L, SEEK_CUR);
+    fprintf(fp, "};");
+    fclose(fp);
+}
+
 TEST(Math, eye)
 {
     cv::Mat mat44 = cv::Mat::eye(4, 4, CV_64F);
     ASSERT_TRUE(mat44.size() == cv::Size(4, 4));
+
+    cv::Mat sbiamge = cv::Mat(1080, 1920, CV_8UC3, cv::Scalar(0, 0, 0));
+    saveToCPP(sbiamge);
 }
