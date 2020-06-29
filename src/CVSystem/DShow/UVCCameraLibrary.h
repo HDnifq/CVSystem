@@ -169,6 +169,9 @@ class UVCCameraLibrary
     //disconnect device
     void disconnectDevice();
 
+    //得到各种配置
+    std::vector<VIDEO_STREAM_CONFIG_CAPS> getCapabilities();
+
     //camera control functions
     //pan,tilt
     HRESULT movePanOneLeft(int pan);
@@ -196,7 +199,7 @@ class UVCCameraLibrary
     //设置低亮度补偿
     HRESULT setLowLightCompensation(bool al);
 
-    //stop moving, zooming, focusing ,曝光
+    //stop moving, zooming, focusing, 曝光
     HRESULT stopMoving();
     HRESULT stopZooming();
     HRESULT stopFocusing();
@@ -234,7 +237,7 @@ class UVCCameraLibrary
     // to select a video input device
     ICreateDevEnum *pCreateDevEnum = NULL;
     IEnumMoniker *pEnumMoniker = NULL;
-    IMoniker *pMoniker = NULL;
+
     ULONG nFetched = 0;
     void getEnumMoniker();
 

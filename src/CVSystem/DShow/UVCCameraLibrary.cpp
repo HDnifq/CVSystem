@@ -1,7 +1,6 @@
-﻿#include "UVCCameraLibrary.h"
-//#include "Mtype.h"
-
-#if defined(_WIN32) || defined(_WIN64)
+﻿#if defined(_WIN32) || defined(_WIN64)
+#    include "UVCCameraLibrary.h"
+#    include "baseclasses/mtype.h"
 
 namespace dxlib {
 
@@ -436,7 +435,7 @@ bool UVCCameraLibrary::connectDevice(const std::string &deviceName)
 
     if (pEnumMoniker == NULL)
         return false;
-
+    IMoniker *pMoniker = NULL;
     while (pEnumMoniker->Next(1, &pMoniker, &nFetched) == S_OK) {
         IPropertyBag *pPropertyBag;
         char devname[256];
@@ -454,63 +453,11 @@ bool UVCCameraLibrary::connectDevice(const std::string &deviceName)
 
         //如果名字符合(输入的名字包含在实际设备名中)
         if (std::string(devname).find(deviceName) != std::string::npos) {
-            pMoniker->BindToObject(0, 0, IID_IBaseFilter,
-                                   (void **)&pDeviceFilter);
+            pMoniker->BindToObject(0, 0, IID_IBaseFilter, (void **)&pDeviceFilter);
             if (pDeviceFilter != NULL) {
-                IAMStreamConfig *pAMStreamConfg;
-                HRESULT hr = E_FAIL;
-                //首先在filter上查找Interface
-                hr = pDeviceFilter->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
-                if (SUCCEEDED(hr)) {
-                    return true;
-                }
-                else {
-                    //如果找不到那么遍历filter的Pin来查找interface
-                    IEnumPins *pEnum = 0;
-                    if (FAILED(pDeviceFilter->EnumPins(&pEnum))) {
-                        return false;
-                    }
-                    // Query every pin for the interface.
-                    IPin *pPin = 0;
-                    while (S_OK == pEnum->Next(1, &pPin, 0)) {
-
-                        hr = pPin->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
-                        pPin->Release();
-                        if (SUCCEEDED(hr)) {
-                            break;
-                        }
-                    }
-                    pEnum->Release();
-
-                    int iCount = 0, iSize = 0;
-                    hr = pAMStreamConfg->GetNumberOfCapabilities(&iCount, &iSize);
-                    // Check the size to make sure we pass in the correct structure.
-                    if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS)) {
-                        // Use the video capabilities structure.
-                        for (int iFormat = 0; iFormat < iCount; iFormat++) {
-                            VIDEO_STREAM_CONFIG_CAPS scc; //这个是媒体信息
-                            AM_MEDIA_TYPE *pmtConfig;
-                            hr = pAMStreamConfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE *)&scc);
-                            if (SUCCEEDED(hr)) {
-                                if ((pmtConfig->majortype == MEDIATYPE_Video) &&
-                                    (pmtConfig->subtype == MEDIASUBTYPE_RGB24) &&
-                                    (pmtConfig->formattype == FORMAT_VideoInfo) &&
-                                    (pmtConfig->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
-                                    (pmtConfig->pbFormat != NULL)) {
-                                    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER *)pmtConfig->pbFormat;
-                                    pVih->bmiHeader.biWidth = 1280;
-                                    pVih->bmiHeader.biHeight = 720;
-                                    pVih->bmiHeader.biSizeImage = DIBSIZE(pVih->bmiHeader);
-                                    hr = pAMStreamConfg->SetFormat(pmtConfig);
-                                }
-
-                                //DeleteMediaType(pmtConfig);
-                            }
-                        }
-                    }
-
-                    return true;
-                }
+                pMoniker->Release();
+                pPropertyBag->Release();
+                return true;
             }
         }
 
@@ -527,6 +474,66 @@ void UVCCameraLibrary::disconnectDevice()
     if (pDeviceFilter != NULL)
         pDeviceFilter->Release();
     pDeviceFilter = NULL;
+}
+
+std::vector<VIDEO_STREAM_CONFIG_CAPS> UVCCameraLibrary::getCapabilities()
+{
+    std::vector<VIDEO_STREAM_CONFIG_CAPS> result;
+    if (pDeviceFilter != NULL) {
+
+        IAMStreamConfig *pAMStreamConfg;
+        HRESULT hr = E_FAIL;
+        //首先在filter上查找Interface
+        hr = pDeviceFilter->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
+        if (!SUCCEEDED(hr)) {
+            //如果找不到那么遍历filter的Pin来查找interface
+            IEnumPins *pEnum = 0;
+            if (SUCCEEDED(pDeviceFilter->EnumPins(&pEnum))) {
+                // Query every pin for the interface.
+                IPin *pPin = 0;
+                while (S_OK == pEnum->Next(1, &pPin, 0)) {
+                    hr = pPin->QueryInterface(IID_IAMStreamConfig, (void **)&pAMStreamConfg);
+                    pPin->Release();
+                    if (SUCCEEDED(hr)) {
+                        break;
+                    }
+                }
+                pEnum->Release();
+            }
+        }
+        //如果成功的找到了Interface
+        if (SUCCEEDED(hr)) {
+            int iCount = 0, iSize = 0;
+            hr = pAMStreamConfg->GetNumberOfCapabilities(&iCount, &iSize);
+            // Check the size to make sure we pass in the correct structure.
+            if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS)) {
+                // Use the video capabilities structure.
+                for (int iFormat = 0; iFormat < iCount; iFormat++) {
+                    VIDEO_STREAM_CONFIG_CAPS scc; //这个是媒体信息
+                    AM_MEDIA_TYPE *pmtConfig;
+                    hr = pAMStreamConfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE *)&scc);
+                    //pAMStreamConfg->GetFormat(&pmtConfig);
+                    if (SUCCEEDED(hr)) {
+                        result.push_back(scc);
+                        /*   if ((pmtConfig->majortype == MEDIATYPE_Video) &&
+                            (pmtConfig->subtype == MEDIASUBTYPE_RGB24) &&
+                            (pmtConfig->formattype == FORMAT_VideoInfo) &&
+                            (pmtConfig->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
+                            (pmtConfig->pbFormat != NULL)) {
+                            VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER *)pmtConfig->pbFormat;
+                            pVih->bmiHeader.biWidth = 1280;
+                            pVih->bmiHeader.biHeight = 720;
+                            pVih->bmiHeader.biSizeImage = DIBSIZE(pVih->bmiHeader);
+                            hr = pAMStreamConfg->SetFormat(pmtConfig);
+                        }*/
+                        DeleteMediaType(pmtConfig);
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 /*
@@ -747,6 +754,7 @@ HRESULT UVCCameraLibrary::moveTo(int pan, int tilt, int zoom)
         pCameraControl->Release();
     return hr;
 }
+
 //move home
 HRESULT UVCCameraLibrary::moveHome()
 {

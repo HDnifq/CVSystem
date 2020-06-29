@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "CVSystem/System/DevicesHelper.h"
-#include "CVSystem/System/UVCCameraLibrary.h"
+#include "CVSystem/DShow/UVCCameraLibrary.h"
 
 using namespace dxlib;
 
@@ -20,6 +20,7 @@ TEST(UVCCameraLibrary, listDevices)
     UVCCameraLibrary uvc;
 
     if (uvc.connectDevice("C920")) {
+        auto caps = uvc.getCapabilities();
         UVCProp focus = uvc.getFocus();
         UVCProp exposure = uvc.getExposure();
         uvc.setAutoFocus(false);

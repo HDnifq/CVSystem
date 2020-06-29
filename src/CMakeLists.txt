@@ -55,6 +55,10 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+
+if(WIN32)
+    add_subdirectory(DShow)
+endif()
 add_subdirectory(CVSystem)
 
 # if(CVSYSTEM_BUILD_TESTS)

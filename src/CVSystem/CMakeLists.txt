@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SUB_NAME "CVSystem")
 
-add_definitions(-D UNICODE)
+# 定义UNICODE会是TCHAR为wchar
+# add_definitions(-D UNICODE)
 if(WIN32)
     add_definitions(-D _WINDOWS)
     add_definitions(-D _USERDLL)
@@ -99,8 +100,16 @@ find_package (Threads)
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CONAN_LIBS = ${CONAN_LIBS}")
 
-target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR} ${PROJECT_LIB_DIR})
+target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
+if(WIN32)
+    target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../DShow)
+endif()
+
 target_link_libraries(${SUB_NAME} PRIVATE ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+if(WIN32)
+    #链接show的库
+    target_link_libraries(${SUB_NAME} PRIVATE baseclasses)
+endif()
 
 # 全都安装到根目录
 install(TARGETS ${SUB_NAME}
