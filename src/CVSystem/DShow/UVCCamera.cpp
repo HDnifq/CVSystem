@@ -1,5 +1,5 @@
 ﻿#if defined(_WIN32) || defined(_WIN64)
-#    include "UVCCameraLibrary.h"
+#    include "UVCCamera.h"
 #    include "baseclasses/mtype.h"
 
 namespace dxlib {
@@ -289,12 +289,12 @@ UVCXU::get_PropertyRange(
 
 /************************************************************End of UVCXU class******************************************************************/
 
-/********************************************************Implementation of UVCCameraLibrary class************************************************/
+/********************************************************Implementation of UVCCamera class************************************************/
 
 /*
 * Constructor of the class
 */
-UVCCameraLibrary::UVCCameraLibrary()
+UVCCamera::UVCCamera()
 {
     // initialize COM
     CoInitialize(0);
@@ -303,7 +303,7 @@ UVCCameraLibrary::UVCCameraLibrary()
 /*
 * Destructor of the class
 */
-UVCCameraLibrary::~UVCCameraLibrary()
+UVCCamera::~UVCCamera()
 {
     disconnectDevice();
 
@@ -317,7 +317,7 @@ UVCCameraLibrary::~UVCCameraLibrary()
     CoUninitialize();
 }
 
-void UVCCameraLibrary::listDevices(std::vector<std::string> &devs)
+void UVCCamera::listDevices(std::vector<std::string> &devs)
 {
     int nDevices = 0;
     IBaseFilter *pDeviceFilter = NULL;
@@ -394,7 +394,7 @@ void UVCCameraLibrary::listDevices(std::vector<std::string> &devs)
 * get moniker enum
 * one moniker corresponds to one camera
 */
-void UVCCameraLibrary::getEnumMoniker()
+void UVCCamera::getEnumMoniker()
 {
     // Create CreateDevEnum to list device
     CoCreateInstance(CLSID_SystemDeviceEnum, NULL, CLSCTX_INPROC_SERVER,
@@ -413,7 +413,7 @@ void UVCCameraLibrary::getEnumMoniker()
     pEnumMoniker->Reset();
 }
 
-bool UVCCameraLibrary::connectDevice(const std::string &deviceName)
+bool UVCCamera::connectDevice(const std::string &deviceName)
 {
     getEnumMoniker();
 
@@ -452,7 +452,7 @@ bool UVCCameraLibrary::connectDevice(const std::string &deviceName)
     return false;
 }
 
-void UVCCameraLibrary::disconnectDevice()
+void UVCCamera::disconnectDevice()
 {
     //release directshow filter
     if (pDeviceFilter != NULL)
@@ -460,7 +460,7 @@ void UVCCameraLibrary::disconnectDevice()
     pDeviceFilter = NULL;
 }
 
-std::vector<VIDEO_STREAM_CONFIG_CAPS> UVCCameraLibrary::getCapabilities()
+std::vector<VIDEO_STREAM_CONFIG_CAPS> UVCCamera::getCapabilities()
 {
     std::vector<VIDEO_STREAM_CONFIG_CAPS> result;
     if (pDeviceFilter != NULL) {
@@ -523,7 +523,7 @@ std::vector<VIDEO_STREAM_CONFIG_CAPS> UVCCameraLibrary::getCapabilities()
 * @pan: (in) step of the panning
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::movePanOneLeft(int pan)
+HRESULT UVCCamera::movePanOneLeft(int pan)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_PAN_RELATIVE, -pan);
 }
@@ -533,7 +533,7 @@ HRESULT UVCCameraLibrary::movePanOneLeft(int pan)
 * @pan: (in) step of the panning
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::movePanOneRight(int pan)
+HRESULT UVCCamera::movePanOneRight(int pan)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_PAN_RELATIVE, pan);
 }
@@ -543,7 +543,7 @@ HRESULT UVCCameraLibrary::movePanOneRight(int pan)
 * @tilt: (in) step of the tilting
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::moveTiltOneTop(int tilt)
+HRESULT UVCCamera::moveTiltOneTop(int tilt)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_TILT_RELATIVE, tilt);
 }
@@ -553,7 +553,7 @@ HRESULT UVCCameraLibrary::moveTiltOneTop(int tilt)
 * @tilt: (in) step of the tilting
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::moveTiltOneBottom(int tilt)
+HRESULT UVCCamera::moveTiltOneBottom(int tilt)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_TILT_RELATIVE, -tilt);
 }
@@ -584,7 +584,7 @@ HRESULT anglueDownRight(int pan, int tilt)
 * @tilt: (in) step of the zooming
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::zoomOneIn(int zoom)
+HRESULT UVCCamera::zoomOneIn(int zoom)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_ZOOM_RELATIVE, zoom);
 }
@@ -594,7 +594,7 @@ HRESULT UVCCameraLibrary::zoomOneIn(int zoom)
 * @tilt: (in) step of the zooming
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::zoomOneOut(int zoom)
+HRESULT UVCCamera::zoomOneOut(int zoom)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_ZOOM_RELATIVE, -zoom);
 }
@@ -605,7 +605,7 @@ HRESULT UVCCameraLibrary::zoomOneOut(int zoom)
 * @tilt: (in) step of the focusing
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::focusOneIn(int focus)
+HRESULT UVCCamera::focusOneIn(int focus)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_FOCUS_RELATIVE, focus);
 }
@@ -615,7 +615,7 @@ HRESULT UVCCameraLibrary::focusOneIn(int focus)
 * @tilt: (in) step of the focusing
 * @return: HRESULT structure if success returns S_OK
 */
-HRESULT UVCCameraLibrary::focusOneOut(int focus)
+HRESULT UVCCamera::focusOneOut(int focus)
 {
     return moveCamera(KSPROPERTY_CAMERACONTROL_FOCUS_RELATIVE, -focus);
 }
@@ -626,7 +626,7 @@ HRESULT UVCCameraLibrary::focusOneOut(int focus)
 * Use KSPROPERTIES for continuous movement
 * @return: if success returns S_OK
 */
-HRESULT UVCCameraLibrary::moveCamera(KSPROPERTY_VIDCAP_CAMERACONTROL prop, int step)
+HRESULT UVCCamera::moveCamera(KSPROPERTY_VIDCAP_CAMERACONTROL prop, int step)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
@@ -663,7 +663,7 @@ HRESULT UVCCameraLibrary::moveCamera(KSPROPERTY_VIDCAP_CAMERACONTROL prop, int s
 * the range of the pan, tilt, zoom values are like this -1 t0 1
 * but the available properties are like 0 to 255
 */
-HRESULT UVCCameraLibrary::moveTo(int pan, int tilt, int zoom)
+HRESULT UVCCamera::moveTo(int pan, int tilt, int zoom)
 {
     HRESULT hr;
     hr = stopMoving();
@@ -719,7 +719,7 @@ HRESULT UVCCameraLibrary::moveTo(int pan, int tilt, int zoom)
 }
 
 //move home
-HRESULT UVCCameraLibrary::moveHome()
+HRESULT UVCCamera::moveHome()
 {
     HRESULT hr;
     hr = stopMoving();
@@ -765,121 +765,121 @@ HRESULT UVCCameraLibrary::moveHome()
     return hr;
 }
 
-bool UVCCameraLibrary::getAutoFocus()
+bool UVCCamera::getAutoFocus()
 {
     return getAuto(KSPROPERTY_CAMERACONTROL_FOCUS);
 }
 
-bool UVCCameraLibrary::getAutoExposure()
+bool UVCCamera::getAutoExposure()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_EXPOSURE);
     return result.isAuto();
 }
 
-bool UVCCameraLibrary::getLowLightCompensation()
+bool UVCCamera::getLowLightCompensation()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY);
     return result.isAuto();
 }
 
-UVCProp UVCCameraLibrary::getPan()
+UVCProp UVCCamera::getPan()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_PAN);
     result.name = "PAN";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getTilt()
+UVCProp UVCCamera::getTilt()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_TILT);
     result.name = "TILT";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getZoom()
+UVCProp UVCCamera::getZoom()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_ZOOM);
     result.name = "ZOOM";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getBrightness()
+UVCProp UVCCamera::getBrightness()
 {
     UVCProp result = getVal(VideoProcAmp_Brightness);
     result.name = "Brightness";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getContrast()
+UVCProp UVCCamera::getContrast()
 {
     UVCProp result = getVal(VideoProcAmp_Contrast);
     result.name = "Contrast";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getHue()
+UVCProp UVCCamera::getHue()
 {
     UVCProp result = getVal(VideoProcAmp_Hue);
     result.name = "Hue";
     return result;
 }
-UVCProp UVCCameraLibrary::getSaturation()
+UVCProp UVCCamera::getSaturation()
 {
     UVCProp result = getVal(VideoProcAmp_Saturation);
     result.name = "Saturation";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getSharpness()
+UVCProp UVCCamera::getSharpness()
 {
     UVCProp result = getVal(VideoProcAmp_Sharpness);
     result.name = "Sharpness";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getGamma()
+UVCProp UVCCamera::getGamma()
 {
     UVCProp result = getVal(VideoProcAmp_Gamma);
     result.name = "Gamma";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getColorEnable()
+UVCProp UVCCamera::getColorEnable()
 {
     UVCProp result = getVal(VideoProcAmp_ColorEnable);
     result.name = "ColorEnable";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getWhiteBalance()
+UVCProp UVCCamera::getWhiteBalance()
 {
     UVCProp result = getVal(VideoProcAmp_WhiteBalance);
     result.name = "WhiteBalance";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getBacklightCompensation()
+UVCProp UVCCamera::getBacklightCompensation()
 {
     UVCProp result = getVal(VideoProcAmp_BacklightCompensation);
     result.name = "BacklightCompensation";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getGain()
+UVCProp UVCCamera::getGain()
 {
     UVCProp result = getVal(VideoProcAmp_Gain);
     result.name = "Gain";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getFocus()
+UVCProp UVCCamera::getFocus()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_FOCUS);
     result.name = "FOCUS";
     return result;
 }
 
-UVCProp UVCCameraLibrary::getExposure()
+UVCProp UVCCamera::getExposure()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_EXPOSURE);
     result.name = "EXPOSURE";
@@ -891,19 +891,19 @@ UVCProp UVCCameraLibrary::getExposure()
 * @af: if true set as Auto otherwise set as Manual
 * @return: if success returns S_OK
 */
-HRESULT UVCCameraLibrary::setAutoFocus(bool af)
+HRESULT UVCCamera::setAutoFocus(bool af)
 {
     stopFocusing();
     return setAuto(KSPROPERTY_CAMERACONTROL_FOCUS, af);
 }
 
-HRESULT UVCCameraLibrary::setAutoExposure(bool ae)
+HRESULT UVCCamera::setAutoExposure(bool ae)
 {
     stopExposuring();
     return setAuto(KSPROPERTY_CAMERACONTROL_EXPOSURE, ae);
 }
 
-HRESULT UVCCameraLibrary::setLowLightCompensation(bool al)
+HRESULT UVCCamera::setLowLightCompensation(bool al)
 {
     // 关于低亮度补偿的设置
     // https://sourceforge.net/p/directshownet/discussion/460697/thread/562ef6cf/
@@ -914,67 +914,67 @@ HRESULT UVCCameraLibrary::setLowLightCompensation(bool al)
     return setAuto(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY, al);
 }
 
-HRESULT UVCCameraLibrary::setBrightness(long val)
+HRESULT UVCCamera::setBrightness(long val)
 {
     return setVal(VideoProcAmp_Brightness, val);
 }
 
-HRESULT UVCCameraLibrary::setContrast(long val)
+HRESULT UVCCamera::setContrast(long val)
 {
     return setVal(VideoProcAmp_Contrast, val);
 }
 
-HRESULT UVCCameraLibrary::setHue(long val)
+HRESULT UVCCamera::setHue(long val)
 {
     return setVal(VideoProcAmp_Hue, val);
 }
 
-HRESULT UVCCameraLibrary::setSaturation(long val)
+HRESULT UVCCamera::setSaturation(long val)
 {
     return setVal(VideoProcAmp_Saturation, val);
 }
 
-HRESULT UVCCameraLibrary::setSharpness(long val)
+HRESULT UVCCamera::setSharpness(long val)
 {
     return setVal(VideoProcAmp_Sharpness, val);
 }
 
-HRESULT UVCCameraLibrary::setGamma(long val)
+HRESULT UVCCamera::setGamma(long val)
 {
     return setVal(VideoProcAmp_Gamma, val);
 }
 
-HRESULT UVCCameraLibrary::setColorEnable(long val)
+HRESULT UVCCamera::setColorEnable(long val)
 {
     return setVal(VideoProcAmp_ColorEnable, val);
 }
 
-HRESULT UVCCameraLibrary::setWhiteBalance(long val)
+HRESULT UVCCamera::setWhiteBalance(long val)
 {
     return setVal(VideoProcAmp_WhiteBalance, val);
 }
 
-HRESULT UVCCameraLibrary::setBacklightCompensation(long val)
+HRESULT UVCCamera::setBacklightCompensation(long val)
 {
     return setVal(VideoProcAmp_BacklightCompensation, val);
 }
 
-HRESULT UVCCameraLibrary::setGain(long val)
+HRESULT UVCCamera::setGain(long val)
 {
     return setVal(VideoProcAmp_Gain, val);
 }
 
-HRESULT UVCCameraLibrary::setFocus(long val)
+HRESULT UVCCamera::setFocus(long val)
 {
     return setVal(KSPROPERTY_CAMERACONTROL_FOCUS, val);
 }
 
-HRESULT UVCCameraLibrary::setExposure(long val)
+HRESULT UVCCamera::setExposure(long val)
 {
     return setVal(KSPROPERTY_CAMERACONTROL_EXPOSURE, val);
 }
 
-bool UVCCameraLibrary::getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
+bool UVCCamera::getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
@@ -983,7 +983,7 @@ bool UVCCameraLibrary::getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
         // The device does not support IAMCameraControl
         if (pCameraControl != NULL)
             pCameraControl->Release();
-        printf("UVCCameraLibrary.getAuto():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.getAuto():This device does not support IAMCameraControl\n");
         return false;
     }
     else {
@@ -1000,13 +1000,13 @@ bool UVCCameraLibrary::getAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
                 return false;
         }
         else {
-            printf("UVCCameraLibrary.getAuto():This device does not support PTZControl\n");
+            printf("UVCCamera.getAuto():This device does not support PTZControl\n");
             return false;
         }
     }
 }
 
-UVCProp UVCCameraLibrary::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
+UVCProp UVCCamera::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 {
     UVCProp result;
     IAMCameraControl *pCameraControl = 0;
@@ -1015,7 +1015,7 @@ UVCProp UVCCameraLibrary::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
         // The device does not support IAMCameraControl
         if (pCameraControl != NULL)
             pCameraControl->Release();
-        printf("UVCCameraLibrary.getVal():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.getVal():This device does not support IAMCameraControl\n");
         return result;
     }
     else {
@@ -1030,13 +1030,13 @@ UVCProp UVCCameraLibrary::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
             return result; //这里原来是Val-Min,改成直接返回就行
         }
         else {
-            printf("UVCCameraLibrary.getVal():This device does not support PTZControl\n");
+            printf("UVCCamera.getVal():This device does not support PTZControl\n");
             return result;
         }
     }
 }
 
-UVCProp UVCCameraLibrary::getVal(VideoProcAmpProperty prop)
+UVCProp UVCCamera::getVal(VideoProcAmpProperty prop)
 {
     HRESULT hr;
     UVCProp result;
@@ -1046,7 +1046,7 @@ UVCProp UVCCameraLibrary::getVal(VideoProcAmpProperty prop)
         // The device does not support IAMCameraControl
         if (pProcAmp != NULL)
             pProcAmp->Release();
-        printf("UVCCameraLibrary.getVal():This device does not support IAMVideoProcAmp\n");
+        printf("UVCCamera.getVal():This device does not support IAMVideoProcAmp\n");
         return result;
     }
     else {
@@ -1061,20 +1061,20 @@ UVCProp UVCCameraLibrary::getVal(VideoProcAmpProperty prop)
             return result; //这里原来是Val-Min,改成直接返回就行
         }
         else {
-            printf("UVCCameraLibrary.getVal():This device does not support PTZControl\n");
+            printf("UVCCamera.getVal():This device does not support PTZControl\n");
             return result;
         }
     }
 }
 
-HRESULT UVCCameraLibrary::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isAuto)
+HRESULT UVCCamera::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isAuto)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
-        printf("UVCCameraLibrary.setAuto():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.setAuto():This device does not support IAMCameraControl\n");
     }
     else {
         long Min, Max, Step, Default, Flags, Val;
@@ -1089,7 +1089,7 @@ HRESULT UVCCameraLibrary::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isA
                 hr = pCameraControl->Set(prop, Val, CameraControl_Flags_Manual);
         }
         else {
-            printf("UVCCameraLibrary.setAuto():This device does not support PTZControl\n");
+            printf("UVCCamera.setAuto():This device does not support PTZControl\n");
         }
     }
     if (pCameraControl != NULL)
@@ -1097,14 +1097,14 @@ HRESULT UVCCameraLibrary::setAuto(KSPROPERTY_VIDCAP_CAMERACONTROL prop, bool isA
     return hr;
 }
 
-HRESULT UVCCameraLibrary::setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val)
+HRESULT UVCCamera::setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
-        printf("UVCCameraLibrary.setVal():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.setVal():This device does not support IAMCameraControl\n");
     }
     else {
         long Min, Max, Step, Default, Flags, Val;
@@ -1116,7 +1116,7 @@ HRESULT UVCCameraLibrary::setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val)
             hr = pCameraControl->Set(prop, val, Flags);
         }
         else {
-            printf("UVCCameraLibrary.setVal():This device does not support PTZControl\n");
+            printf("UVCCamera.setVal():This device does not support PTZControl\n");
         }
     }
     if (pCameraControl != NULL)
@@ -1124,14 +1124,14 @@ HRESULT UVCCameraLibrary::setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val)
     return hr;
 }
 
-HRESULT UVCCameraLibrary::setVal(VideoProcAmpProperty prop, long val)
+HRESULT UVCCamera::setVal(VideoProcAmpProperty prop, long val)
 {
     HRESULT hr;
     IAMVideoProcAmp *pProcAmp = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMVideoProcAmp, (void **)&pProcAmp);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
-        printf("UVCCameraLibrary.setVal():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.setVal():This device does not support IAMCameraControl\n");
     }
     else {
         long Min, Max, Step, Default, Flags, Val;
@@ -1143,7 +1143,7 @@ HRESULT UVCCameraLibrary::setVal(VideoProcAmpProperty prop, long val)
             hr = pProcAmp->Set(prop, val, Flags);
         }
         else {
-            printf("UVCCameraLibrary.setVal():This device does not support PTZControl\n");
+            printf("UVCCamera.setVal():This device does not support PTZControl\n");
         }
     }
     if (pProcAmp != NULL)
@@ -1151,33 +1151,33 @@ HRESULT UVCCameraLibrary::setVal(VideoProcAmpProperty prop, long val)
     return hr;
 }
 
-HRESULT UVCCameraLibrary::stopMoving()
+HRESULT UVCCamera::stopMoving()
 {
     stopControling(KSPROPERTY_CAMERACONTROL_PAN_RELATIVE);
     return stopControling(KSPROPERTY_CAMERACONTROL_TILT_RELATIVE);
 }
-HRESULT UVCCameraLibrary::stopZooming()
+HRESULT UVCCamera::stopZooming()
 {
     return stopControling(KSPROPERTY_CAMERACONTROL_ZOOM_RELATIVE);
 }
-HRESULT UVCCameraLibrary::stopFocusing()
+HRESULT UVCCamera::stopFocusing()
 {
     return stopControling(KSPROPERTY_CAMERACONTROL_FOCUS_RELATIVE);
 }
 
-HRESULT UVCCameraLibrary::stopExposuring()
+HRESULT UVCCamera::stopExposuring()
 {
     return stopControling(KSPROPERTY_CAMERACONTROL_EXPOSURE_RELATIVE);
 }
 
-HRESULT UVCCameraLibrary::stopControling(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
+HRESULT UVCCamera::stopControling(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 {
     HRESULT hr;
     IAMCameraControl *pCameraControl = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl);
     if (FAILED(hr)) {
         // The device does not support IAMCameraControl
-        printf("UVCCameraLibrary.stopControling():This device does not support IAMCameraControl\n");
+        printf("UVCCamera.stopControling():This device does not support IAMCameraControl\n");
     }
     else {
         long Min, Max, Step, Default, Flags, Val;
@@ -1185,11 +1185,11 @@ HRESULT UVCCameraLibrary::stopControling(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
         // Get the range and default values
         hr = pCameraControl->GetRange(prop, &Min, &Max, &Step, &Default, &Flags);
         if (SUCCEEDED(hr)) {
-            printf("UVCCameraLibrary.stopControling():Min %d , Max %d , Step %d\n", Min, Max, Step);
+            printf("UVCCamera.stopControling():Min %d , Max %d , Step %d\n", Min, Max, Step);
             hr = pCameraControl->Set(prop, 0, KSPROPERTY_CAMERACONTROL_FLAGS_RELATIVE);
         }
         else {
-            printf("UVCCameraLibrary.stopControling():This device does not support PTZControl\n");
+            printf("UVCCamera.stopControling():This device does not support PTZControl\n");
         }
     }
     if (pCameraControl != NULL)
@@ -1198,43 +1198,43 @@ HRESULT UVCCameraLibrary::stopControling(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 }
 
 /*OSD menu tool*/
-HRESULT UVCCameraLibrary::osdMenuOpenClose()
+HRESULT UVCCamera::osdMenuOpenClose()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_OPEN_CLOSE, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuEnter()
+HRESULT UVCCamera::osdMenuEnter()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_OK, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuBack()
+HRESULT UVCCamera::osdMenuBack()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_BACK, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuUp()
+HRESULT UVCCamera::osdMenuUp()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_UP, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuDown()
+HRESULT UVCCamera::osdMenuDown()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_DOWN, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuLeft()
+HRESULT UVCCamera::osdMenuLeft()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_LEFT, ulUvcRedSize, (BYTE *)&nPos);
 }
-HRESULT UVCCameraLibrary::osdMenuRight()
+HRESULT UVCCamera::osdMenuRight()
 {
     int nPos = 0;
     return uvcxu.put_Property(UVC_1702C_XU_PLUG_CTRL_RIGHT, ulUvcRedSize, (BYTE *)&nPos);
 }
 
-HRESULT UVCCameraLibrary::checkOSDMenu()
+HRESULT UVCCamera::checkOSDMenu()
 {
     HRESULT hr = E_FAIL;
 
@@ -1261,7 +1261,7 @@ HRESULT UVCCameraLibrary::checkOSDMenu()
 
     return hr;
 }
-/********************************************************End of UVCCameraLibrary class************************************************************/
+/********************************************************End of UVCCamera class************************************************************/
 
 } // namespace dxlib
 

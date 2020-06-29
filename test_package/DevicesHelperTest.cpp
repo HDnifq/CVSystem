@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "CVSystem/System/DevicesHelper.h"
-#include "CVSystem/DShow/UVCCameraLibrary.h"
+#include "CVSystem/DShow/UVCCamera.h"
 
 using namespace dxlib;
 
@@ -12,12 +12,12 @@ TEST(DevicesHelper, listDevices)
     EXPECT_TRUE(devCount > 0);
 }
 
-TEST(UVCCameraLibrary, listDevices)
+TEST(UVCCamera, listDevices)
 {
     std::vector<std::string> list;
-    UVCCameraLibrary::listDevices(list);
+    UVCCamera::listDevices(list);
 
-    UVCCameraLibrary uvc;
+    UVCCamera uvc;
 
     if (uvc.connectDevice("C920")) {
         auto caps = uvc.getCapabilities();

@@ -153,11 +153,11 @@ class UVCProp
     }
 };
 
-class UVCCameraLibrary
+class UVCCamera
 {
   public:
-    UVCCameraLibrary();
-    ~UVCCameraLibrary();
+    UVCCamera();
+    ~UVCCamera();
 
     /**
      * 静态方法,列出设备.
