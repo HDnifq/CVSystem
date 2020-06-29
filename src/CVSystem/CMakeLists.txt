@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+﻿cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -101,13 +101,11 @@ message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CONAN_LIBS = ${CONAN_LIBS}")
 
 target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
-if(WIN32)
-    target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../DShow)
-endif()
-
 target_link_libraries(${SUB_NAME} PRIVATE ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
 if(WIN32)
     #链接show的库
+    target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../DShow)
     target_link_libraries(${SUB_NAME} PRIVATE baseclasses)
 endif()
 

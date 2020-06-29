@@ -8,8 +8,6 @@
 #if defined(_WIN32) || defined(_WIN64)
 
 #    include <windows.h>
-#    include <iostream>
-#    include <strmif.h>
 #    include <vidcap.h>
 #    include <dshow.h>
 #    include <ks.h>
@@ -144,6 +142,7 @@ class UVCProp
     long Default = 0;
     long Flags = 0;
     long Val = 0;
+    HRESULT hr = E_FAIL;
 
     bool isAuto()
     {
@@ -160,16 +159,44 @@ class UVCCameraLibrary
     UVCCameraLibrary();
     ~UVCCameraLibrary();
 
-    //static method to list video connected capture devices
+    /**
+     * 静态方法,列出设备.
+     *
+     * @author daixian
+     * @date 2020/6/29
+     *
+     * @param [out] devs The devs.
+     */
     static void listDevices(std::vector<std::string> &devs);
 
-    //connect to device with device name
+    /**
+     * 连接一个摄像头设备.
+     *
+     * @author daixian
+     * @date 2020/6/28
+     *
+     * @param  deviceName 设备名称.
+     *
+     * @returns 连接成功返回true.
+     */
     bool connectDevice(const std::string &deviceName);
 
-    //disconnect device
+    /**
+     * 关闭连接.
+     *
+     * @author daixian
+     * @date 2020/6/29
+     */
     void disconnectDevice();
 
-    //得到各种配置
+    /**
+     * 得到相机支持的分辨率等信息.
+     *
+     * @author daixian
+     * @date 2020/6/29
+     *
+     * @returns The capabilities.
+     */
     std::vector<VIDEO_STREAM_CONFIG_CAPS> getCapabilities();
 
     //camera control functions
@@ -192,12 +219,6 @@ class UVCCameraLibrary
     HRESULT moveHome();
     //move to absolute position
     HRESULT moveTo(int pan, int tilt, int zoom);
-    //set auto/manual of focus
-    HRESULT setAutoFocus(bool af);
-    //设置 自动/手动 曝光
-    HRESULT setAutoExposure(bool ae);
-    //设置低亮度补偿
-    HRESULT setLowLightCompensation(bool al);
 
     //stop moving, zooming, focusing, 曝光
     HRESULT stopMoving();
@@ -205,15 +226,44 @@ class UVCCameraLibrary
     HRESULT stopFocusing();
     HRESULT stopExposuring();
 
-    //get focus status(Auto/Manual)
+    /********* 相机属性(VideoProcAmpProperty和CameraControl) *********/
     bool getAutoFocus();
+    bool getAutoExposure();
+    bool getLowLightCompensation();
 
-    //get camera properties
     UVCProp getPan();
     UVCProp getTilt();
     UVCProp getZoom();
+
+    UVCProp getBrightness();
+    UVCProp getContrast();
+    UVCProp getHue();
+    UVCProp getSaturation();
+    UVCProp getSharpness();
+    UVCProp getGamma();
+    UVCProp getColorEnable();
+    UVCProp getWhiteBalance();
+    UVCProp getBacklightCompensation();
+    UVCProp getGain();
+
     UVCProp getFocus();
     UVCProp getExposure();
+
+    //设置 (Auto/Manual)
+    HRESULT setAutoFocus(bool af);
+    HRESULT setAutoExposure(bool ae);
+    HRESULT setLowLightCompensation(bool al);
+
+    HRESULT setBrightness(long val);
+    HRESULT setContrast(long val);
+    HRESULT setHue(long val);
+    HRESULT setSaturation(long val);
+    HRESULT setSharpness(long val);
+    HRESULT setGamma(long val);
+    HRESULT setColorEnable(long val);
+    HRESULT setWhiteBalance(long val);
+    HRESULT setBacklightCompensation(long val);
+    HRESULT setGain(long val);
 
     HRESULT setFocus(long val);
     HRESULT setExposure(long val);
@@ -254,16 +304,18 @@ class UVCCameraLibrary
 
     //get value of the property
     UVCProp getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop);
+    UVCProp getVal(VideoProcAmpProperty prop);
 
     //设置属性值
     HRESULT setVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop, long val);
+    HRESULT setVal(VideoProcAmpProperty prop, long val);
 
     /*OSD Menu 这个可能是他们自定义的功能*/
     UVCXU uvcxu;
-    ULONG ulUvcRedSize;
-    ULONG ulUvcGreenSize;
-    ULONG ulUvcBlueSize;
-    ULONG ulUvc2dSize;
+    ULONG ulUvcRedSize = 0;
+    ULONG ulUvcGreenSize = 0;
+    ULONG ulUvcBlueSize = 0;
+    ULONG ulUvc2dSize = 0;
 };
 
 } // namespace dxlib

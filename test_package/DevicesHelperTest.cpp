@@ -27,5 +27,9 @@ TEST(UVCCameraLibrary, listDevices)
         uvc.setAutoExposure(false);
         uvc.setLowLightCompensation(false);
         uvc.setExposure(-7);
+
+        UVCProp brightness = uvc.getBrightness();
+        UVCProp gain = uvc.getGain();
+        uvc.setGain(255);
     }
 }
