@@ -71,3 +71,5 @@ class CVSystemConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["CVSystem"]
+        if self.settings.os == "Windows":
+            self.cpp_info.libs.append("baseclasses")
