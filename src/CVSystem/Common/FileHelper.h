@@ -81,6 +81,22 @@ class FileHelper
      */
     static void readFile(const std::string& path, std::vector<unsigned char>& data);
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary> 分隔符. </summary>
+    ///
+    /// <remarks> Dx, 2020/4/2. </remarks>
+    ///
+    /// <returns> A std::string. </returns>
+    ///-------------------------------------------------------------------------------------------------
+    static inline std::string sep()
+    {
+#if defined(_WIN32) || defined(_WIN64)
+        return "\\";
+#else
+        return "/";
+#endif
+    }
+
     /**
      * 从一个文件夹的第一层目录去搜索文件添加到result中.
      *
