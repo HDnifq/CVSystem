@@ -43,6 +43,8 @@
 #include "dlog/dlog.h"
 #include "xuexuejson/Serialize.hpp"
 
+using namespace dxlib::cvsystem;
+
 namespace dxlib {
 
 DevicesHelper* DevicesHelper::m_pInstance = NULL;

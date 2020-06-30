@@ -12,6 +12,8 @@
 //所有的CV_CAP_PROP的数组的长度
 #define DXLIB_CAMERA_CAP_PROP_LEN 64
 
+using namespace dxlib::cvsystem;
+
 namespace dxlib {
 
 class Camera::Impl

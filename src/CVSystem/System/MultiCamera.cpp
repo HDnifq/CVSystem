@@ -2,7 +2,6 @@
 
 #include "dlog/dlog.h"
 
-#include "../Common/StringHelper.h"
 #include "../Common/CoolTime.hpp"
 #include "../Common/Event.h"
 #include "../Common/FPSCalc.hpp"
