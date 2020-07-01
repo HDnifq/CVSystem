@@ -40,6 +40,8 @@ TEST(Camera, setProp)
 
     Camera camera(camName);
     camera.open();
+    //如果打开失败这里会为null
+    ASSERT_TRUE(camera.capture != nullptr);
     ASSERT_TRUE(camera.capture->isOpened());
 
     camera.setPropWithString(cv::CAP_PROP_BRIGHTNESS, "-64");

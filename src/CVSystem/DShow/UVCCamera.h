@@ -253,10 +253,10 @@ class UVCCamera
 
     UVCProp getFocus();
     UVCProp getExposure();
+    UVCProp getLowLightCompensationProp();
 
     // 得到所有的属性信息
     std::vector<UVCProp> getAllProp();
-
 
     //设置 (Auto/Manual)
     HRESULT setAutoFocus(bool af);

@@ -782,8 +782,14 @@ bool UVCCamera::getAutoExposure()
 
 bool UVCCamera::getLowLightCompensation()
 {
+    //低亮度补偿的val为1表示使能,为0表示关闭
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY);
-    return result.isAuto();
+    if (result.Val) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 UVCProp UVCCamera::getPan()
@@ -890,6 +896,13 @@ UVCProp UVCCamera::getExposure()
     return result;
 }
 
+UVCProp UVCCamera::getLowLightCompensationProp()
+{
+    UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY);
+    result.name = "LowLightCompensation";
+    return result;
+}
+
 std::vector<UVCProp> UVCCamera::getAllProp()
 {
     std::vector<UVCProp> result;
@@ -906,6 +919,7 @@ std::vector<UVCProp> UVCCamera::getAllProp()
     result.push_back(getGain());
     result.push_back(getFocus());
     result.push_back(getExposure());
+    result.push_back(getLowLightCompensationProp());
 
     return result;
 }
@@ -934,8 +948,11 @@ HRESULT UVCCamera::setLowLightCompensation(bool al)
     // KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY maps to the Low-Light Compensation check box on the USB Video Class property page.
     // https://docs.microsoft.com/zh-cn/windows-hardware/drivers/stream/ksproperty-cameracontrol-auto-exposure-priority?redirectedfrom=MSDN
     // 它实际上是这个枚举: KSPROPERTY_VIDCAP_CAMERACONTROL
-    stopControling(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY);
-    return setAuto(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY, al);
+    //stopControling(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY);
+    if (al)
+        return setVal(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY, 1);
+    else
+        return setVal(KSPROPERTY_CAMERACONTROL_AUTO_EXPOSURE_PRIORITY, 0);
 }
 
 HRESULT UVCCamera::setBrightness(long val)
@@ -1054,7 +1071,7 @@ UVCProp UVCCamera::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
             return result; //这里原来是Val-Min,改成直接返回就行
         }
         else {
-            printf("UVCCamera.getVal():This device does not support PTZControl\n");
+            printf("UVCCamera.getVal():This device does not support Prop=%d \n", prop);
             return result;
         }
     }

@@ -19,18 +19,25 @@ TEST(UVCCamera, listDevices)
 
     UVCCamera uvc;
 
-    if (uvc.connectDevice("C920")) {
+    if (uvc.connectDevice("C920")) { //Bison
         auto caps = uvc.getCapabilities();
+        auto allCaps = uvc.getAllProp();
         UVCProp focus = uvc.getFocus();
         UVCProp exposure = uvc.getExposure();
+
+        uvc.setLowLightCompensation(false);
+        allCaps = uvc.getAllProp();
+
         uvc.setAutoFocus(false);
         uvc.setAutoExposure(false);
-        uvc.setLowLightCompensation(false);
+
         uvc.setExposure(-7);
 
         UVCProp brightness = uvc.getBrightness();
         UVCProp gain = uvc.getGain();
         uvc.setGain(255);
-        auto allCaps = uvc.getAllProp();
+        allCaps = uvc.getAllProp();
+        uvc.setLowLightCompensation(true);
+        allCaps = uvc.getAllProp();
     }
 }
