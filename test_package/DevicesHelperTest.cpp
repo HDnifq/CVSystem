@@ -31,5 +31,6 @@ TEST(UVCCamera, listDevices)
         UVCProp brightness = uvc.getBrightness();
         UVCProp gain = uvc.getGain();
         uvc.setGain(255);
+        auto allCaps = uvc.getAllProp();
     }
 }

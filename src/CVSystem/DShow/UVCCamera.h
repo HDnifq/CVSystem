@@ -19,6 +19,9 @@
 #    include <vector>
 #    include <string>
 
+// 用于json
+#    include "xuexuejson/Serialize.hpp"
+
 namespace dxlib {
 
 DEFINE_GUIDSTRUCT("A29E7641-DE04-47E3-8B2B-F4341AFF003B", PROPSETID_XU_H264);
@@ -132,7 +135,7 @@ class UVCXU // : public IKsNodeControl
  * @author daixian
  * @date 2020/6/28
  */
-class UVCProp
+class UVCProp : XUEXUE_JSON_OBJECT
 {
   public:
     std::string name;
@@ -151,6 +154,8 @@ class UVCProp
         }
         return false;
     }
+
+    XUEXUE_JSON_OBJECT_M7(name, Min, Max, Step, Default, Flags, Val)
 };
 
 class UVCCamera
@@ -248,6 +253,10 @@ class UVCCamera
 
     UVCProp getFocus();
     UVCProp getExposure();
+
+    // 得到所有的属性信息
+    std::vector<UVCProp> getAllProp();
+
 
     //设置 (Auto/Manual)
     HRESULT setAutoFocus(bool af);

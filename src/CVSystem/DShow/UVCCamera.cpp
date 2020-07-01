@@ -415,6 +415,10 @@ void UVCCamera::getEnumMoniker()
 
 bool UVCCamera::connectDevice(const std::string &deviceName)
 {
+    if (deviceName.empty()) {
+        return false;
+    }
+
     getEnumMoniker();
 
     if (pEnumMoniker == NULL)
@@ -875,14 +879,34 @@ UVCProp UVCCamera::getGain()
 UVCProp UVCCamera::getFocus()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_FOCUS);
-    result.name = "FOCUS";
+    result.name = "Focus";
     return result;
 }
 
 UVCProp UVCCamera::getExposure()
 {
     UVCProp result = getVal(KSPROPERTY_CAMERACONTROL_EXPOSURE);
-    result.name = "EXPOSURE";
+    result.name = "Exposure";
+    return result;
+}
+
+std::vector<UVCProp> UVCCamera::getAllProp()
+{
+    std::vector<UVCProp> result;
+
+    result.push_back(getBrightness());
+    result.push_back(getContrast());
+    result.push_back(getHue());
+    result.push_back(getSaturation());
+    result.push_back(getSharpness());
+    result.push_back(getGamma());
+    result.push_back(getColorEnable());
+    result.push_back(getWhiteBalance());
+    result.push_back(getBacklightCompensation());
+    result.push_back(getGain());
+    result.push_back(getFocus());
+    result.push_back(getExposure());
+
     return result;
 }
 
@@ -1038,8 +1062,8 @@ UVCProp UVCCamera::getVal(KSPROPERTY_VIDCAP_CAMERACONTROL prop)
 
 UVCProp UVCCamera::getVal(VideoProcAmpProperty prop)
 {
-    HRESULT hr;
     UVCProp result;
+    HRESULT &hr = result.hr;
     IAMVideoProcAmp *pProcAmp = 0;
     hr = pDeviceFilter->QueryInterface(IID_IAMVideoProcAmp, (void **)&pProcAmp);
     if (FAILED(hr)) {
