@@ -1,7 +1,9 @@
 ﻿#include "MultiCameraRequestHandler.h"
+
+#include "../dto/MCStatusDto.hpp"
+
 #include <iostream>
 #include "dlog/dlog.h"
-#include "xuexuejson/Serialize.hpp"
 
 #include "Poco/URI.h"
 #include <algorithm>
@@ -9,7 +11,6 @@
 #include "../../System/MultiCamera.h"
 
 #include "../extension/ParserQueryParameters.hpp"
-#include "../dto/MCStatusDto.hpp"
 
 using namespace xuexue::json;
 using namespace Poco::Net;

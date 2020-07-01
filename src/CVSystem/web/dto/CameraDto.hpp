@@ -37,7 +37,7 @@ class CameraDto : XUEXUE_JSON_OBJECT
 
         devID = cam->devID;
         size = cam->size;
-        paramSize = cam->size;
+        paramSize = cam->paramSize;
         isStereoCamera = cam->isStereoCamera;
         isNoSendToProc = cam->isNoSendToProc;
         scID = cam->scID;
@@ -46,13 +46,13 @@ class CameraDto : XUEXUE_JSON_OBJECT
     }
 
     /// <summary> 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index. </summary>
-    int camIndex;
+    int camIndex = -1;
 
     /// <summary> 这个相机的设备名. </summary>
     std::string devName;
 
     /// <summary> 虚拟相机. </summary>
-    bool isVirtualCamera;
+    bool isVirtualCamera = false;
 
     /// <summary>
     /// 如果它是一个虚拟相机，那么它可能是一个立体相机的一半，这里则记录它的实际物理相机的名字.
@@ -60,7 +60,7 @@ class CameraDto : XUEXUE_JSON_OBJECT
     std::string physicalDevName;
 
     /// <summary> (这个是用户只读的)设备的id顺序，物理硬件上的index. </summary>
-    int devID;
+    int devID = -1;
 
     /// <summary> 相机的分辨率size，打开相机之后会按照这个设置来尝试设置相机分辨率. </summary>
     cv::Size size;
@@ -69,19 +69,19 @@ class CameraDto : XUEXUE_JSON_OBJECT
     cv::Size paramSize;
 
     /// <summary> 是否是立体相机. </summary>
-    bool isStereoCamera;
+    bool isStereoCamera = false;
 
     /// <summary> 是否不要传图到后面给Proc,如果设置它为true,那么需要把这个相机的index放到后面. </summary>
-    bool isNoSendToProc;
+    bool isNoSendToProc = false;
 
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
-    int scID;
+    int scID = -1;
 
     /// <summary> 双目相机里的L相机的camIndex. </summary>
-    int stereoCamIndexL;
+    int stereoCamIndexL = -1;
 
     /// <summary> 双目相机里的R相机的camIndex. </summary>
-    int stereoCamIndexR;
+    int stereoCamIndexR = -1;
 
     XUEXUE_JSON_OBJECT_M12(camIndex, devName, isVirtualCamera, physicalDevName, devID, size, paramSize,
                            isStereoCamera, isNoSendToProc, scID, stereoCamIndexL, stereoCamIndexR)

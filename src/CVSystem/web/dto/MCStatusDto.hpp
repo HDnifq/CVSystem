@@ -41,13 +41,13 @@ class MCStatusDto : XUEXUE_JSON_OBJECT
     }
 
     /// <summary> 是否相机已经打开. </summary>
-    bool isCameraOpened;
+    bool isCameraOpened = false;
 
     /// <summary> 是否采图. </summary>
-    bool isGrab;
+    bool isGrab = false;
 
     /// <summary> 是否当前计算线程正在工作. </summary>
-    bool isRunning;
+    bool isRunning = false;
 
     /// <summary> 当前执行的proc的名字,如果没有proc就返回null. </summary>
     std::string activeProcName;
@@ -56,10 +56,10 @@ class MCStatusDto : XUEXUE_JSON_OBJECT
     std::vector<std::string> procs;
 
     /// <summary> 当前帧数. </summary>
-    uint frameCount;
+    uint frameCount = 0;
 
     /// <summary> 当前的fps. </summary>
-    float fps;
+    float fps = 0;
 
     /// <summary> 当前录入的所有相机. </summary>
     std::vector<CameraDto> cameras;
