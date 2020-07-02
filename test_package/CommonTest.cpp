@@ -7,8 +7,11 @@
 #pragma execution_character_set("utf-8")
 #include "xuexuejson/Serialize.hpp"
 
+#include "CVSystem/Common/base64.h"
+
 using namespace dxlib;
 using namespace std;
+using namespace dxlib::cvsystem;
 
 class TestClass
 {
@@ -81,4 +84,19 @@ TEST(Common, string_at)
     std::string str = "12345678";
     EXPECT_TRUE(str[0] == '1');
     EXPECT_TRUE(str[1] == '2');
+}
+
+TEST(Common, base64)
+{
+    std::vector<uchar> data;
+    for (size_t i = 0; i < 1024; i++) {
+        data.push_back(i);
+    }
+
+    std::string str = base64::encode(data.data(), data.size());
+    std::vector<uchar> data2 = base64::decode(str);
+
+    for (size_t i = 0; i < data.size(); i++) {
+        ASSERT_TRUE(data[i] == data2[i]);
+    }
 }
