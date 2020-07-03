@@ -3,6 +3,8 @@
 #include "CVSystem/CVSystem.h"
 #include "time.h"
 
+#include <opencv2/freetype.hpp>
+
 //用来测试s2ws_ws2s
 #pragma execution_character_set("utf-8")
 #include "xuexuejson/Serialize.hpp"
@@ -99,4 +101,39 @@ TEST(Common, base64)
     for (size_t i = 0; i < data.size(); i++) {
         ASSERT_TRUE(data[i] == data2[i]);
     }
+}
+
+TEST(Common, Font)
+{
+    using namespace cv;
+    String text = "Funny 中文 ❀ (╯‵□′)╯︵┻━┻";
+    int fontHeight = 32;
+    int thickness = -1;
+    int linestyle = 8;
+    Mat img(600, 800, CV_8UC3, Scalar::all(0));
+    int baseline = 0;
+    cv::Ptr<cv::freetype::FreeType2> ft2;
+    ft2 = cv::freetype::createFreeType2();
+    ft2->loadFontData("FZSTK.TTF", 0);
+    Size textSize = ft2->getTextSize(text,
+                                     fontHeight,
+                                     thickness,
+                                     &baseline);
+    if (thickness > 0) {
+        baseline += thickness;
+    }
+    // center the text
+    Point textOrg((img.cols - textSize.width) / 2,
+                  (img.rows + textSize.height) / 2);
+    // draw the box
+    rectangle(img, textOrg + Point(0, baseline),
+              textOrg + Point(textSize.width, -textSize.height),
+              Scalar(0, 255, 0), 1, 8);
+    // ... and the baseline first
+    line(img, textOrg + Point(0, thickness),
+         textOrg + Point(textSize.width, thickness),
+         Scalar(0, 0, 255), 1, 8);
+    // then put the text itself
+    ft2->putText(img, text, textOrg, fontHeight,
+                 Scalar::all(255), thickness, linestyle, true);
 }

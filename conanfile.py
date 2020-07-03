@@ -23,7 +23,7 @@ class CVSystemConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = {"shared": False,
                        "dlog:shared": False,
-                       "opencv:shared": True,
+                       "opencv:shared": False,
                        "boost:without_test": True,
                        "poco:enable_data_sqlite": False}
     generators = "cmake"
@@ -32,7 +32,7 @@ class CVSystemConan(ConanFile):
     def requirements(self):
         self.requires("boost/1.71.0")
         self.requires("eigen/3.3.7")
-        self.requires("opencv/4.2.0@daixian/stable")
+        self.requires("opencv/4.3.0@daixian/stable")
         self.requires("dlog/[>=2.5.2]@daixian/stable")
         self.requires("xuexuejson/[>1.1.0]@daixian/stable")
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
