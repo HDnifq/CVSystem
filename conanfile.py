@@ -23,7 +23,7 @@ class CVSystemConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = {"shared": False,
                        "dlog:shared": False,
-                       "opencv:shared": False,
+                       "opencv:shared": True,
                        "boost:without_test": True,
                        "poco:enable_data_sqlite": False}
     generators = "cmake"

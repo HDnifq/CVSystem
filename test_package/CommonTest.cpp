@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 
+#include "dlog/dlog.h"
 #include "CVSystem/CVSystem.h"
 #include "time.h"
 
@@ -114,7 +115,7 @@ TEST(Common, Font)
     int baseline = 0;
     cv::Ptr<cv::freetype::FreeType2> ft2;
     ft2 = cv::freetype::createFreeType2();
-    ft2->loadFontData("FZSTK.TTF", 0);
+    ft2->loadFontData("Meiryo-01.ttf", 0);
     Size textSize = ft2->getTextSize(text,
                                      fontHeight,
                                      thickness,
