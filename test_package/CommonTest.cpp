@@ -11,6 +11,7 @@
 #include "xuexuejson/Serialize.hpp"
 
 #include "CVSystem/Common/base64.h"
+#include "Poco/File.h"
 
 using namespace dxlib;
 using namespace std;
@@ -106,6 +107,12 @@ TEST(Common, base64)
 
 TEST(Common, Font)
 {
+    Poco::File file("Meiryo-01.ttf");
+    if (!file.exists()) {
+        //如果字体文件不存在那么就不跑测试了
+        return;
+    }
+
     using namespace cv;
     String text = "Funny 中文 ❀ (╯‵□′)╯︵┻━┻";
     int fontHeight = 32;
