@@ -74,7 +74,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
             vCameras[camIndex]->applyCapProp();
         }
     }
-    //构造采图结果：一个结构体包含4个相机的图
+    //构造采图结果：使用记录的相机的结构体来创建新的结果文件
     cimg = pCameraImage(new CameraImage(vCameras));
     //cimg->fnum = fnumber;//这个帧号在这个函数外面标记
     cimg->grabStartTime = clock();
@@ -83,7 +83,6 @@ bool CameraGrab::grab(pCameraImage& cimg)
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
             grabOneCamera(cimg, vCameras[camIndex].get());
-            success++;
         }
         catch (const std::exception& e) {
             LogE("CameraGrab.grab():异常 %s", e.what());
@@ -119,23 +118,24 @@ bool CameraGrab::grab(pCameraImage& cimg)
     }
 }
 
-void CameraGrab::grabOneCamera(pCameraImage& cimg, Camera* curCamera)
+bool CameraGrab::grabOneCamera(pCameraImage& cimg, Camera* curCamera)
 {
     if (curCamera == nullptr) {
-        return;
+        return false;
     }
+
     int camIndex = curCamera->camIndex;
     //当前要写入的[相机-图像]
     ImageItem& item = cimg->vImage[camIndex];
 
     if (curCamera->isVirtualCamera) {
         //item.isSuccess = false;//(这个失败是默认值)
-        return;
+        return false;
     }
 
     if (!curCamera->isOpened()) {
         //item.isSuccess = false;//标记采图失败
-        return;
+        return false;
     }
 
     //如果不是stereo相机这样
@@ -205,6 +205,7 @@ void CameraGrab::grabOneCamera(pCameraImage& cimg, Camera* curCamera)
             LogE("CameraGrab.grabOneCamera():Stereo相机%s采图read失败！", curCamera->devName.c_str());
         }
     }
+    return item.isSuccess;
 }
 
 //bool CameraGrab::startGrabImage(pCameraImage& cimg)
@@ -310,6 +311,19 @@ bool CameraGrab::close()
     }
 
     clear();
+    return true;
+}
+
+bool CameraGrab::isAllCameraClosed()
+{
+    for (size_t i = 0; i < vCameras.size(); i++) {
+        if (vCameras[i] != nullptr) {
+            //只要有一个相机还打开着就返回false
+            if (vCameras[i]->isOpened()) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 

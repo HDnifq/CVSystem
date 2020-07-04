@@ -197,7 +197,26 @@ class CameraImage
         }
         return cv::Size(0, 0);
     }
+
+    /**
+     * 是否所有的相机都关闭了.用户在proc处理里进行判断,如果所有相机都关闭了那么可以自行睡眠.
+     *
+     * @author daixian
+     * @date 2020/7/4
+     *
+     * @returns 如果所有的相机都关闭了就返回true.
+     */
+    bool isAllCameraClosed()
+    {
+        for (int i = 0; i < vImage.size(); i++) {
+            if (vImage[i].camera->isOpened()) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
+
 /** 定义这个智能指针类型. */
 typedef std::shared_ptr<CameraImage> pCameraImage;
 

@@ -69,11 +69,32 @@ class CameraGrab
     ///-------------------------------------------------------------------------------------------------
     bool close();
 
+    /**
+     * 是否所有的相机都关闭了
+     *
+     * @author daixian
+     * @date 2020/7/4
+     *
+     * @returns 如果所有的相机都关闭了就返回true.
+     */
+    bool isAllCameraClosed();
+
   private:
     /// <summary> 清空,close的时候会自动调用. </summary>
     void clear();
 
-    void grabOneCamera(pCameraImage& result, Camera* curCamera);
+    /**
+     * Grab one camera
+     *
+     * @author daixian
+     * @date 2020/7/4
+     *
+     * @param [in,out] result    The result.
+     * @param [in,out] curCamera If non-null, the current camera.
+     *
+     * @returns 是否采图成功.
+     */
+    bool grabOneCamera(pCameraImage& result, Camera* curCamera);
 };
 
 } // namespace dxlib
