@@ -195,7 +195,7 @@ TEST(SVM, non_linear_svms)
     }
     //! [show_vectors]
 
-    imwrite("result.png", I);                      // save the Image
-    imshow("SVM for Non-Linear Training Data", I); // show it to the user
-    waitKey();
+    //imwrite("result.png", I);                      // save the Image
+    //imshow("SVM for Non-Linear Training Data", I); // show it to the user
+    //waitKey();
 }

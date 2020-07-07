@@ -182,9 +182,12 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
         LogI("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
 
         //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
-        string uri;
-        URI::decode(req.getURI(), uri);
-        LogI("FileHandle::handleRequest():解码uri=%s", uri.c_str());
+        string decStr;
+
+        URI::decode(req.getURI(), decStr);
+        string path = URI(decStr).getPath();
+
+        LogI("FileHandle::handleRequest():解码uri=%s", decStr.c_str());
         //wstring wuri = json::JsonHelper::utf8To16(uri);
 
         //输出一下http的key
@@ -199,13 +202,13 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
         string html;
 
         //如果目录下存在index.html那么就使用index.html
-        if (uri.back() == '/') {
+        if (path.back() == '/') {
             //如果这个目录下存在index.html
-            if (_impl->isFileExist(uri + "index.html", fullPath, con_type))
-                uri += "index.html";
+            if (_impl->isFileExist(path + "index.html", fullPath, con_type))
+                path += "index.html";
         }
 
-        if (_impl->isFileExist(uri, fullPath, con_type)) { //如果存在文件那么就返回文件流
+        if (_impl->isFileExist(path, fullPath, con_type)) { //如果存在文件那么就返回文件流
             //这是支持range的文件流
             Poco::File mediaFile(fullPath);
             Poco::Timestamp dateTime = mediaFile.getLastModified();
@@ -248,7 +251,7 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
                 response.send();
             }
         }
-        else if (_impl->isDirExist(uri, html)) { //如果是文件夹
+        else if (_impl->isDirExist(path, html)) { //如果是文件夹
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("text/html;charset=utf-8");
             std::ostream& out = response.send();
