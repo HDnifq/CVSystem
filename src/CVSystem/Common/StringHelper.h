@@ -76,11 +76,12 @@ class StringHelper
 
     /**
      * 得到当前时间戳.
+     * 最后文件的形式如20191228-023549.
      *
      * @author daixian
      * @date 2018/12/14
      *
-     * @returns The time.
+     * @returns %Y%m%d-%H%M%S的字符串.
      */
     static std::string secTimeStr();
 
