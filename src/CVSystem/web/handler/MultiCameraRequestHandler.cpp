@@ -75,6 +75,8 @@ void MultiCameraRequestHandler::handleRequestOpenCamera(HTTPServerRequest& reque
 {
     LogI("MultiCameraRequestHandler.handleRequestOpenCamera():执行打开相机");
     MultiCamera::GetInst()->openCamera();
+    response.set("Access-Control-Request-Method", request.getMethod()); //getMethod返回大写的"GET"
+    response.set("Access-Control-Allow-Origin", "*");
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("text/plain");
     std::ostream& out = response.send();
@@ -85,6 +87,8 @@ void MultiCameraRequestHandler::handleRequestCloseCamera(HTTPServerRequest& requ
 {
     LogI("MultiCameraRequestHandler.handleRequestCloseCamera():执行关闭相机");
     MultiCamera::GetInst()->closeCamera();
+    response.set("Access-Control-Request-Method", request.getMethod());
+    response.set("Access-Control-Allow-Origin", "*");
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("text/plain");
     std::ostream& out = response.send();
@@ -95,6 +99,8 @@ void MultiCameraRequestHandler::handleRequestStart(HTTPServerRequest& request, H
 {
     LogI("MultiCameraRequestHandler.handleRequestStart():执行启动分析线程");
     MultiCamera::GetInst()->start();
+    response.set("Access-Control-Request-Method", request.getMethod());
+    response.set("Access-Control-Allow-Origin", "*");
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("text/plain");
     std::ostream& out = response.send();
@@ -105,6 +111,8 @@ void MultiCameraRequestHandler::handleRequestStop(HTTPServerRequest& request, HT
 {
     LogI("MultiCameraRequestHandler.handleRequestStop():执行停止分析线程");
     MultiCamera::GetInst()->stop();
+    response.set("Access-Control-Request-Method", request.getMethod());
+    response.set("Access-Control-Allow-Origin", "*");
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("text/plain");
     std::ostream& out = response.send();
@@ -116,7 +124,8 @@ void MultiCameraRequestHandler::handleRequestStatus(HTTPServerRequest& request, 
     LogI("MultiCameraRequestHandler.handleRequestStatus():执行查询当前运行状态");
 
     MCStatusDto dto(MultiCamera::GetInst(), CameraManger::GetInst());
-
+    response.set("Access-Control-Request-Method", request.getMethod());
+    response.set("Access-Control-Allow-Origin", "*");
     response.setStatus(HTTPResponse::HTTP_OK);
     response.setContentType("application/json");
     std::ostream& out = response.send();
