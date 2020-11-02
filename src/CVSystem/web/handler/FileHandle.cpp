@@ -9,14 +9,14 @@
 #include "dlog/dlog.h"
 #include <regex>
 
-#include <boost/filesystem.hpp>
-//#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
+#include <Poco/Path.h>
+#include <Poco/File.h>
+#include <Poco/Format.h>
+
 #include <stdlib.h>
 
 using namespace Poco::Net;
 using namespace Poco;
-namespace fs = boost::filesystem;
 using namespace xuexue::json;
 
 namespace dxlib {
@@ -30,16 +30,18 @@ class FileHandle::Impl
         if (dirPath.back() == '\\' || dirPath.back() == '/')
             dirPath.erase(dirPath.end() - 1);
 
-        fs::path root(dirPath); //拼接完整路径
-        if (fs::is_directory(root))
-            this->dirRoot = root.wstring();
-        else
-            LogE("FileHandle.Impl():设置路径不是文件夹，web资源可能不存在!");
+        Path root = Poco::Path(dirPath).absolute().makeDirectory().toString(); //拼接完整路径
+
+        this->dirRoot = root.toString();
+        File dir(root);
+        if (!dir.exists())
+            LogE("FileHandle.Impl():设置文件夹路径%s不存在，web资源可能不存在!", this->dirRoot.c_str());
     }
+
     ~Impl() {}
 
     /** 文件资源根目录，构造的时候设置. */
-    std::wstring dirRoot;
+    std::string dirRoot;
 
     /** 文件扩展名对应的关联类型（静态类型）. */
     static std::map<std::string, std::string> content_type;
@@ -61,15 +63,15 @@ class FileHandle::Impl
      */
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
-        std::wstring wuri = JsonHelper::utf8To16(relativePath);
+        Path pfullPath = Poco::Path(dirRoot, relativePath).makeFile();
+        ////返回的文件路径是UTF8的
+        //fullPath = JsonHelper::utf16To8(pfullPath.wstring());
+        File file(pfullPath);
 
-        fs::path pfullPath = fs::path(dirRoot) / fs::path(wuri);
-        //返回的文件路径是UTF8的
-        fullPath = JsonHelper::utf16To8(pfullPath.wstring());
-
-        if (fs::is_regular_file(pfullPath)) { //如果文件存在
-            if (pfullPath.has_extension()) {  //如果文件有扩展名
-                std::string ext = pfullPath.extension().string();
+        //如果文件存在
+        if (file.exists() && file.isFile()) {
+            if (pfullPath.getBaseName() != pfullPath.getFileName()) { //如果文件有扩展名
+                std::string ext = pfullPath.getExtension();
                 content_type = this->content_type[ext]; //尝试搜索对应的content-type
                 if (content_type.empty()) {
                     content_type = "application/octet-stream";
@@ -96,36 +98,42 @@ class FileHandle::Impl
      */
     bool isDirExist(const std::string& relativePath, std::string& html)
     {
-        std::wstring wRelativePath = JsonHelper::utf8To16(relativePath);
-        if (relativePath.back() != L'/') {
+        if (relativePath.back() != '/') {
             return false;
         }
-        //这个函数里面都使用UTF16最后再转UTF8,免得文件系统编码有问题
-        std::wstring whtml;
-        fs::path fullPath = fs::path(dirRoot) / fs::path(wRelativePath);
+        html.clear();
 
-        if (fs::is_directory(fullPath)) { //如果文件夹存在
-            whtml = L"<html><head><title>file server:" + wRelativePath + L"</title></head><body><H2>" + wRelativePath + L"</H2><hr><pre>";
+        Path pfullPath = Poco::Path(dirRoot, relativePath).makeDirectory();
+        File dir(pfullPath);
+
+        //如果文件夹存在
+        if (dir.exists() && dir.isDirectory()) {
+            html = "<html><head><title>file server:" + relativePath + "</title></head><body><H2>" + relativePath + "</H2><hr><pre>";
 
             //2018/5/3    14:43        &lt;dir&gt; <A HREF="/Debug/">Debug</A><br>
             //2019/2/18    17:05         2742 <A HREF="/FilesDownload.zip">FilesDownload.zip</A><br>
+            std::vector<Poco::File> vFiles;
+            dir.list(vFiles);
 
-            fs::directory_iterator di(fullPath);
-            for (auto& de : di) {
-                if (fs::is_regular_file(de.status())) { //如果这个是文件
-                    std::wstring fname = de.path().filename().wstring();
-                    size_t filesize = fs::file_size(de.path());
-                    std::wstring uri = wRelativePath + fname;
-                    whtml += (boost::wformat(L"%10i  <A HREF=\"%s\">%s</A><br>") % filesize % uri % fname).str();
+            for (size_t i = 0; i < vFiles.size(); i++) {
+                Poco::File& file = vFiles[i];
+
+                if (file.exists() && file.isFile()) { //如果这个是文件
+                    std::string fname = Path(file.path()).getFileName();
+                    size_t filesize = file.getSize();
+                    std::string uri = relativePath + fname;
+                    //html += (boost::wformat(L"%10i  <A HREF=\"%s\">%s</A><br>") % filesize % uri % fname).str();
+                    html += Poco::format("%10i  <A HREF=\"%s\">%s</A><br>", filesize, uri, fname);
                 }
-                else if (fs::is_directory(de.status())) { //如果这个是文件夹
-                    std::wstring fname = de.path().filename().wstring();
-                    std::wstring uri = wRelativePath + fname + L"/";
-                    whtml += (boost::wformat(L"     &lt;dir&gt;  <A HREF=\"%s\">%s</A><br>") % uri % fname).str();
+                else if (file.exists() && file.isDirectory()) { //如果这个是文件夹
+                    std::string fname = Path(file.path()).getFileName();
+                    std::string uri = relativePath + fname + "/";
+                    //whtml += (boost::wformat(L"     &lt;dir&gt;  <A HREF=\"%s\">%s</A><br>") % uri % fname).str();
+                    html += format("     &lt;dir&gt;  <A HREF=\"%s\">%s</A><br>", uri, fname);
                 }
             }
-            whtml += L"</pre><hr></body></html>";
-            html = JsonHelper::utf16To8(whtml);
+
+            html += "</pre><hr></body></html>";
             return true;
         }
         return false;

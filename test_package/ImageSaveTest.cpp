@@ -27,15 +27,15 @@ TEST(ImageSave, ReadFormFile)
 
 TEST(ImageSave, ReadFormFile2)
 {
-    File file("D:\\Work\\MRSystem\\x64\\Release\\images\\debug\\camera");
+    //File file("D:\\Work\\MRSystem\\x64\\Release\\images\\debug\\camera");
 
-    if (file.exists() && file.isDirectory()) {
-        ImageSave::GetInst()->ReadFormFile(file.path());
-        size_t size = ImageSave::GetInst()->dqImageFile.size();
-        EXPECT_TRUE(size > 0);
-        auto ig = ImageSave::GetInst()->GetFrontImage();
-        EXPECT_TRUE(ig.size() > 0);
-    }
+    //if (file.exists() && file.isDirectory()) {
+    //    ImageSave::GetInst()->ReadFormFile(file.path());
+    //    size_t size = ImageSave::GetInst()->dqImageFile.size();
+    //    EXPECT_TRUE(size > 0);
+    //    auto ig = ImageSave::GetInst()->GetFrontImage();
+    //    EXPECT_TRUE(ig.size() > 0);
+    //}
 }
 
 //getItem的方法,返回值改成了一个对象

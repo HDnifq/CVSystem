@@ -1,7 +1,7 @@
 ﻿#include "DBCommon.h"
 
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
+#include "xuexue/csharp/csharp.h"
+#include "Poco/Format.h"
 
 #include "SQLiteCpp/SQLiteCpp.h"
 
@@ -9,7 +9,6 @@
 #include "dlog/dlog.h"
 
 using namespace std;
-namespace fs = boost::filesystem;
 
 namespace dxlib {
 
@@ -61,11 +60,13 @@ void* DBCommon::getPtr()
 
 bool DBCommon::open(const std::string& path, bool isKey)
 {
+    using namespace xuexue::csharp;
+
     if (_impl->db != nullptr) {
         delete _impl->db;
     }
     //如果文件存在
-    if (fs::is_regular_file(path)) {
+    if (File::Exists(path)) {
         _impl->db = new SQLite::Database(path, SQLite::OPEN_READONLY);
         if (isKey) {
             _impl->db->key(this->key); //加密
@@ -90,11 +91,12 @@ bool DBCommon::open(const std::string& path, bool isKey)
 
 bool DBCommon::openRW(const std::string& path, bool isKey)
 {
+    using namespace xuexue::csharp;
     if (_impl->db != nullptr) {
         delete _impl->db;
     }
     //如果文件存在
-    if (fs::is_regular_file(path)) {
+    if (File::Exists(path)) {
         _impl->db = new SQLite::Database(path, SQLite::OPEN_READWRITE);
         if (isKey) {
             _impl->db->key(this->key); //加密
@@ -140,7 +142,8 @@ bool DBCommon::isOpened()
 
 int DBCommon::createNew(const std::string& path, bool isKey)
 {
-    if (fs::is_regular_file(path)) { //如果文件存在
+    using namespace xuexue::csharp;
+    if (File::Exists(path)) { //如果文件存在
         LogE("DBCommon.createNew():数据库文件已经存在了,先确认手动删除之后再操作!");
         return -1;
     }
@@ -179,12 +182,12 @@ int DBCommon::write(int user_id, const std::string& name, const std::string& txt
 
     SQLite::Database& db = *_impl->db;
     //从数据库读信息
-    SQLite::Statement queryS(db, (boost::format("SELECT * FROM common_tbl WHERE name='%s'") % name).str());
+    SQLite::Statement queryS(db, Poco::format("SELECT * FROM common_tbl WHERE name='%s'", name));
     int updateCount = 0;
     while (queryS.executeStep()) {
         int id = queryS.getColumn("id").getInt(); //选到主键
         LogD("DBCommon.write():选中了项id=%d,更新它的数据...", id);
-        SQLite::Statement queryU(db, (boost::format("UPDATE common_tbl SET user_id=?,name=?,txt=?,data=? WHERE id='%d'") % id).str());
+        SQLite::Statement queryU(db, Poco::format("UPDATE common_tbl SET user_id=?,name=?,txt=?,data=? WHERE id='%d'", id));
         queryU.bind(1, user_id);
         queryU.bind(2, name);
         queryU.bind(3, txt);
@@ -222,12 +225,12 @@ int DBCommon::write(int user_id, const std::string& name, const std::string& txt
 
     SQLite::Database& db = *_impl->db;
     //从数据库读信息
-    SQLite::Statement queryS(db, (boost::format("SELECT * FROM common_tbl WHERE name='%s'") % name).str());
+    SQLite::Statement queryS(db, Poco::format("SELECT * FROM common_tbl WHERE name='%s'", name));
     int updateCount = 0;
     while (queryS.executeStep()) {
         int id = queryS.getColumn("id").getInt(); //选到主键
         LogD("DBCommon.write():选中了项id=%d,更新它的数据...", id);
-        SQLite::Statement queryU(db, (boost::format("UPDATE common_tbl SET user_id=?,name=?,txt=? WHERE id='%d'") % id).str());
+        SQLite::Statement queryU(db, Poco::format("UPDATE common_tbl SET user_id=?,name=?,txt=? WHERE id='%d'", id));
         queryU.bind(1, user_id);
         queryU.bind(2, name);
         queryU.bind(3, txt);
@@ -262,7 +265,7 @@ int DBCommon::readOne(int user_id, const std::string& name, std::string& txt, st
     }
 
     SQLite::Database& db = *_impl->db;
-    SQLite::Statement queryS(db, (boost::format("SELECT * FROM common_tbl WHERE user_id='%d' AND name='%s'") % user_id % name).str());
+    SQLite::Statement queryS(db, Poco::format("SELECT * FROM common_tbl WHERE user_id='%d' AND name='%s'", user_id, name));
 
     while (queryS.executeStep()) {
         int id = queryS.getColumn("id").getInt(); //选到主键
@@ -284,7 +287,7 @@ std::string DBCommon::readOneText(const std::string& name, int user_id)
     }
 
     SQLite::Database& db = *_impl->db;
-    SQLite::Statement queryS(db, (boost::format("SELECT txt FROM common_tbl WHERE user_id='%d' AND name='%s'") % user_id % name).str());
+    SQLite::Statement queryS(db, Poco::format("SELECT txt FROM common_tbl WHERE user_id='%d' AND name='%s'", user_id, name));
     while (queryS.executeStep()) {
         return queryS.getColumn(0).getString();
     }

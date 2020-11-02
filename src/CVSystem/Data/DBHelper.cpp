@@ -1,5 +1,5 @@
 ﻿#include "DBHelper.h"
-#include <boost/format.hpp>
+#include "Poco/Format.h"
 #include "dlog/dlog.h"
 
 namespace dxlib {
@@ -15,10 +15,8 @@ int DBHelper::UPDATE(SQLite::Database* SQLiteCppDB, const std::string& table_nam
         return 0;
     }
     SQLite::Database& db = *SQLiteCppDB;
-    string sql = (boost::format("UPDATE %s SET %s=? WHERE %s='%s'") % table_name %
-                  update_col_name %
-                  where_col_name % where_row_value)
-                     .str();
+    string sql = Poco::format("UPDATE %s SET %s=? WHERE %s='%s'", table_name, update_col_name,
+                              where_col_name, where_row_value);
 
     SQLite::Statement queryb(db, sql);
     queryb.bind(1, update_value);
@@ -35,9 +33,8 @@ int DBHelper::SELECT(SQLite::Database* SQLiteCppDB, const std::string& table_nam
     }
     SQLite::Database& db = *SQLiteCppDB;
 
-    string sql = (boost::format("SELECT %s FROM %s WHERE %s='%s'") % select_col_name % table_name %
-                  where_col_name % where_row_value)
-                     .str();
+    string sql = Poco::format("SELECT %s FROM %s WHERE %s='%s'", select_col_name, table_name,
+                              where_col_name, where_row_value);
 
     //从数据库读信息
     SQLite::Statement querybr(db, sql);
@@ -60,9 +57,8 @@ int DBHelper::SELECT(SQLite::Database* SQLiteCppDB, const std::string& table_nam
     }
     SQLite::Database& db = *SQLiteCppDB;
 
-    string sql = (boost::format("SELECT %s FROM %s WHERE %s='%s'") % select_col_name % table_name %
-                  where_col_name % where_row_value)
-                     .str();
+    string sql = Poco::format("SELECT %s FROM %s WHERE %s='%s'", select_col_name, table_name,
+                              where_col_name, where_row_value);
 
     //从数据库读信息
     SQLite::Statement querybr(db, sql);

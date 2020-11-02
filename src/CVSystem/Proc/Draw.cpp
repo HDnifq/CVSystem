@@ -1,5 +1,7 @@
 ﻿#include "Draw.h"
-#include "boost/filesystem.hpp"
+#include "Poco/Format.h"
+#include "xuexue/csharp/csharp.h"
+
 #include "dlog/dlog.h"
 
 namespace dxlib {
@@ -354,17 +356,16 @@ void Draw::saveToMemory()
 
 void Draw::saveMemImgToFile(const std::string& dirPath)
 {
-    namespace fs = boost::filesystem;
-    if (fs::exists(dirPath)) {
-        if (!fs::is_directory(dirPath)) {
-            LogE("Draw.saveMemImgToFile():保存图片路径存在,但不是文件夹! %s", dirPath.c_str());
-            return;
-        }
+    using namespace xuexue::csharp;
+
+    if (File::Exists(dirPath)) {
+        LogE("Draw.saveMemImgToFile():保存图片路径存在,但不是文件夹! %s", dirPath.c_str());
+        return;
     }
-    else {
+    if (!Directory::Exists(dirPath)) {
         LogI("Draw.saveMemImgToFile():保存图片路径不存在,尝试创建文件夹! %s", dirPath.c_str());
         try {
-            fs::create_directories(dirPath);
+            Directory::createDirectory(dirPath);
         }
         catch (const std::exception& ex) {
             LogE("异常:%s", ex.what());
@@ -379,11 +380,10 @@ void Draw::saveMemImgToFile(const std::string& dirPath)
 
         char fileName[64];
         snprintf(fileName, sizeof(fileName), "%02d.png", nameCount);
-        fs::path filePath = fs::path(dirPath) / fileName;
-        cv::imwrite(filePath.string(), img);
+        cv::imwrite(Path::Combine(dirPath, fileName), img);
         nameCount++;
     }
-}
+} // namespace dxlib
 
 void Draw::writeMemImgToMem(void* buff)
 {

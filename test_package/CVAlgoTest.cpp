@@ -11,21 +11,22 @@ using namespace std;
 //亮点测试
 TEST(CVALGO, LightPoint)
 {
-    ImageSave::GetInst()->ReadFormFile("D:\\Work\\CVSystem\\TestImage\\ALGO\\GlassPoint");
+    //现在没有读文件了,不用了
+    //ImageSave::GetInst()->ReadFormFile("D:\\Work\\CVSystem\\TestImage\\ALGO\\GlassPoint");
 
-    auto ig = ImageSave::GetInst()->GetBackImage();
+    //auto ig = ImageSave::GetInst()->GetBackImage();
 
-    LightPoint::Param param;
-    for (auto& kvp : ig) {
-        LightPoint::Result result;
-        LightPoint::detection(kvp.second, param, result);
+    //LightPoint::Param param;
+    //for (auto& kvp : ig) {
+    //    LightPoint::Result result;
+    //    LightPoint::detection(kvp.second, param, result);
 
-        cv::Mat img = kvp.second;
-        int w = img.cols;
-        int h = img.rows;
-        cv::Mat imgL = cv::Mat(img, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
-        cv::Mat imgR = cv::Mat(img, cv::Rect(w / 2, 0, w / 2, h)); //等于图的左半边
-    }
+    //    cv::Mat img = kvp.second;
+    //    int w = img.cols;
+    //    int h = img.rows;
+    //    cv::Mat imgL = cv::Mat(img, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
+    //    cv::Mat imgR = cv::Mat(img, cv::Rect(w / 2, 0, w / 2, h)); //等于图的左半边
+    //}
 }
 
 Eigen::Vector2d PixToOne(Eigen::Vector2d pix)

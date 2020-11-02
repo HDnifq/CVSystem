@@ -2,9 +2,9 @@
 #include <vector>
 #include <array>
 #include <map>
-#include <boost/range/adaptor/map.hpp>
-#include <boost/range/algorithm/copy.hpp>
-#include <boost/assign.hpp>
+//#include <boost/range/adaptor/map.hpp>
+//#include <boost/range/algorithm/copy.hpp>
+//#include <boost/assign.hpp>
 #include <algorithm>
 #include "string.h"
 
@@ -140,7 +140,13 @@ class ALGO
     template <typename K, typename V>
     static void mapKeys(const std::map<K, V>& m, std::vector<K>& keys)
     {
-        boost::copy(m | boost::adaptors::map_keys, std::back_inserter(keys));
+        //std::copy(m | std::adaptors::map_keys, std::back_inserter(keys));
+        std::map<K, V>::const_iterator iter = m.cbegin();
+        keys.clear();
+        while (iter != m.cend()) {
+            keys.push_back(iter->first);
+            iter++;
+        }
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -156,7 +162,13 @@ class ALGO
     template <typename K, typename V>
     static void mapValues(const std::map<K, V>& m, std::vector<V>& values)
     {
-        boost::copy(m | boost::adaptors::map_values, std::back_inserter(values));
+        //std::copy(m | std::adaptors::map_values, std::back_inserter(values));
+        std::map<K, V>::const_iterator iter = m.cbegin();
+        values.clear();
+        while (iter != m.cend()) {
+            values.push_back(iter->second);
+            iter++;
+        }
     }
 
     ///-------------------------------------------------------------------------------------------------

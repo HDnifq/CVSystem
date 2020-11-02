@@ -107,7 +107,7 @@ class FileHelper
      * @param          dirPath Pathname of the directory.
      * @param          pattern (Optional) Specifies the pattern.
      */
-    static void getFiles(std::vector<std::string>& result, const std::string& dirPath, const std::string& pattern = ".png");
+    //static void getFiles(std::vector<std::string>& result, const std::string& dirPath, const std::string& pattern = ".png");
 
     /**
      * 设定两个文件夹来选择文件夹里的所有图片.
@@ -121,7 +121,7 @@ class FileHelper
      *
      * @returns The image pairs.
      */
-    static ImagePairsResult getImagePairs(const std::string& dirPathL, const std::string& dirPathR, const std::string& extension = ".png");
+    //static ImagePairsResult getImagePairs(const std::string& dirPathL, const std::string& dirPathR, const std::string& extension = ".png");
 
     //按正则表达式搜索完整文件名
     static void search(std::vector<std::string>& result, const std::string& dirPath, const std::string& regexStr = "[.]png$");
