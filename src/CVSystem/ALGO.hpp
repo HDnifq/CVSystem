@@ -141,7 +141,8 @@ class ALGO
     static void mapKeys(const std::map<K, V>& m, std::vector<K>& keys)
     {
         //std::copy(m | std::adaptors::map_keys, std::back_inserter(keys));
-        std::map<K, V>::const_iterator iter = m.cbegin();
+        //std::map<K, V>::const_iterator iter = m.cbegin();
+        auto iter = m.cbegin();
         keys.clear();
         while (iter != m.cend()) {
             keys.push_back(iter->first);
@@ -163,7 +164,7 @@ class ALGO
     static void mapValues(const std::map<K, V>& m, std::vector<V>& values)
     {
         //std::copy(m | std::adaptors::map_values, std::back_inserter(values));
-        std::map<K, V>::const_iterator iter = m.cbegin();
+        auto iter = m.cbegin();
         values.clear();
         while (iter != m.cend()) {
             values.push_back(iter->second);

@@ -31,7 +31,7 @@
 #    pragma comment(lib, "Quartz.lib")
 
 #else
-#    include <boost/filesystem.hpp>
+//#    include <boost/filesystem.hpp>
 #endif
 
 #include <map>
@@ -42,6 +42,9 @@
 #include "../Common/StringHelper.h"
 #include "dlog/dlog.h"
 #include "xuexuejson/Serialize.hpp"
+
+#include "Poco/Path.h"
+#include "Poco/File.h"
 
 using namespace dxlib::cvsystem;
 
@@ -231,26 +234,59 @@ void setCameraProperties(std::string cameraName)
 
 #elif __linux
 
+//int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
+//{
+//    namespace fs = boost::filesystem;
+//    using namespace std;
+//
+//    //设备在v4l里
+//    fs::path pv4l = "/dev/v4l";
+//    if (!fs::exists(pv4l)) //不存在相机
+//    {
+//        return 0;
+//    }
+//    fs::directory_iterator di(pv4l / "by-id");
+//    for (auto& de : di) {
+//        wstring name = de.path().filename().wstring(); //设备名字
+//        //看看能不能匹配到usb-F3D_USB_Camera_201903050001-video-index0
+//        //usb-046d_HD_Pro_Webcam_C920_A15963EF-video-index0
+//        const std::wregex pattern(L".*index0$");
+//        if (regex_match(name, pattern)) {
+//            LogI("DevicesHelper.listDevices():找到了设备%s", StringHelper::ws2s(name).c_str());
+//            devListout[devListout.size()] = de.path().wstring();
+//        }
+//    }
+//    return devListout.size();
+//}
 int DevicesHelper::listDevices(std::map<int, std::wstring>& devListout)
 {
-    namespace fs = boost::filesystem;
-    using namespace std;
 
     //设备在v4l里
-    fs::path pv4l = "/dev/v4l";
-    if (!fs::exists(pv4l)) //不存在相机
+    Poco::File pv4l = "/dev/v4l";
+    if (!pv4l.exists()) //不存在相机
     {
         return 0;
     }
-    fs::directory_iterator di(pv4l / "by-id");
-    for (auto& de : di) {
-        wstring name = de.path().filename().wstring(); //设备名字
+
+    Poco::File pv4ldir = ("/dev/v4l/by-id/");
+    if (!pv4ldir.exists()) //不存在相机
+    {
+        return 0;
+    }
+    std::vector<Poco::File> vFiles;
+    pv4ldir.list(vFiles);
+
+    for (size_t i = 0; i < vFiles.size(); i++) {
+        Poco::File& file = vFiles[i];
+        Poco::Path filePath(file.path());
+        std::string name = filePath.getFileName(); //设备名字
+
         //看看能不能匹配到usb-F3D_USB_Camera_201903050001-video-index0
         //usb-046d_HD_Pro_Webcam_C920_A15963EF-video-index0
-        const std::wregex pattern(L".*index0$");
+        const std::regex pattern(".*index0$");
         if (regex_match(name, pattern)) {
-            LogI("DevicesHelper.listDevices():找到了设备%s", StringHelper::ws2s(name).c_str());
-            devListout[devListout.size()] = de.path().wstring();
+            LogI("DevicesHelper.listDevices():找到了设备%s", name.c_str());
+            devListout[devListout.size()] = xuexue::json::JsonHelper::utf8To16(filePath.toString());
         }
     }
     return devListout.size();
