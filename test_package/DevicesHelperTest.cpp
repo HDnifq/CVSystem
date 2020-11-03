@@ -12,7 +12,9 @@ TEST(DevicesHelper, listDevices)
     EXPECT_TRUE(devCount > 0);
 }
 
-TEST(UVCCamera, listDevices)
+#if defined(_WIN32) || defined(_WIN64)
+
+TEST(DShow, listDevices)
 {
     std::vector<std::string> list;
     UVCCamera::listDevices(list);
@@ -41,3 +43,5 @@ TEST(UVCCamera, listDevices)
         allCaps = uvc.getAllProp();
     }
 }
+
+#endif
