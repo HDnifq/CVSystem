@@ -65,7 +65,13 @@ int main(int argc, char* argv[])
 
         kvp.second->setProp(cv::CAP_PROP_FPS, 60);
         //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
+
+#if defined(_WIN32) || defined(_WIN64)
         kvp.second->setProp(cv::CAP_PROP_EXPOSURE, -11);
+#else
+        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, 10);
+#endif
+
         //输出一下
         kvp.second->outputProp();
     }
