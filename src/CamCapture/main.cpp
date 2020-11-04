@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
 
     std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
     for (auto& kvp : camMap) {
-        kvp.second->isVirtualCamera = true; //标记0,1为逻辑相机
+        kvp.second->isVirtualCamera = false; //不为逻辑相机
         kvp.second->size = cv::Size(1280, 400);
-        kvp.second->paramSize = cv::Size(640, 400);
+        kvp.second->paramSize = cv::Size(1280, 400);
 
         kvp.second->setProp(cv::CAP_PROP_FPS, 60);
         //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
@@ -80,8 +80,9 @@ int main(int argc, char* argv[])
     dlog_set_file_thr(dlog_level::info);
     while (true)
     {
-        LogI("当前fps=%s", MultiCamera::GetInst()->fps());
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        LogI("当前fps=%f", MultiCamera::GetInst()->fps());
+
     }
     dlog_close();
     return 0;
