@@ -1,6 +1,7 @@
 ﻿#include "CVSystem/CVSystem.h"
 
 #include "dlog/dlog.h"
+#include <thread>
 
 using namespace dxlib;
 using namespace std;
@@ -52,20 +53,36 @@ int main(int argc, char* argv[])
     for (auto& kvp : DevicesHelper::GetInst()->devList)
     {
         string camName = kvp.second;
-        CameraManger::GetInst()->add(pCamera(new Camera(camName)));
+        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
+
     }
 
-    CameraManger::GetInst()->camMap[0]->setProp(cv::CAP_PROP_AUTO_EXPOSURE, 0);
+    std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
+    for (auto& kvp : camMap) {
+        kvp.second->isVirtualCamera = true; //标记0,1为逻辑相机
+        kvp.second->size = cv::Size(1280, 400);
+        kvp.second->paramSize = cv::Size(640, 400);
+
+        kvp.second->setProp(cv::CAP_PROP_FPS, 60);
+        //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
+        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, -11);
+        //输出一下
+        kvp.second->outputProp();
+    }
+
     MultiCamera::GetInst()->addProc(new TestProc());
     MultiCamera::GetInst()->openCamera(); //打开相机
-
-    //输出一下
-    CameraManger::GetInst()->camMap[0]->outputProp();
 
     //启动计算线程
     MultiCamera::GetInst()->start();
 
-    getchar();
+    dlog_set_console_thr(dlog_level::info);
+    dlog_set_file_thr(dlog_level::info);
+    while (true)
+    {
+        LogI("当前fps=%s", MultiCamera::GetInst()->fps());
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }
     dlog_close();
     return 0;
 }
