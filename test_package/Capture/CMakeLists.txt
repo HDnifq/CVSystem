@@ -3,7 +3,7 @@
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SUB_NAME "CamCapture")
+set(SUB_NAME "Capture")
 
 # 定义UNICODE会是TCHAR为wchar
 # add_definitions(-D UNICODE)
@@ -47,9 +47,9 @@ find_package (Threads)
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CONAN_LIBS = ${CONAN_LIBS}")
 
-target_include_directories(${SUB_NAME}.out PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../)
+target_include_directories(${SUB_NAME}.out PRIVATE ${CMAKE_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/src")
 target_link_libraries(${SUB_NAME}.out PRIVATE ${CONAN_LIBS} ${CMAKE_THREAD_LIBS_INIT} "CVSystem")
- 
+
 # if(WIN32)
 #     #链接某些自定义的依赖的库
 #     target_include_directories(${SUB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../DShow)

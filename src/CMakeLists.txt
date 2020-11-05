@@ -60,7 +60,6 @@ if(WIN32)
     add_subdirectory(DShow)
 endif()
 add_subdirectory(CVSystem)
-add_subdirectory(CamCapture)
 
 # if(CVSYSTEM_BUILD_TESTS)
 # # 使能测试
