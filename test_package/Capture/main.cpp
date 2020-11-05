@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 
     //读配置文件
     CamCaptureConfig config;
-    std::string configPath = "./CamCaptureConfig.json";
+    std::string configPath = Path::Combine(Path::ModuleDir(), "CamCaptureConfig.json");
     if (File::Exists(configPath)) {
         std::string json = File::ReadAllText(configPath);
         config = xuexue::json::JsonMapper::toObject<CamCaptureConfig>(json);
@@ -159,11 +159,8 @@ int main(int argc, char* argv[])
         kvp.second->setProp(cv::CAP_PROP_FPS, 60);
         //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
 
-#if defined(_WIN32) || defined(_WIN64)
-        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, -11);
-#else
-        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, 1);
-#endif
+        //设置曝光
+        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, config.exposure);
 
         //输出一下
         kvp.second->outputProp();

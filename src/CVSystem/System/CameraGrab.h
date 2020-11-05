@@ -95,6 +95,9 @@ class CameraGrab
      * @returns 是否采图成功.
      */
     bool grabOneCamera(pCameraImage& result, Camera* curCamera);
+
+    class Impl;
+    Impl* _impl;
 };
 
 } // namespace dxlib

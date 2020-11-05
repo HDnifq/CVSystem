@@ -3,10 +3,133 @@
 #include <memory>
 #include "dlog/dlog.h"
 
+#include "Poco/TaskManager.h"
+
 namespace dxlib {
+
+class TaskGrabOneCamera : public Poco::Task
+{
+  public:
+    TaskGrabOneCamera(const std::string& name, CameraGrab* cameraGrab,
+                      pCameraImage& cimg, Camera* curCamera) : Task(name),
+                                                               cameraGrab(cameraGrab),
+                                                               cimg(cimg),
+                                                               curCamera(curCamera) {}
+    ~TaskGrabOneCamera() {}
+
+    pCameraImage cimg;
+    Camera* curCamera;
+    CameraGrab* cameraGrab;
+
+    bool isSuccess = false;
+
+    virtual void runTask()
+    {
+        if (curCamera == nullptr) {
+            isSuccess = false;
+        }
+
+        int camIndex = curCamera->camIndex;
+        //当前要写入的[相机-图像]
+        ImageItem& item = cimg->vImage[camIndex];
+
+        if (curCamera->isVirtualCamera) {
+            //item.isSuccess = false;//(这个失败是默认值)
+            return;
+        }
+
+        if (!curCamera->isOpened()) {
+            //item.isSuccess = false;//标记采图失败
+            return;
+        }
+
+        //如果不是stereo相机这样
+        if (!curCamera->isStereoCamera) {
+
+            item.grabStartTime = clock();
+            if (curCamera->capture->read(item.image)) {
+                //如果是需要处理,特殊相机旋转了180度的
+                if (curCamera->isAutoProcSpecialTpye && curCamera->specialTpye == Camera::SpecialTpye::Rotate180) {
+                    cv::Mat normalImage;
+                    cv::rotate(item.image, normalImage, cv::ROTATE_180);
+                    item.image = normalImage;
+                }
+                item.isSuccess = true;
+                item.grabEndTime = clock();
+                LogD("CameraGrab.grabOneCamera():相机%s采图完成！", curCamera->devName.c_str());
+            }
+            else {
+                item.isSuccess = false;
+                item.grabEndTime = clock();
+                LogE("CameraGrab.grabOneCamera():相机%s采图read失败！", curCamera->devName.c_str());
+            }
+        }
+        else {
+            //如果是stereo相机
+            int camIndexL = curCamera->stereoCamIndexL;
+            int camIndexR = curCamera->stereoCamIndexR;
+            CV_Assert(camIndexL >= 0 && camIndexR >= 0);
+            CV_Assert(camIndexL < cimg->vImage.size() && camIndexR < cimg->vImage.size());
+
+            ImageItem& itemL = cimg->vImage[camIndexL];
+            ImageItem& itemR = cimg->vImage[camIndexR];
+            itemL.camera = cameraGrab->vCameras[camIndexL].get(); //标记camera来源(这里规定只能是vCameras来源)
+            itemR.camera = cameraGrab->vCameras[camIndexR].get(); //标记camera来源(这里规定只能是vCameras来源)
+
+            //加入自己的steroInfo
+            cimg->stereoInfo[curCamera->scID] = {itemL.camera, itemR.camera};
+
+            item.grabStartTime = itemL.grabStartTime = itemR.grabStartTime = clock();
+
+            cv::Mat imgNew;
+            if (curCamera->capture->read(imgNew)) {
+                item.isSuccess = itemL.isSuccess = itemR.isSuccess = true;
+                item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
+
+                int w = imgNew.cols;
+                int h = imgNew.rows;
+                if (w != curCamera->size.width || h != curCamera->size.height) {
+                    LogE("CameraGrab.grabOneCamera():相机%s采图分辨率错误!设定值(%d,%d)=>(%d,%d)",
+                         curCamera->devName.c_str(),
+                         curCamera->size.width,
+                         curCamera->size.height,
+                         w,
+                         h);
+                }
+
+                item.image = imgNew;
+                //这里实际上没有拷贝的
+                itemL.image = cv::Mat(imgNew, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
+                itemR.image = cv::Mat(imgNew, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
+                LogD("CameraGrab.grabOneCamera():Stereo相机%s采图完成！", curCamera->devName.c_str());
+            }
+            else {
+                item.isSuccess = itemL.isSuccess = itemR.isSuccess = false;
+                item.grabEndTime = itemL.grabEndTime = itemR.grabEndTime = clock();
+
+                LogE("CameraGrab.grabOneCamera():Stereo相机%s采图read失败！", curCamera->devName.c_str());
+            }
+        }
+        isSuccess = item.isSuccess;
+    }
+
+  private:
+};
+
+class CameraGrab::Impl
+{
+  public:
+    Impl() {}
+    ~Impl() {}
+
+    Poco::TaskManager taskManager;
+
+  private:
+};
 
 CameraGrab::CameraGrab()
 {
+    _impl = new Impl();
 }
 
 CameraGrab::CameraGrab(const std::vector<pCamera>& cps)
@@ -14,6 +137,7 @@ CameraGrab::CameraGrab(const std::vector<pCamera>& cps)
     for (auto& item : cps) {
         vCameras.push_back(item);
     }
+    delete _impl;
 }
 
 CameraGrab::~CameraGrab()
@@ -61,12 +185,11 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
     }
 }
 
-//传递进来的参数是nullptr
 bool CameraGrab::grab(pCameraImage& cimg)
 {
     int success = 0;
     int fail = 0;
-    cimg = nullptr;
+    cimg = nullptr; //传递进来的参数赋值nullptr
 
     //执行完毕之后就更新相机的属性状态
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
@@ -79,16 +202,27 @@ bool CameraGrab::grab(pCameraImage& cimg)
     //cimg->fnum = fnumber;//这个帧号在这个函数外面标记
     cimg->grabStartTime = clock();
 
+    //std::vector<TaskGrabOneCamera*> taskList;
+
     //对所有相机采图
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
-            grabOneCamera(cimg, vCameras[camIndex].get());
+            Camera* pCam = vCameras[camIndex].get();
+            TaskGrabOneCamera* task = new TaskGrabOneCamera(pCam->devName, this, cimg, vCameras[camIndex].get());
+            _impl->taskManager.start(task);
+            //grabOneCamera(cimg, vCameras[camIndex].get());
+            //taskList.push_back(task);
         }
         catch (const std::exception& e) {
             LogE("CameraGrab.grab():异常 %s", e.what());
             fail++;
         }
     }
+    _impl->taskManager.joinAll();
+
+    //for (size_t i = 0; i < taskList.size(); i++) {
+    //    delete taskList[i];
+    //}
 
     //统计采图成功和失败的
     for (size_t i = 0; i < cimg->vImage.size(); i++) {
