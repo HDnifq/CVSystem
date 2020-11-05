@@ -60,12 +60,15 @@ DevicesHelper::~DevicesHelper()
 {
 }
 
-int DevicesHelper::getIndexWithName(std::string name, bool isRegex, bool isWarning)
+int DevicesHelper::getIndexWithName(const std::string& name, bool isRegex, bool isWarning)
 {
     for (int i = 0; i < devList.size(); i++) {
         if (isRegex) {
             const std::regex pattern(name);
             if (std::regex_search(devList.at(i), pattern)) {
+                if (name != devList.at(i)) {
+                    LogW("DevicesHelper.getIndexWithName():传入设备名不准确,实际上%s->%s!", name.c_str(), devList.at(i).c_str());
+                }
                 return i;
             }
         }
@@ -85,12 +88,8 @@ std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::vector<
     //要打开的设备列表
     std::map<int, std::string> openDevList;
     for (int i = 0; i < names.size(); i++) {
-
         int index = getIndexWithName(names[i], isRegex, isWarning);
-        if (index < 0) {
-            LogW("DevicesHelper.getDevListWithNames():未能找到摄像机 %s!", names[i].c_str());
-        }
-        else {
+        if (index > 0) {
             openDevList[index] = names[i];
         }
     }

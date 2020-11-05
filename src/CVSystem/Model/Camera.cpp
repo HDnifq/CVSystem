@@ -164,7 +164,7 @@ bool Camera::open()
             //打开相机是否成功
             bool isSuccess = false;
 #if __linux
-            isSuccess = capture->open(devName, cv::CAP_V4L);
+            isSuccess = capture->open(DevicesHelper::GetInst()->devList[devID], cv::CAP_V4L);
 #else
             //这个open函数可能会弹窗,导致一直卡死在这里
             isSuccess = capture->open(devID, cv::CAP_DSHOW);

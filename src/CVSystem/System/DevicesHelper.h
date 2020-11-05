@@ -55,7 +55,7 @@ class DevicesHelper
 
     /**
      * 通过相机的名字得到相机的index(注意调用前需要先调用一次listDevices), 如果不存在相机那么返回-1.
-     * 注意linux下一般要使用正则.
+     * 注意linux下一般要使用正则,
      *
      * @author daixian
      * @date 2017/7/17
@@ -66,7 +66,7 @@ class DevicesHelper
      *
      * @returns 如果不存在相机那么返回-1.
      */
-    int getIndexWithName(std::string name, bool isRegex = false, bool isWarning = true);
+    int getIndexWithName(const std::string& name, bool isRegex = false, bool isWarning = true);
 
     /**
      * 输入一组需要的摄像机名字的得到一个设备列表(注意调用前需要先调用一次listDevices).
