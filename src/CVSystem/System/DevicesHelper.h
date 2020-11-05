@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <vector>
 #include <map>
 #include <string>
 
@@ -77,7 +78,7 @@ class DevicesHelper
      *
      * @returns 设备的index和名字对应的map.
      */
-    std::map<int, std::string> getDevListWithNames(const std::string name[], int length);
+    std::map<int, std::string> getDevListWithNames(const std::vector<std::string>& names);
 
     /**
      * 列出设备列表,将结果写到对象成员.

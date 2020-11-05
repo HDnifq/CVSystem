@@ -3,12 +3,33 @@
 #include "dlog/dlog.h"
 #include <thread>
 
+#include "xuexuejson/Serialize.hpp"
+#include "xuexue/csharp/csharp.h"
+
 using namespace dxlib;
 using namespace std;
 
+class CamCaptureConfig : XUEXUE_JSON_OBJECT
+{
+  public:
+    CamCaptureConfig()
+    {
+    }
+    ~CamCaptureConfig() {}
+
+    // 曝光设置
+    int exposure = 0;
+
+    //要打的相机名
+    vector<string> names = {"F3DSC01"};
+
+    XUEXUE_JSON_OBJECT_M2(exposure, names)
+  private:
+};
+
 class TestProc : public FrameProc
 {
-public:
+  public:
     TestProc() {}
     ~TestProc() {}
 
@@ -16,19 +37,20 @@ public:
 
     void process(pCameraImage camImage, int& key) override
     {
-        for (size_t i = 0; i < camImage->vImage.size(); i++)
-        {
-            if (camImage->vImage[i].isSuccess == false)
-            {
+        for (size_t i = 0; i < camImage->vImage.size(); i++) {
+            if (camImage->vImage[i].isSuccess == false) {
                 LogE("TestProc.process():有个相机采图失败!");
                 continue;
             }
             cv::Mat image = camImage->vImage[i].image;
-            cv::Mat gray; cv::Mat thr40; cv::Mat  thr110; cv::Mat thr180;
+            cv::Mat gray;
+            cv::Mat thr40;
+            cv::Mat thr110;
+            cv::Mat thr180;
             thresholdOnce(image, gray, thr40, thr110, thr180);
         }
 
-        count++;                     //采图的计数加1
+        count++; //采图的计数加1
 
         //try {
         //    key = cv::waitKey(1); //一定要加waitKey无法显示图片
@@ -91,11 +113,25 @@ public:
     }
 };
 
-
-
 int main(int argc, char* argv[])
 {
+    using xuexue::csharp::File;
+    using xuexue::csharp::Path;
+
     dlog_init("log", "CamCapture", dlog_init_relative::MODULE);
+
+    //读配置文件
+    CamCaptureConfig config;
+    std::string configPath = Path::Combine(Path::ModuleDir(), "CamCaptureConfig.json");
+    if (File::Exists(configPath)) {
+        std::string json = File::ReadAllText(configPath);
+        config = xuexue::json::JsonMapper::toObject<CamCaptureConfig>(json);
+    }
+    else {
+        std::string json = xuexue::json::JsonMapper::toJson(config, true);
+        File::WriteAllText(configPath, json);
+    }
+
     CameraManger::GetInst()->clear();
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
@@ -106,11 +142,12 @@ int main(int argc, char* argv[])
     }
     LogI("找到了%zu个相机", DevicesHelper::GetInst()->devList.size());
 
-    for (auto& kvp : DevicesHelper::GetInst()->devList)
-    {
-        string camName = kvp.second;
-        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
+    auto devList = DevicesHelper::GetInst()->getDevListWithNames(config.names);
 
+    for (auto& kvp : devList) {
+        string camName = kvp.second;
+
+        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
     }
 
     std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
@@ -140,11 +177,9 @@ int main(int argc, char* argv[])
 
     dlog_set_console_thr(dlog_level::info);
     dlog_set_file_thr(dlog_level::info);
-    while (true)
-    {
+    while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(2));
         LogI("当前fps=%f", MultiCamera::GetInst()->fps());
-
     }
     dlog_close();
     return 0;
