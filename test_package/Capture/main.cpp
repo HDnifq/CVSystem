@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
     }
     LogI("找到了%zu个相机", DevicesHelper::GetInst()->devList.size());
 
-    auto devList = DevicesHelper::GetInst()->getDevListWithNames(config.names);
+    auto devList = DevicesHelper::GetInst()->getDevListWithNames(config.names, true);
 
     for (auto& kvp : devList) {
         string camName = kvp.second;

@@ -80,12 +80,13 @@ int DevicesHelper::getIndexWithName(std::string name, bool isRegex, bool isWarni
     return -1;
 }
 
-std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::vector<std::string>& names)
+std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::vector<std::string>& names, bool isRegex, bool isWarning)
 {
     //要打开的设备列表
     std::map<int, std::string> openDevList;
     for (int i = 0; i < names.size(); i++) {
-        int index = getIndexWithName(names[i]);
+
+        int index = getIndexWithName(names[i], isRegex, isWarning);
         if (index < 0) {
             LogW("DevicesHelper.getDevListWithNames():未能找到摄像机 %s!", names[i].c_str());
         }

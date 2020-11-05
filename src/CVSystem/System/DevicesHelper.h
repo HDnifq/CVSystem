@@ -55,6 +55,7 @@ class DevicesHelper
 
     /**
      * 通过相机的名字得到相机的index(注意调用前需要先调用一次listDevices), 如果不存在相机那么返回-1.
+     * 注意linux下一般要使用正则.
      *
      * @author daixian
      * @date 2017/7/17
@@ -69,16 +70,18 @@ class DevicesHelper
 
     /**
      * 输入一组需要的摄像机名字的得到一个设备列表(注意调用前需要先调用一次listDevices).
+     * 注意linux下一般要使用正则.
      *
      * @author daixian
      * @date 2017/7/18
      *
-     * @param  name   摄像机名字数组.
-     * @param  length 数组长度.
+     * @param  names   摄像机名字数组.
+     * @param  isRegex   (Optional) 是否使用正则表达式匹配.
+     * @param  isWarning (Optional) 如果没有找到相机是否提示警告日志,用于悄悄的检索当前系统相机.
      *
      * @returns 设备的index和名字对应的map.
      */
-    std::map<int, std::string> getDevListWithNames(const std::vector<std::string>& names);
+    std::map<int, std::string> getDevListWithNames(const std::vector<std::string>& names, bool isRegex = false, bool isWarning = true);
 
     /**
      * 列出设备列表,将结果写到对象成员.
