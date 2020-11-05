@@ -89,7 +89,7 @@ std::map<int, std::string> DevicesHelper::getDevListWithNames(const std::vector<
     std::map<int, std::string> openDevList;
     for (int i = 0; i < names.size(); i++) {
         int index = getIndexWithName(names[i], isRegex, isWarning);
-        if (index > 0) {
+        if (index >= 0) {
             openDevList[index] = names[i];
         }
     }

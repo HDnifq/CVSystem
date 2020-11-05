@@ -142,12 +142,10 @@ int main(int argc, char* argv[])
     }
     LogI("找到了%zu个相机", DevicesHelper::GetInst()->devList.size());
 
-    auto devList = DevicesHelper::GetInst()->getDevListWithNames(config.names, true);
-
-    for (auto& kvp : devList) {
-        string camName = kvp.second;
-
-        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
+    for (auto& camName : config.names) {
+        if (DevicesHelper::GetInst()->getIndexWithName(camName, true) >= 0) {
+            CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
+        }
     }
 
     std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;

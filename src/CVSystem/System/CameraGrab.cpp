@@ -26,7 +26,7 @@ class TaskGrabOneCamera : public Poco::Task
     virtual void runTask()
     {
         if (curCamera == nullptr) {
-            isSuccess = false;
+            return;
         }
 
         int camIndex = curCamera->camIndex;
@@ -119,7 +119,9 @@ class TaskGrabOneCamera : public Poco::Task
 class CameraGrab::Impl
 {
   public:
-    Impl() {}
+    Impl()
+    {
+    }
     ~Impl() {}
 
     Poco::TaskManager taskManager;
@@ -137,11 +139,12 @@ CameraGrab::CameraGrab(const std::vector<pCamera>& cps)
     for (auto& item : cps) {
         vCameras.push_back(item);
     }
-    delete _impl;
+    _impl = new Impl();
 }
 
 CameraGrab::~CameraGrab()
 {
+    delete _impl;
 }
 
 void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
