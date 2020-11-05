@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 
     //读配置文件
     CamCaptureConfig config;
-    std::string configPath = Path::Combine(Path::ModuleDir(), "CamCaptureConfig.json");
+    std::string configPath = "./CamCaptureConfig.json";
     if (File::Exists(configPath)) {
         std::string json = File::ReadAllText(configPath);
         config = xuexue::json::JsonMapper::toObject<CamCaptureConfig>(json);
