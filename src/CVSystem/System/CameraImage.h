@@ -208,12 +208,12 @@ class CameraImage
      */
     bool isAllCameraClosed()
     {
-        for (int i = 0; i < vImage.size(); i++) {
-            if (vImage[i].camera->isOpened()) {
-                return false;
-            }
-        }
-        return true;
+        //for (int i = 0; i < vImage.size(); i++) {
+        //    if (vImage[i].camera->isOpened()) {
+        //        return false;
+        //    }
+        //}
+        return false;
     }
 };
 

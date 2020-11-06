@@ -5,19 +5,19 @@
 
 #include "Poco/TaskManager.h"
 
+#include "CameraImageQueue.h"
+
 namespace dxlib {
 
 class TaskGrabOneCamera : public Poco::Task
 {
   public:
     TaskGrabOneCamera(const std::string& name, CameraGrab* cameraGrab,
-                      pCameraImage& cimg, Camera* curCamera) : Task(name),
-                                                               cameraGrab(cameraGrab),
-                                                               cimg(cimg),
-                                                               curCamera(curCamera) {}
+                      Camera* curCamera) : Task(name),
+                                           cameraGrab(cameraGrab),
+                                           curCamera(curCamera) {}
     ~TaskGrabOneCamera() {}
 
-    pCameraImage cimg;
     Camera* curCamera;
     CameraGrab* cameraGrab;
 
@@ -28,7 +28,7 @@ class TaskGrabOneCamera : public Poco::Task
         if (curCamera == nullptr) {
             return;
         }
-
+#if aaa
         int camIndex = curCamera->camIndex;
         //当前要写入的[相机-图像]
         ImageItem& item = cimg->vImage[camIndex];
@@ -111,6 +111,7 @@ class TaskGrabOneCamera : public Poco::Task
             }
         }
         isSuccess = item.isSuccess;
+#endif
     }
 
   private:
@@ -125,6 +126,8 @@ class CameraGrab::Impl
     ~Impl() {}
 
     Poco::TaskManager taskManager;
+
+    CameraImageQueue imageQueue;
 
   private:
 };
@@ -188,6 +191,23 @@ void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
     }
 }
 
+void CameraGrab::startGrab()
+{
+    for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
+        try {
+            Camera* pCam = vCameras[camIndex].get();
+            if (!pCam->isVirtualCamera) {
+                TaskGrabOneCamera* task = new TaskGrabOneCamera(pCam->devName, this, pCam);
+                _impl->imageQueue.AddCamera(pCam);
+                _impl->taskManager.start(task);
+            }
+        }
+        catch (const std::exception& e) {
+            LogE("CameraGrab.startGrab():异常 %s", e.what());
+        }
+    }
+}
+
 bool CameraGrab::grab(pCameraImage& cimg)
 {
     int success = 0;
@@ -211,9 +231,9 @@ bool CameraGrab::grab(pCameraImage& cimg)
     for (size_t camIndex = 0; camIndex < vCameras.size(); camIndex++) {
         try {
             Camera* pCam = vCameras[camIndex].get();
-            TaskGrabOneCamera* task = new TaskGrabOneCamera(pCam->devName, this, cimg, vCameras[camIndex].get());
-            _impl->taskManager.start(task);
-            //grabOneCamera(cimg, vCameras[camIndex].get());
+            //TaskGrabOneCamera* task = new TaskGrabOneCamera(pCam->devName, this, cimg, vCameras[camIndex].get());
+            //_impl->taskManager.start(task);
+            grabOneCamera(cimg, pCam);
             //taskList.push_back(task);
         }
         catch (const std::exception& e) {
@@ -221,7 +241,7 @@ bool CameraGrab::grab(pCameraImage& cimg)
             fail++;
         }
     }
-    _impl->taskManager.joinAll();
+    //_impl->taskManager.joinAll();
 
     //for (size_t i = 0; i < taskList.size(); i++) {
     //    delete taskList[i];
