@@ -23,11 +23,11 @@ void CameraImageQueue::Clear()
 void CameraImageQueue::AddCamera(Camera* camera)
 {
     vGrabCamera.push_back(camera);
-    vTempImageQueue.push_back(std::deque<ImageItem>());
+    vTempImageQueue.push_back(std::deque<CameraImage>());
     vLock.push_back(new std::mutex());
 }
 
-void CameraImageQueue::PushImage(Camera* camera, ImageItem& image)
+void CameraImageQueue::PushImage(const Camera* camera, const CameraImage& image)
 {
     int index = 0;
     for (size_t i = 0; i < vGrabCamera.size(); i++) {
@@ -42,7 +42,7 @@ void CameraImageQueue::PushImage(Camera* camera, ImageItem& image)
     vLock[index]->unlock();
 }
 
-void CameraImageQueue::GetImage(pCameraImage& camImage)
+pCameraImageGroup CameraImageQueue::GetImage()
 {
     int doneCount = 0;
     for (size_t i = 0; i < vLock.size(); i++) {
@@ -53,15 +53,22 @@ void CameraImageQueue::GetImage(pCameraImage& camImage)
         vLock[i]->unlock();
     }
     if (doneCount == vGrabCamera.size()) {
-        //这表示采图完成了
+        pCameraImageGroup imgGroup = std::make_shared<CameraImageGroup>();
+        imgGroup->fnum = doneCount++;
+
+        //这表示采图完成了,所有的相机都已经采图OK
         for (size_t i = 0; i < vLock.size(); i++) {
             vLock[i]->lock();
-            if (!vTempImageQueue[i].empty()) {
-                doneCount++;
-            }
+            CameraImage& img = vTempImageQueue[i].front();
+            imgGroup->addCameraImage(img);
+            vTempImageQueue[i].pop_front();
             vLock[i]->unlock();
         }
+        return imgGroup;
     }
+
+    //这里采图没有完成
+    return nullptr;
 }
 
 } // namespace dxlib

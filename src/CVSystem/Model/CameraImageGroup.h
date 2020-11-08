@@ -15,14 +15,15 @@ namespace dxlib {
 class CameraImageGroup
 {
   public:
-    CameraImageGroup(std::vector<pCamera>& vCameras)
-    {
-        vImage.resize(vCameras.size()); //先直接创建算了
-        //记录所有的camera
-        for (size_t i = 0; i < vCameras.size(); i++) {
-            vImage[i].camera = vCameras[i].get();
-        }
-    }
+    //CameraImageGroup(std::vector<pCamera>& vCameras)
+    //{
+    //    vImage.resize(vCameras.size()); //先直接创建算了
+    //    //记录所有的camera
+    //    for (size_t i = 0; i < vCameras.size(); i++) {
+    //        vImage[i].camera = vCameras[i].get();
+    //    }
+    //}
+    CameraImageGroup() {}
 
     // 相机帧序号.
     unsigned int fnum = 0;
@@ -30,8 +31,8 @@ class CameraImageGroup
     // 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录).
     std::vector<CameraImage> vImage;
 
-    // 立体相机信息. key是scId,后面是LR两个相机指针
-    std::map<int, std::array<Camera*, 2>> stereoInfo;
+    //// 立体相机信息. key是scId,后面是LR两个相机指针
+    //std::map<int, std::array<Camera*, 2>> stereoInfo;
 
     // 这一帧的最早采集开始时间戳.
     clock_t grabStartTime = 0;
@@ -46,6 +47,16 @@ class CameraImageGroup
     clock_t procEndTime = 0;
 
     /**
+     * 向数据结构中添加一项相机图片的记录.
+     *
+     * @author daixian
+     * @date 2020/11/8
+     *
+     * @param  camImage The camera image.
+     */
+    void addCameraImage(const CameraImage& camImage);
+
+    /**
      * 这一帧的采集消耗时间 ms.
      *
      * @author daixian
@@ -53,10 +64,7 @@ class CameraImageGroup
      *
      * @returns A float.
      */
-    float grabCostTime()
-    {
-        return (float)(grabEndTime - grabStartTime) / CLOCKS_PER_SEC * 1000;
-    }
+    float grabCostTime();
 
     /**
      * 等待处理的消耗时间 ms.
@@ -66,10 +74,7 @@ class CameraImageGroup
      *
      * @returns A float.
      */
-    float waitProcTime()
-    {
-        return (float)(procStartTime - grabEndTime) / CLOCKS_PER_SEC * 1000;
-    }
+    float waitProcTime();
 
     /**
      * 处理消耗的时间 ms.
@@ -79,13 +84,10 @@ class CameraImageGroup
      *
      * @returns A float.
      */
-    float procCostTime()
-    {
-        return (float)(procEndTime - procStartTime) / CLOCKS_PER_SEC * 1000;
-    }
+    float procCostTime();
 
     /**
-     * vImage并不是一个以camIndex为序号的数据结构，所以用这个函数来查找一个ImageItem.
+     * vImage并不一定是一个以camIndex为序号的数据结构，所以用这个函数来查找一个ImageItem.
      *
      * @author daixian
      * @date 2018/12/19
@@ -94,24 +96,10 @@ class CameraImageGroup
      *
      * @returns 如果没有找到那么就返回null.
      */
-    CameraImage getItem(int camIndex) const
-    {
-        //如果vector的index是能够对应上的，那么就直接返回这一项
-        if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
-            return vImage[camIndex];
-        }
-        //如果对应不上那么只能遍历搜索
-        for (int i = 0; i < vImage.size(); i++) {
-            if (vImage[i].camera->camIndex == camIndex) {
-                return vImage[i];
-            }
-        }
-        LogE("CameraImage.getItem():输入的camIndex未能查找到!camIndex=%d", camIndex);
-        return CameraImage();
-    }
+    CameraImage getImage(int camIndex) const;
 
     /**
-     * 使用camIndex搜索一个ImageItem.
+     * vImage并不一定是一个以camIndex为序号的数据结构，使用camIndex搜索一个ImageItem.
      *
      * @author daixian
      * @date 2019/8/5
@@ -121,24 +109,7 @@ class CameraImageGroup
      *
      * @returns 如果成功返回true.
      */
-    bool getItem(int camIndex, CameraImage& item) const
-    {
-        //如果vector的index是能够对应上的，那么就直接返回这一项
-        if (vImage.size() > camIndex && vImage[camIndex].camera->camIndex == camIndex) {
-            item = vImage[camIndex];
-            return true;
-        }
-
-        //如果对应不上那么只能遍历搜索
-        for (int i = 0; i < vImage.size(); i++) {
-            if (vImage[i].camera->camIndex == camIndex) {
-                item = vImage[camIndex];
-                return true;
-            }
-        }
-        LogE("CameraImage.getItem():输入的camIndex未能查找到!camIndex=%d", camIndex);
-        return false;
-    }
+    bool getImage(int camIndex, CameraImage& item) const;
 
     /**
      * 第一张有内容的图片的大小,用来简单的获得当前工作图片大小.

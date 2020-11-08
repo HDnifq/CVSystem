@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CameraImage.h"
+#include "CameraImageGroup.h"
 
 //#include "../Common/concurrentqueue.h"
 //#include "../Common/blockingconcurrentqueue.h"
@@ -10,11 +11,12 @@
 
 namespace dxlib {
 
-///-------------------------------------------------------------------------------------------------
-/// <summary> 用于多线程采图的时候无脑的采图的数据结构. </summary>
-///
-/// <remarks> Surface, 2020/11/7. </remarks>
-///-------------------------------------------------------------------------------------------------
+/**
+ * 用于多线程采图的时候无脑的采图的数据结构.
+ *
+ * @author daixian
+ * @date 2020/11/8
+ */
 class CameraImageQueue
 {
   public:
@@ -38,12 +40,36 @@ class CameraImageQueue
 
     void Clear();
 
-    // 首先需要增加一个相机的记录.
+    /**
+     * 首先需要增加一个相机的记录,给对应的数据结构都增加.
+     *
+     * @author daixian
+     * @date 2020/11/8
+     *
+     * @param  camera 相机.
+     */
     void AddCamera(Camera* camera);
 
-    void PushImage(Camera* camera, CameraImage& image);
+    /**
+     * 添加一个相机图片.
+     *
+     * @author daixian
+     * @date 2020/11/8
+     *
+     * @param [in,out] camera If non-null, the camera.
+     * @param [in,out] image  The image.
+     */
+    void PushImage(const Camera* camera, const CameraImage& image);
 
-    void GetImage(pCameraImage& camImage);
+    /**
+     * 提取一个图片组.
+     *
+     * @author daixian
+     * @date 2020/11/8
+     *
+     * @returns The image.
+     */
+    pCameraImageGroup GetImage();
 
   private:
 };

@@ -564,23 +564,23 @@ HRESULT UVCCamera::moveTiltOneBottom(int tilt)
 
 /*HRESULT angleUpLeft(int pan, int tilt)
 {
-	HRESULT hr;
-	return hr;
+    HRESULT hr;
+    return hr;
 }
 HRESULT angleUpRight(int pan, int tilt)
 {
-	HRESULT hr;
-	return hr;
+    HRESULT hr;
+    return hr;
 }
 HRESULT angleDownLeft(int pan, int tilt)
 {
-	HRESULT hr;
-	return hr;
+    HRESULT hr;
+    return hr;
 }
 HRESULT anglueDownRight(int pan, int tilt)
 {
-	HRESULT hr;
-	return hr;
+    HRESULT hr;
+    return hr;
 }*/
 
 /*

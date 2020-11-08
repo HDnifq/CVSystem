@@ -211,9 +211,9 @@ class UVCCamera
     HRESULT moveTiltOneTop(int tilt);
     HRESULT moveTiltOneBottom(int tilt);
     /*HRESULT angleUpLeft(int pan, int tilt);
-	HRESULT angleUpRight(int pan, int tilt);
-	HRESULT angleDownLeft(int pan, int tilt);
-	HRESULT anglueDownRight(int pan, int tilt);*/
+    HRESULT angleUpRight(int pan, int tilt);
+    HRESULT angleDownLeft(int pan, int tilt);
+    HRESULT anglueDownRight(int pan, int tilt);*/
     //zoom
     HRESULT zoomOneIn(int zoom);
     HRESULT zoomOneOut(int zoom);
