@@ -2,9 +2,9 @@
 
 #include <chrono>
 #include <thread>
+#include <memory>
 
 #include "../System/DevicesHelper.h"
-
 #include <opencv2/videoio.hpp>
 
 #include "dlog/dlog.h"
@@ -101,8 +101,11 @@ CameraDevice::~CameraDevice()
     delete _impl;
 }
 
-bool CameraDevice::open()
+bool CameraDevice::open(float& costTime)
 {
+    //统计时间
+    costTime = 0;
+    clock_t startTime = clock();
 
     //如果存在VideoCapture那么就释放
     if (capture == nullptr) {
@@ -189,6 +192,10 @@ bool CameraDevice::open()
 
     //打开相机成功之后会进入这里
     outputProp(); //输出一下当前关心的相机属性状态
+
+    //统计时间
+    costTime = (float)(clock() - startTime) / CLOCKS_PER_SEC * 1000;
+
     return true;
 }
 
@@ -204,6 +211,9 @@ bool CameraDevice::isOpened()
 
 bool CameraDevice::read(cv::Mat& image)
 {
+    if (!isOpened()) {
+        return false;
+    }
     return capture->read(image);
 }
 

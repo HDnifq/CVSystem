@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <opencv2/opencv.hpp>
-#include <memory>
 
 namespace dxlib {
 
@@ -40,17 +39,17 @@ class CameraDevice
      *
      * @returns 打开成功返回true.
      */
-    bool open();
+    bool open(float& costTime);
 
     /**
-     * 采一张图片.
+     * 采一张图片,这个函数在采图的时候是阻塞的.
      *
      * @author daixian
      * @date 2020/3/18
      *
-     * @param [in,out] image The image to read.
+     * @param [in,out] image 需要采集的图片.
      *
-     * @returns True if it succeeds, false if it fails.
+     * @returns 成功采集返回true.
      */
     bool read(cv::Mat& image);
 

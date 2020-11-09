@@ -1,4 +1,5 @@
 ﻿#include "CameraImageQueue.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 
@@ -27,11 +28,16 @@ void CameraImageQueue::AddCamera(Camera* camera)
     vLock.push_back(new std::mutex());
 }
 
-void CameraImageQueue::PushImage(const Camera* camera, const CameraImage& image)
+void CameraImageQueue::PushImage(const CameraImage& image)
 {
+    if (image.camera == nullptr) {
+        LogE("CameraImageQueue.PushImage():加入的数据项的camera为null");
+        return;
+    }
+
     int index = 0;
     for (size_t i = 0; i < vGrabCamera.size(); i++) {
-        if (vGrabCamera[i] == camera) {
+        if (vGrabCamera[i] == image.camera) {
             index = i;
             break;
         }

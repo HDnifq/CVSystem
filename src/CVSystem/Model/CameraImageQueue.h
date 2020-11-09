@@ -38,10 +38,17 @@ class CameraImageQueue
     // 采图完成的帧数
     int doneCount = 0;
 
+    /**
+     * 清空数据记录
+     *
+     * @author daixian
+     * @date 2020/11/9
+     */
     void Clear();
 
     /**
      * 首先需要增加一个相机的记录,给对应的数据结构都增加.
+     * vTempImageQueue和vGrabCamera这两个数组的index是保持一致的.
      *
      * @author daixian
      * @date 2020/11/8
@@ -56,10 +63,9 @@ class CameraImageQueue
      * @author daixian
      * @date 2020/11/8
      *
-     * @param [in,out] camera If non-null, the camera.
-     * @param [in,out] image  The image.
+     * @param  image The image.
      */
-    void PushImage(const Camera* camera, const CameraImage& image);
+    void PushImage(const CameraImage& image);
 
     /**
      * 提取一个图片组.

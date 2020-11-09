@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <opencv2/opencv.hpp>
-#include "dlog/dlog.h"
 
 #include "Camera.h"
 #include "CameraDevice.h"
@@ -23,7 +22,7 @@ struct CameraImage
     Camera* camera = nullptr;
 
     // 实际的采图设备的指针.
-    CameraDevice* cameraDevice = nullptr;
+    CameraDevice* device = nullptr;
 
     // 是否采图成功.
     bool isSuccess = false;

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "CameraParam.h"
+#include "CameraDevice.h"
 
 namespace dxlib {
 
@@ -79,14 +80,14 @@ class Camera
     // 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用)
     std::shared_ptr<Camera> stereoOther = nullptr;
 
-    // 实际的物理相机.
-    std::shared_ptr<Camera> physicalCamera = nullptr;
-
     // 这是相机采图的帧率.
     float FPS = 0;
 
     // 用户使用的附加对象.
     void* userData;
+
+    // 产生这个相机图像的设备
+    CameraDevice* device = nullptr;
 
 #pragma region 简单函数
 

@@ -1,4 +1,5 @@
 ﻿#include "CameraImage.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 
