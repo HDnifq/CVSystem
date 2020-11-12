@@ -68,12 +68,12 @@ class CameraImageQueue
     void PushImage(const CameraImage& image);
 
     /**
-     * 提取一个图片组.
+     * 提取一个图片组,如果采图还没有结束那么返回null.
      *
      * @author daixian
      * @date 2020/11/8
      *
-     * @returns The image.
+     * @returns 图片组,如果失败返回null.
      */
     pCameraImageGroup GetImage();
 

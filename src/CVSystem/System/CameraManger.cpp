@@ -6,6 +6,8 @@
 
 namespace dxlib {
 
+CameraManger* CameraManger::m_pInstance = new CameraManger();
+
 CameraManger::CameraManger()
 {
 }
@@ -14,40 +16,62 @@ CameraManger::~CameraManger()
 {
 }
 
-CameraManger* CameraManger::m_pInstance = NULL;
-
-pCamera CameraManger::add(pCamera cp)
+pCameraDevice CameraManger::add(pCameraDevice& device)
 {
-    if (camMap.find(cp->camIndex) != camMap.end()) {
-        LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", cp->camIndex);
-        return nullptr;
+    //检察重复
+    for (size_t i = 0; i < vDevice.size(); i++) {
+        if (vDevice[i] == device) {
+            LogE("CameraManger.add():传入了一个重复设备指针%s,当前相机个数%d,直接返回！", device->devName.c_str(), vDevice.size());
+            return device;
+        }
+        if (vDevice[i]->devName == device->devName) {
+            LogE("CameraManger.add():传入了一个重复设备名称%s,当前相机个数%d,直接返回！", device->devName.c_str(), vDevice.size());
+            return device;
+        }
     }
-    if (mNamePCamera.find(cp->devName) != mNamePCamera.end()) {
-        LogE("CameraManger.add():添加相机有重复的devName=%s，添加失败!", cp->devName.c_str());
+
+    vDevice.push_back(device);
+
+    LogI("CameraManger.add():添加了一个设备%s,当前设备格式个数%d！", device->devName.c_str(), vDevice.size());
+    return device;
+}
+
+pCamera CameraManger::add(pCamera& camera)
+{
+    if (mCamera.find(camera->camIndex) != mCamera.end()) {
+        LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", camera->camIndex);
         return nullptr;
     }
 
-    cp->camIndex = (int)camMap.size(); //分配一个camIndex
-    camMap[cp->camIndex] = cp;
-    mNamePCamera[cp->devName] = cp;
-    vCamera.push_back(cp);
+    camera->camIndex = (int)mCamera.size(); //分配一个camIndex
+    mCamera[camera->camIndex] = camera;
+    vCamera.push_back(camera); //添加一个
 
     //检查一下vCamera
     for (int i = 0; i < vCamera.size(); i++) {
         CV_Assert(vCamera[i]->camIndex == i);
     }
-
-    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", cp->devName.c_str(), camMap.size());
-    return cp;
+    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", camera->name.c_str(), mCamera.size());
+    return camera;
 }
 
-pCamera CameraManger::addVirtual(pCamera cp)
+pCameraImageFactory CameraManger::add(pCameraImageFactory& cmf)
 {
-    cp->isVirtualCamera = true;
-    return add(cp);
+    //检察重复
+    for (size_t i = 0; i < vCameraImageFactory.size(); i++) {
+        if (vCameraImageFactory[i] == cmf) {
+            LogE("CameraManger.add():传入了一个重复图片转换器%s,直接返回！", cmf->device->devName.c_str(), vDevice.size());
+            return cmf;
+        }
+    }
+
+    vCameraImageFactory.push_back(cmf);
+
+    LogI("CameraManger.add():添加了一个图片转换器%s,当前设备格式个数%d！", cmf->device->devName.c_str(), vDevice.size());
+    return cmf;
 }
 
-pStereoCamera CameraManger::add(pStereoCamera sc)
+pStereoCamera CameraManger::add(pStereoCamera& sc)
 {
     if (sc->scID < 0) {
         sc->scID = static_cast<int>(vStereo.size()); //这个id就是vStereo里的index
@@ -62,7 +86,7 @@ pStereoCamera CameraManger::add(pStereoCamera sc)
     return sc;
 }
 
-pCameraPair CameraManger::add(pCameraPair cp)
+pCameraPair CameraManger::add(pCameraPair& cp)
 {
     if (cp->cpID < 0) {
         cp->cpID = static_cast<int>(vCameraPair.size()); //这个id就是vCameraPair里的index
@@ -79,16 +103,18 @@ pCameraPair CameraManger::add(pCameraPair cp)
 
 pCamera CameraManger::getCamera(const int camIndex)
 {
-    if (camMap.find(camIndex) != camMap.end()) {
-        return camMap[camIndex];
+    if (mCamera.find(camIndex) != mCamera.end()) {
+        return mCamera[camIndex];
     }
     return nullptr;
 }
 
-pCamera CameraManger::getCamera(const std::string& devName)
+pCamera CameraManger::getCamera(const std::string& name)
 {
-    if (mNamePCamera.find(devName) != mNamePCamera.end()) {
-        return mNamePCamera[devName];
+    for (auto& kvp : mCamera) {
+        if (kvp.second->name == name) {
+            return kvp.second;
+        }
     }
     return nullptr;
 }
@@ -100,9 +126,8 @@ std::vector<pCamera>& CameraManger::getCameraVec()
 
 void CameraManger::clear()
 {
-    this->camMap.clear();
+    this->mCamera.clear();
     this->vCamera.clear();
-    this->mNamePCamera.clear();
     this->vStereo.clear();
 }
 
@@ -177,9 +202,10 @@ pCameraPair CameraManger::getCameraPair(int cameraL, int cameraR)
 bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, double value)
 {
     bool success = false;
-    auto iter = camMap.find(camIndex);
-    if (iter != camMap.end()) {
-        iter->second->setProp(CAP_PROP, value);
+    auto iter = mCamera.find(camIndex);
+    if (iter != mCamera.end()) {
+        if (iter->second->device != nullptr)
+            iter->second->device->setProp(CAP_PROP, value);
         success = true;
     }
     return success;
@@ -188,11 +214,10 @@ bool CameraManger::setProp(int camIndex, cv::VideoCaptureProperties CAP_PROP, do
 bool CameraManger::isAllCameraIsOpen()
 {
     bool isAllOpen = true;
-    for (auto& kvp : this->camMap) {
-        pCamera& camera = kvp.second;
-        if (!camera->isVirtualCamera && !camera->isOpened()) {
+    for (auto& v : this->vDevice) {
+        if (!v->isOpened()) {
             isAllOpen = false;
-            LogW("CameraManger.isAllCameraIsOpen():相机 %s 没有打开！", camera->devName.c_str());
+            LogW("CameraManger.isAllCameraIsOpen():相机 %s 没有打开！", v->devName.c_str());
         }
     }
     return isAllOpen;
@@ -202,7 +227,7 @@ bool CameraManger::checkInputData()
 {
     bool isRight = true;
 
-    for (auto kvp : camMap) {
+    for (auto kvp : mCamera) {
         if (kvp.first != kvp.second->camIndex) {
             LogE("CameraManger.checkDataInput():相机的camIndex录入有错误,和map的key值不同.");
             isRight = false;

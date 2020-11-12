@@ -15,8 +15,23 @@ namespace dxlib {
 class ICameraImageFactory
 {
   public:
-    // 创建一组CameraImage,CameraDevice和Camera是一对多的关系.它实际表示了device到Camera的映射方法.
-    virtual std::vector<CameraImage> Create(CameraDevice* device, std::vector<Camera*> camera) = 0;
+    // 相机设备
+    CameraDevice* device;
+
+    // 逻辑相机
+    std::vector<Camera*> cameras;
+
+    /**
+     * 创建一组CameraImage,CameraDevice和Camera是一对多的关系.它实际表示了device到Camera的图片映射方法.
+     *
+     * @author daixian
+     * @date 2020/11/12
+     *
+     * @returns 一个std::vector<CameraImage>,它的数量和cameras的数量相同.
+     */
+    virtual std::vector<CameraImage> Create() = 0;
 };
+// 定义这个智能指针类型.
+typedef std::shared_ptr<ICameraImageFactory> pCameraImageFactory;
 
 } // namespace dxlib

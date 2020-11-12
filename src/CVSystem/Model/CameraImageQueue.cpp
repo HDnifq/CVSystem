@@ -67,6 +67,14 @@ pCameraImageGroup CameraImageQueue::GetImage()
             vLock[i]->lock();
             CameraImage& img = vTempImageQueue[i].front();
             imgGroup->addCameraImage(img);
+
+            //记录一下采图时间
+            if (imgGroup->grabStartTime == 0 || imgGroup->grabStartTime > img.grabStartTime) {
+                imgGroup->grabStartTime = img.grabStartTime;
+            }
+            if (imgGroup->grabEndTime == 0 || imgGroup->grabEndTime < img.grabEndTime) {
+                imgGroup->grabEndTime = img.grabEndTime;
+            }
             vTempImageQueue[i].pop_front();
             vLock[i]->unlock();
         }

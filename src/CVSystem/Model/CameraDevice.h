@@ -42,6 +42,16 @@ class CameraDevice
     bool open(float& costTime);
 
     /**
+     * 打开这个相机
+     *
+     * @author daixian
+     * @date 2020/11/12
+     *
+     * @returns 打开成功返回true.
+     */
+    bool open();
+
+    /**
      * 采一张图片,这个函数在采图的时候是阻塞的.
      *
      * @author daixian
@@ -161,9 +171,7 @@ class CameraDevice
 
 #pragma region 特殊相机扩展
 
-    /**
-     * 相机的一些特殊安装形式,如安装时翻转了180度等等.
-     */
+    // 相机的一些特殊安装形式,如安装时翻转了180度等等.
     enum class SpecialTpye
     {
         // 正常.
@@ -172,10 +180,10 @@ class CameraDevice
         Rotate180,
     };
 
-    /** 相机的特殊类型. */
+    // 相机的特殊类型.
     SpecialTpye specialTpye = SpecialTpye::None;
 
-    /** 是否在采图的时候自动处理相机的特殊类型，如采图的时候直接翻转180度，则后面处理逻辑不需要处理. */
+    // 是否在采图的时候自动处理相机的特殊类型，如采图的时候直接翻转180度，则后面处理逻辑不需要处理.
     bool isAutoProcSpecialTpye = true;
 
 #pragma endregion
@@ -200,7 +208,7 @@ class CameraDevice
     class Impl;
     Impl* _impl = nullptr;
 };
-/** 定义这个智能指针类型. */
+// 定义这个智能指针类型.
 typedef std::shared_ptr<CameraDevice> pCameraDevice;
 
 } // namespace dxlib

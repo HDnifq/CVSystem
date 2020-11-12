@@ -10,26 +10,25 @@
 using namespace dxlib;
 using namespace std;
 
-//测试对象作为参数传递是否会拷贝一次
-TEST(Camera, propMap)
+TEST(CameraDevice, propMap)
 {
-    auto map = Camera::propStringMap();
+    auto map = CameraDevice::propStringMap();
 
     EXPECT_TRUE(map.size() > 0);
     int i = 0;
     for (auto kvp : map) {
-        cv::VideoCaptureProperties prop = Camera::propStr2Enum(kvp.second);
+        cv::VideoCaptureProperties prop = CameraDevice::propStr2Enum(kvp.second);
 
         //在枚举的定义里没有31号
         if (i == 31) {
             i++;
         }
-        ASSERT_TRUE((int)prop == i) << "i=" << i;
+        ASSERT_EQ(prop, i);
         i++;
     }
 }
 
-TEST(Camera, setProp)
+TEST(CameraDevice, setProp)
 {
     //得到第一个相机名
     DevicesHelper::GetInst()->listDevices();
@@ -38,7 +37,7 @@ TEST(Camera, setProp)
     }
     string camName = DevicesHelper::GetInst()->devList.begin()->second;
 
-    Camera camera(camName);
+    CameraDevice camera(camName, cv::Size(640, 400), 0);
     camera.open();
     //如果打开失败这里会为null
     ASSERT_TRUE(camera.capture != nullptr);

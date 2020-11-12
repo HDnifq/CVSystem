@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "CameraImage.h"
+#include "../Model/CameraImage.h"
+#include "../Model/ICameraImageFactory.h"
 
 namespace dxlib {
 
@@ -14,7 +15,7 @@ class CameraGrabMT
 {
   public:
     CameraGrabMT();
-    CameraGrabMT(const std::vector<pCamera>& cps);
+    CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice> vdevices);
     ~CameraGrabMT();
 
     // 相机(其中camIndex就等于这个vector的index).
@@ -23,8 +24,8 @@ class CameraGrabMT
     // 相机硬件设备
     std::vector<pCameraDevice> vDevices;
 
-    /// <summary> 是否忽略失败的相机. </summary>
-    //bool isIgnoreFailureCamera = true;
+    // 相机图片转换器
+    std::vector<pCameraImageFactory> vCameraImageFactory;
 
     /**
      * 设置相机,这里就保证了输入map然后改成了正确的vector的index.

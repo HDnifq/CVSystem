@@ -1,4 +1,4 @@
-﻿#include "CameraGrab.h"
+﻿#include "CameraGrabMT.h"
 #include <chrono>
 #include <memory>
 #include "dlog/dlog.h"
@@ -137,12 +137,11 @@ CameraGrabMT::CameraGrabMT()
     _impl = new Impl();
 }
 
-CameraGrabMT::CameraGrabMT(const std::vector<pCamera>& cps)
+CameraGrabMT::CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice> vdevices)
 {
-    for (auto& item : cps) {
-        vCameras.push_back(item);
-    }
     _impl = new Impl();
+    vCameras = vcameras;
+    vDevices = vdevices;
 }
 
 CameraGrabMT::~CameraGrabMT()
@@ -150,7 +149,7 @@ CameraGrabMT::~CameraGrabMT()
     delete _impl;
 }
 
-void CameraGrab::setCameras(const std::map<int, pCamera>& camMap)
+void CameraGrabMT::setCameras(const std::map<int, pCamera>& camMap)
 {
     vCameras.clear();
     std::size_t size = 0;

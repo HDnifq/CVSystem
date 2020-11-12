@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../Model/Camera.h"
+#include "../Model/ICameraImageFactory.h"
 #include "../Model/StereoCamera.h"
 #include "../Model/CameraPair.h"
 
@@ -20,13 +21,17 @@ class CameraManger
 
     static CameraManger* GetInst()
     {
-        if (m_pInstance == NULL)
-            m_pInstance = new CameraManger();
         return m_pInstance;
     }
 
-    // 所有相机的map，以camIndex为key.它实际已经等价于vCamera
-    std::map<int, pCamera> camMap;
+    // 相机硬件设备.
+    std::vector<pCameraDevice> vDevice;
+
+    // 所有相机的map，以camIndex为key.它实际已经等价于vCamera.
+    std::map<int, pCamera> mCamera;
+
+    // 相机图片转换器
+    std::vector<pCameraImageFactory> vCameraImageFactory;
 
     // 立体相机对.
     std::vector<pStereoCamera> vStereo;
@@ -43,28 +48,40 @@ class CameraManger
     void clear();
 
     /**
-     * 添加一个相机，会自动递增分配一个camIndex.
+     * 添加一个设备
      *
      * @author daixian
      * @date 2018/11/29
      *
-     * @param  cp 要添加的相机.
+     * @param  device 要添加的设备.
      *
      * @returns A pCamera.
      */
-    pCamera add(pCamera cp);
+    pCameraDevice add(pCameraDevice& device);
 
     /**
-     * 添加一个虚拟相机,虚拟相机参与计算逻辑.
+     * 添加一个逻辑相机.
      *
      * @author daixian
      * @date 2020/3/27
      *
-     * @param  cp 要添加的相机.
+     * @param  camera 要添加的相机.
      *
      * @returns A pCamera.
      */
-    pCamera addVirtual(pCamera cp);
+    pCamera add(pCamera& camera);
+
+    /**
+     * 添加一个相机图片转换器.
+     *
+     * @author daixian
+     * @date 2020/11/12
+     *
+     * @param  cmf The cmf to add.
+     *
+     * @returns A pCameraImageFactory.
+     */
+    pCameraImageFactory add(pCameraImageFactory& cmf);
 
     /**
      * 添加立体相机对,会检察自动递增分配scID.
@@ -76,7 +93,7 @@ class CameraManger
      *
      * @returns A pStereoCamera.
      */
-    pStereoCamera add(pStereoCamera sc);
+    pStereoCamera add(pStereoCamera& sc);
 
     /**
      * 添加一个相机组,会检察自动递增分配cpID.
@@ -88,7 +105,7 @@ class CameraManger
      *
      * @returns A pCameraPair.
      */
-    pCameraPair add(pCameraPair cp);
+    pCameraPair add(pCameraPair& cp);
 
     /**
      * 通过camIndex得到一个相机.
@@ -108,11 +125,11 @@ class CameraManger
      * @author daixian
      * @date 2020/3/17
      *
-     * @param  devName 相机名.
+     * @param  name 相机名.
      *
      * @returns 如果相机不存在那么返回null.
      */
-    pCamera getCamera(const std::string& devName);
+    pCamera getCamera(const std::string& name);
 
     /**
      * 得到当前所有相机的vector数组.
@@ -235,9 +252,6 @@ class CameraManger
   private:
     // 单例.
     static CameraManger* m_pInstance;
-
-    // 名字和相机指针的map.
-    std::map<std::string, pCamera> mNamePCamera;
 
     // 相机index的数组.
     std::vector<pCamera> vCamera;

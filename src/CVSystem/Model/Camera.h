@@ -175,7 +175,7 @@ class Camera
     class Impl;
     Impl* _impl = nullptr;
 };
-/** 定义这个智能指针类型. */
+// 定义这个智能指针类型.
 typedef std::shared_ptr<Camera> pCamera;
 
 } // namespace dxlib

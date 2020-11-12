@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "CameraImage.h"
+#include "../Model/CameraImage.h"
 
 namespace dxlib {
 

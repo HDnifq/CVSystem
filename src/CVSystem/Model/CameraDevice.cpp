@@ -199,6 +199,12 @@ bool CameraDevice::open(float& costTime)
     return true;
 }
 
+bool CameraDevice::open()
+{
+    float costTime;
+    return open(costTime);
+}
+
 bool CameraDevice::isOpened()
 {
     if (capture == nullptr) {

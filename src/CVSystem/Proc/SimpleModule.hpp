@@ -3,6 +3,7 @@
 #include "../System/MultiCamera.h"
 #include "../System/DevicesHelper.h"
 #include "CamImageProc.hpp"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 
