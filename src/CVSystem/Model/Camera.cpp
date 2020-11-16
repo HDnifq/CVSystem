@@ -146,8 +146,8 @@ void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
     this->camL = camL;
     this->camR = camR;
 
-    this->camL->physicalCamera = camPhy;
-    this->camR->physicalCamera = camPhy;
+    //this->camL->physicalCamera = camPhy;
+    //this->camR->physicalCamera = camPhy;
 
     this->camL->stereoOther = this->camR;
     this->camR->stereoOther = this->camL;

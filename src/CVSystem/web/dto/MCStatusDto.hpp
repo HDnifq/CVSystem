@@ -34,7 +34,7 @@ class MCStatusDto : XUEXUE_JSON_OBJECT
             procs.push_back(mcProcs[i]->name());
         }
         //记录所有相机
-        for (auto& kvp : cm->camMap) {
+        for (auto& kvp : cm->mCamera) {
             CameraDto cdto(kvp.second);
             cameras.push_back(cdto);
         }

@@ -10,7 +10,7 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
 
     //绑定相机采图设备来源
     for (size_t i = 0; i < cameras.size(); i++) {
-        cameras[i]->device = device;
+        cameras[i]->device = device.get();
     }
 
     if (cameras.size() < 2 || cameras.size() % 2 != 0) {
@@ -30,13 +30,13 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
             CameraImage& camImageR = result[2 * i + 1];
 
             camImageL.grabEndTime = clock();
-            camImageL.device = device;
-            camImageL.camera = cameras[2 * i];
+            camImageL.device = device.get();
+            camImageL.camera = cameras[2 * i].get();
             camImageL.isSuccess = true;
 
             camImageR.grabEndTime = clock();
-            camImageR.device = device;
-            camImageR.camera = cameras[2 * i + 1];
+            camImageR.device = device.get();
+            camImageR.camera = cameras[2 * i + 1].get();
             camImageR.isSuccess = true;
 
             int w = image.cols;
@@ -60,13 +60,13 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
             CameraImage& camImageR = result[2 * i + 1];
 
             camImageL.grabEndTime = clock();
-            camImageL.device = device;
-            camImageL.camera = cameras[2 * i];
+            camImageL.device = device.get();
+            camImageL.camera = cameras[2 * i].get();
             camImageL.isSuccess = false;
 
             camImageR.grabEndTime = clock();
-            camImageR.device = device;
-            camImageR.camera = cameras[2 * i + 1];
+            camImageR.device = device.get();
+            camImageR.camera = cameras[2 * i + 1].get();
             camImageR.isSuccess = false;
         }
     }

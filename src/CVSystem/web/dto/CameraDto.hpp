@@ -31,15 +31,19 @@ class CameraDto : XUEXUE_JSON_OBJECT
     CameraDto(pCamera cam)
     {
         camIndex = cam->camIndex;
-        devName = cam->devName;
-        isVirtualCamera = cam->isVirtualCamera;
-        physicalDevName = cam->physicalDevName;
 
-        devID = cam->devID;
+        name = cam->name;
+        //isVirtualCamera = cam->isVirtualCamera;
+        //physicalDevName = cam->physicalDevName;
+        if (cam->device != nullptr)
+            devID = cam->device->devID;
+        else
+            devID = -1;
+
         size = cam->size;
         paramSize = cam->paramSize;
-        isStereoCamera = cam->isStereoCamera;
-        isNoSendToProc = cam->isNoSendToProc;
+        //isStereoCamera = cam->isStereoCamera;
+        //isNoSendToProc = cam->isNoSendToProc;
         scID = cam->scID;
         stereoCamIndexL = cam->stereoCamIndexL;
         stereoCamIndexR = cam->stereoCamIndexR;
@@ -49,7 +53,7 @@ class CameraDto : XUEXUE_JSON_OBJECT
     int camIndex = -1;
 
     /// <summary> 这个相机的设备名. </summary>
-    std::string devName;
+    std::string name;
 
     /// <summary> 虚拟相机. </summary>
     bool isVirtualCamera = false;
@@ -69,10 +73,10 @@ class CameraDto : XUEXUE_JSON_OBJECT
     cv::Size paramSize;
 
     /// <summary> 是否是立体相机. </summary>
-    bool isStereoCamera = false;
+    //bool isStereoCamera = false;
 
     /// <summary> 是否不要传图到后面给Proc,如果设置它为true,那么需要把这个相机的index放到后面. </summary>
-    bool isNoSendToProc = false;
+    //bool isNoSendToProc = false;
 
     /// <summary> 立体相机对的序号(区分多组立体相机). </summary>
     int scID = -1;
@@ -83,8 +87,8 @@ class CameraDto : XUEXUE_JSON_OBJECT
     /// <summary> 双目相机里的R相机的camIndex. </summary>
     int stereoCamIndexR = -1;
 
-    XUEXUE_JSON_OBJECT_M12(camIndex, devName, isVirtualCamera, physicalDevName, devID, size, paramSize,
-                           isStereoCamera, isNoSendToProc, scID, stereoCamIndexL, stereoCamIndexR)
+    XUEXUE_JSON_OBJECT_M10(camIndex, name, isVirtualCamera, physicalDevName, devID, size, paramSize,
+                           scID, stereoCamIndexL, stereoCamIndexR)
   private:
 };
 

@@ -137,7 +137,7 @@ CameraGrabMT::CameraGrabMT()
     _impl = new Impl();
 }
 
-CameraGrabMT::CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice> vdevices)
+CameraGrabMT::CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice>& vdevices)
 {
     _impl = new Impl();
     vCameras = vcameras;
@@ -470,12 +470,12 @@ bool CameraGrab::close()
     return true;
 }
 
-bool CameraGrab::isAllCameraClosed()
+bool CameraGrabMT::isAllCameraClosed()
 {
-    for (size_t i = 0; i < vCameras.size(); i++) {
-        if (vCameras[i] != nullptr) {
+    for (size_t i = 0; i < vDevices.size(); i++) {
+        if (vDevices[i] != nullptr) {
             //只要有一个相机还打开着就返回false
-            if (vCameras[i]->isOpened()) {
+            if (vDevices[i]->isOpened()) {
                 return false;
             }
         }
@@ -483,8 +483,10 @@ bool CameraGrab::isAllCameraClosed()
     return true;
 }
 
-void CameraGrab::clear()
+void CameraGrabMT::clear()
 {
     vCameras.clear();
+    vDevices.clear();
+    vCameraImageFactory.clear();
 }
 } // namespace dxlib

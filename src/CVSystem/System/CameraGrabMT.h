@@ -6,6 +6,7 @@ namespace dxlib {
 
 /**
  * 多线程相机采图.里面有一个vector记录相机，然后打开这些相机, 调用grab()函数对这些相机采图.
+ * TODO: 实际可以写CameraImageFactory模拟对象来做单元测试.
  * 
  * 
  * @author daixian
@@ -15,7 +16,7 @@ class CameraGrabMT
 {
   public:
     CameraGrabMT();
-    CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice> vdevices);
+    CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice>& vdevices);
     ~CameraGrabMT();
 
     // 相机(其中camIndex就等于这个vector的index).
@@ -24,7 +25,7 @@ class CameraGrabMT
     // 相机硬件设备
     std::vector<pCameraDevice> vDevices;
 
-    // 相机图片转换器
+    // 相机图片采集器
     std::vector<pCameraImageFactory> vCameraImageFactory;
 
     /**
@@ -38,7 +39,7 @@ class CameraGrabMT
     void setCameras(const std::map<int, pCamera>& camMap);
 
     /**
-     * 启动抓图.
+     * 异步的启动抓图.
      *
      * @author daixian
      * @date 2020/11/6
@@ -92,7 +93,12 @@ class CameraGrabMT
     bool isAllCameraClosed();
 
   private:
-    /// <summary> 清空,close的时候会自动调用. </summary>
+    /**
+     * 清空,close的时候会自动调用.
+     *
+     * @author daixian
+     * @date 2020/11/16
+     */
     void clear();
 
     /**
