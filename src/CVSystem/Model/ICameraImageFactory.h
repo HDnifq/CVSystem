@@ -26,6 +26,7 @@ class ICameraImageFactory
 
     /**
      * 创建一组CameraImage,CameraDevice和Camera是一对多的关系.它实际表示了device到Camera的图片映射方法.
+     * 目前这个函数实际上包含了阻塞的读取相机图片.
      *
      * @author daixian
      * @date 2020/11/12

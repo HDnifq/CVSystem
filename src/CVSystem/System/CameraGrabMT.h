@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Model/CameraImage.h"
+#include "../Model/CameraImageGroup.h"
 #include "../Model/ICameraImageFactory.h"
 
 namespace dxlib {
@@ -16,7 +16,10 @@ class CameraGrabMT
 {
   public:
     CameraGrabMT();
-    CameraGrabMT(const std::vector<pCamera>& vcameras, const std::vector<pCameraDevice>& vdevices);
+    CameraGrabMT(const std::vector<pCamera>& vcameras,
+                 const std::vector<pCameraDevice>& vdevices,
+                 const std::vector<pCameraImageFactory>& vcameraImageFactory);
+
     ~CameraGrabMT();
 
     // 相机(其中camIndex就等于这个vector的index).
@@ -29,16 +32,6 @@ class CameraGrabMT
     std::vector<pCameraImageFactory> vCameraImageFactory;
 
     /**
-     * 设置相机,这里就保证了输入map然后改成了正确的vector的index.
-     *
-     * @author daixian
-     * @date 2020/11/9
-     *
-     * @param [in] camMap The camera map.
-     */
-    void setCameras(const std::map<int, pCamera>& camMap);
-
-    /**
      * 异步的启动抓图.
      *
      * @author daixian
@@ -46,40 +39,36 @@ class CameraGrabMT
      */
     void startGrab();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 进行一次抓图，依次对所有记录的相机进行采图，
-    /// 输出的结果里面的vector图片的ImageItem的index应该是和相机的camIndex一致的.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2019/3/5. </remarks>
-    ///
-    /// <param name="result"> [out] 这是一个输出结果. </param>
-    ///
-    /// <returns> A pCameraImage. </returns>
-    ///-------------------------------------------------------------------------------------------------
-    bool grab(pCameraImage& result);
+    /**
+     * 由外面的线程对图片队列进行一次抓图，依次对所有记录的相机进行采图，输出的结果里面的vector图片的ImageItem的index应该是和相机的camIndex一致的.
+     *
+     * @author daixian
+     * @date 2020/11/26
+     *
+     * @param [out] result 这是一个输出结果.
+     *
+     * @returns 如果为true表示抓图完成.
+     */
+    bool tryGet(pCameraImageGroup& result);
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 打开相机，如果有一个相机打开失败就会返回false，但是仍然会尝试去打开其他的相机.
-    /// </summary>
-    ///
-    /// <remarks> Dx, 2019/3/5. </remarks>
-    ///
-    /// <returns>
-    /// 有一个相机打开失败就会返回false，全部打开成功会返回true.
-    /// </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 打开相机，如果有一个相机打开失败就会返回false，但是仍然会尝试去打开其他的相机.
+     *
+     * @author daixian
+     * @date 2020/11/26
+     *
+     * @returns 有一个相机打开失败就会返回false，全部打开成功会返回true.
+     */
     bool open();
 
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary> 关闭相机. </summary>
-    ///
-    /// <remarks> Dx, 2018/11/12. </remarks>
-    ///
-    /// <returns> 正常执行返回true. </returns>
-    ///-------------------------------------------------------------------------------------------------
+    /**
+     * 关闭相机.
+     *
+     * @author daixian
+     * @date 2020/11/26
+     *
+     * @returns 正常执行返回true.
+     */
     bool close();
 
     /**
@@ -100,19 +89,6 @@ class CameraGrabMT
      * @date 2020/11/16
      */
     void clear();
-
-    /**
-     * Grab one camera
-     *
-     * @author daixian
-     * @date 2020/7/4
-     *
-     * @param [in,out] result    The result.
-     * @param [in,out] curCamera If non-null, the current camera.
-     *
-     * @returns 是否采图成功.
-     */
-    bool grabOneCamera(pCameraImage& result, Camera* curCamera);
 
     class Impl;
     Impl* _impl;
