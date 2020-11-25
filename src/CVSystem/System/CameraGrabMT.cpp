@@ -26,9 +26,9 @@ class TaskGrabOneCamera : public Poco::Task
      * @author daixian
      * @date 2020/11/26
      *
-     * @param          name                The name.
-     * @param [in,out] imageQueue          If non-null, queue of images.
-     * @param [in,out] pCameraImageFactory If non-null, the camera image factory.
+     * @param      name                The name.
+     * @param [in] imageQueue          If non-null, queue of images.
+     * @param [in] pCameraImageFactory If non-null, the camera image factory.
      */
     TaskGrabOneCamera(const std::string& name,
                       CameraImageQueue* imageQueue,
@@ -165,7 +165,7 @@ bool CameraGrabMT::open()
         clock_t startTime = clock();
         //打开相机
         if (device->open()) {
-            double costTime = (clock() - startTime) / CLOCKS_PER_SEC * 1000;
+            double costTime = (clock() - startTime) / CLOCKS_PER_SEC * 1000.;
             //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
             cv::Mat img;
             device->capture->read(img);
