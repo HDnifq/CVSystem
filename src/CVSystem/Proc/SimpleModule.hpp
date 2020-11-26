@@ -35,7 +35,7 @@ class SimpleModule
         std::string camName = DevicesHelper::GetInst()->devList.begin()->second;
         pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 16));
         pCamera camera = pCamera(new Camera(camName, cv::Size(1280, 720)));
-        MonoCameraImageFactory* factory = new MonoCameraImageFactory(device, camera);
+        ICameraImageFactory* factory = new MonoCameraImageFactory(device, camera);
         CameraManger::GetInst()->add(device);
         CameraManger::GetInst()->add(camera);
         CameraManger::GetInst()->add(pCameraImageFactory(factory));

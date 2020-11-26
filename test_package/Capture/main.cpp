@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
             pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 400), 0));
             pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 400)));
             pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 400)));
-            StereoCameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
+            ICameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
             CameraManger::GetInst()->add(device);
             CameraManger::GetInst()->add(cameraL);
             CameraManger::GetInst()->add(cameraR);
