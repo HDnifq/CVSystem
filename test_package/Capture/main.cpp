@@ -20,10 +20,16 @@ class CamCaptureConfig : XUEXUE_JSON_OBJECT
     // 曝光设置
     int exposure = 0;
 
-    //要打的相机名
+    // 要打的相机名
     vector<string> names = {"F3DSC01"};
 
-    XUEXUE_JSON_OBJECT_M2(exposure, names)
+    // 是否打印debug日志
+    bool islogDebug = false;
+
+    // 是否cpu处理计算
+    bool isDoProc = false;
+
+    XUEXUE_JSON_OBJECT_M4(exposure, names, islogDebug, isDoProc)
   private:
 };
 
@@ -35,6 +41,8 @@ class TestProc : public FrameProc
 
     int count = 0;
 
+    bool isDoProc = false;
+
     void process(pCameraImageGroup camImage, int& key) override
     {
         for (size_t i = 0; i < camImage->vImage.size(); i++) {
@@ -44,11 +52,13 @@ class TestProc : public FrameProc
             }
             //LogI("TestProc.process():执行算法处理!");
             cv::Mat image = camImage->vImage[i].image;
-            cv::Mat gray;
-            cv::Mat thr40;
-            cv::Mat thr110;
-            cv::Mat thr180;
-            thresholdOnce(image, gray, thr40, thr110, thr180);
+            if (isDoProc) {
+                cv::Mat gray;
+                cv::Mat thr40;
+                cv::Mat thr110;
+                cv::Mat thr180;
+                thresholdOnce(image, gray, thr40, thr110, thr180);
+            }
         }
 
         count++; //采图的计数加1
@@ -157,8 +167,10 @@ int main(int argc, char* argv[])
             CameraManger::GetInst()->add(factory);
         }
     }
+    TestProc* testProc = new TestProc();
+    testProc->isDoProc = config.isDoProc;
+    MultiCamera::GetInst()->addProc(testProc);
 
-    MultiCamera::GetInst()->addProc(new TestProc());
     MultiCamera::GetInst()->openCamera(); //打开相机
 
     for (auto& dev : CameraManger::GetInst()->vDevice) {
@@ -180,8 +192,10 @@ int main(int argc, char* argv[])
     //启动计算线程
     MultiCamera::GetInst()->start();
 
-    dlog_set_console_thr(dlog_level::info);
-    dlog_set_file_thr(dlog_level::info);
+    if (!config.islogDebug) {
+        dlog_set_console_thr(dlog_level::info);
+        dlog_set_file_thr(dlog_level::info);
+    }
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(2));
         LogI("当前fps=%f", MultiCamera::GetInst()->fps());

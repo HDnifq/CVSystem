@@ -16,7 +16,7 @@ CameraManger::~CameraManger()
 {
 }
 
-pCameraDevice CameraManger::add(pCameraDevice& device)
+pCameraDevice CameraManger::add(const pCameraDevice& device)
 {
     //检察重复
     for (size_t i = 0; i < vDevice.size(); i++) {
@@ -36,7 +36,7 @@ pCameraDevice CameraManger::add(pCameraDevice& device)
     return device;
 }
 
-pCamera CameraManger::add(pCamera& camera)
+pCamera CameraManger::add(const pCamera& camera)
 {
     if (mCamera.find(camera->camIndex) != mCamera.end()) {
         LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", camera->camIndex);
@@ -55,7 +55,7 @@ pCamera CameraManger::add(pCamera& camera)
     return camera;
 }
 
-pCameraImageFactory CameraManger::add(pCameraImageFactory& cmf)
+pCameraImageFactory CameraManger::add(const pCameraImageFactory& cmf)
 {
     //检察重复
     for (size_t i = 0; i < vCameraImageFactory.size(); i++) {
@@ -71,7 +71,7 @@ pCameraImageFactory CameraManger::add(pCameraImageFactory& cmf)
     return cmf;
 }
 
-pStereoCamera CameraManger::add(pStereoCamera& sc)
+pStereoCamera CameraManger::add(const pStereoCamera& sc)
 {
     if (sc->scID < 0) {
         sc->scID = static_cast<int>(vStereo.size()); //这个id就是vStereo里的index
@@ -86,7 +86,7 @@ pStereoCamera CameraManger::add(pStereoCamera& sc)
     return sc;
 }
 
-pCameraPair CameraManger::add(pCameraPair& cp)
+pCameraPair CameraManger::add(const pCameraPair& cp)
 {
     if (cp->cpID < 0) {
         cp->cpID = static_cast<int>(vCameraPair.size()); //这个id就是vCameraPair里的index

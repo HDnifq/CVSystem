@@ -60,7 +60,7 @@ class CameraManger
      *
      * @returns A pCamera.
      */
-    pCameraDevice add(pCameraDevice& device);
+    pCameraDevice add(const pCameraDevice& device);
 
     /**
      * 添加一个逻辑相机.
@@ -72,7 +72,7 @@ class CameraManger
      *
      * @returns A pCamera.
      */
-    pCamera add(pCamera& camera);
+    pCamera add(const pCamera& camera);
 
     /**
      * 添加一个相机图片转换器.
@@ -84,7 +84,7 @@ class CameraManger
      *
      * @returns A pCameraImageFactory.
      */
-    pCameraImageFactory add(pCameraImageFactory& cmf);
+    pCameraImageFactory add(const pCameraImageFactory& cmf);
 
     /**
      * 添加立体相机对,会检察自动递增分配scID.
@@ -96,7 +96,7 @@ class CameraManger
      *
      * @returns A pStereoCamera.
      */
-    pStereoCamera add(pStereoCamera& sc);
+    pStereoCamera add(const pStereoCamera& sc);
 
     /**
      * 添加一个相机组,会检察自动递增分配cpID.
@@ -108,7 +108,7 @@ class CameraManger
      *
      * @returns A pCameraPair.
      */
-    pCameraPair add(pCameraPair& cp);
+    pCameraPair add(const pCameraPair& cp);
 
     /**
      * 通过camIndex得到一个相机.
