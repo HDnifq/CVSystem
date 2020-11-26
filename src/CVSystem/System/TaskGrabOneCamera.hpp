@@ -117,32 +117,9 @@ class TaskGrabOneCamera : public Poco::Runnable
             // 如果这个采图完了它就去检察是否能够执行proc处理
             if (isDoProc && proc != nullptr) {
                 if (isGrab.load()) {
-                    //如果是采图过程中
-                    pCameraImageGroup cimg = imageQueue->GetImage();
-                    if (cimg != nullptr) {
-                        LogD("TaskGrabOneCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
-                        cimg->fnum = frameCount;
-                        cimg->procStartTime = clock(); //标记处理开始时间
-
-                        fps = _fpsCalc.update(++frameCount);
-
-                        //标注一下当前工作相机的FPS
-                        for (size_t i = 0; i < cimg->vImage.size(); i++) {
-                            if (cimg->vImage[i].camera != nullptr) {
-                                cimg->vImage[i].camera->FPS = fps;
-                            }
-                        }
-
-                        LogD("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
-                        int ckey = -1; //让proc去自己想检测keydown就keydown
-                        proc->process(cimg, ckey);
-                        if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                            cvKey.exchange(ckey);
-                        }
-
-                        cimg->procEndTime = clock(); //标记处理结束时间
-                        LogD("TaskGrabOneCamera.run():采图耗时%.0fms,处理耗时%.0fms", cimg->grabCostTime(), cimg->procCostTime());
-                    }
+                    //因为这个主相机有可能采图超前一帧,所以这里执行两次处理
+                    if (doOnceProc())
+                        doOnceProc();
                 }
                 else {
                     LogD("MultiCamera.run():执行onLightSleep!");
@@ -159,6 +136,48 @@ class TaskGrabOneCamera : public Poco::Runnable
                 //干脆用这个线程来驱动检查事件
                 Event::GetInst()->checkMemEvent();
             }
+        }
+    }
+
+    /**
+     * 执行一次帧处理
+     *
+     * @author daixian
+     * @date 2020/11/27
+     *
+     * @returns True if it succeeds, false if it fails.
+     */
+    bool doOnceProc()
+    {
+        //如果是采图过程中
+        pCameraImageGroup cimg = imageQueue->GetImage();
+        if (cimg != nullptr) {
+            LogD("TaskGrabOneCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
+            cimg->fnum = frameCount;
+            cimg->procStartTime = clock(); //标记处理开始时间
+
+            fps = _fpsCalc.update(++frameCount);
+
+            //标注一下当前工作相机的FPS
+            for (size_t i = 0; i < cimg->vImage.size(); i++) {
+                if (cimg->vImage[i].camera != nullptr) {
+                    cimg->vImage[i].camera->FPS = fps;
+                }
+            }
+
+            LogD("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
+            int ckey = -1; //让proc去自己想检测keydown就keydown
+            proc->process(cimg, ckey);
+            if (ckey != -1) { //如果有按键按下那么修改最近的按键值
+                cvKey.exchange(ckey);
+            }
+
+            cimg->procEndTime = clock(); //标记处理结束时间
+            LogD("TaskGrabOneCamera.run():采图耗时%.0fms,处理耗时%.0fms", cimg->grabCostTime(), cimg->procCostTime());
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
