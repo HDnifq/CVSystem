@@ -3,6 +3,7 @@
 #include <memory>
 #include "dlog/dlog.h"
 
+#include "Poco/ThreadPool.h"
 #include "Poco/TaskManager.h"
 
 #include "../Model/CameraImageQueue.h"
@@ -17,7 +18,7 @@ namespace dxlib {
  * @author daixian
  * @date 2020/11/26
  */
-class TaskGrabOneCamera : public Poco::Task
+class TaskGrabOneCamera : public Poco::Runnable
 {
   public:
     /**
@@ -33,18 +34,17 @@ class TaskGrabOneCamera : public Poco::Task
     TaskGrabOneCamera(const std::string& name,
                       CameraImageQueue* imageQueue,
                       ICameraImageFactory* pCameraImageFactory)
-        : Task(name),
-          imageQueue(imageQueue),
+        : imageQueue(imageQueue),
           pCameraImageFactory(pCameraImageFactory) {}
 
-    ~TaskGrabOneCamera() {}
+    virtual ~TaskGrabOneCamera() {}
 
     CameraImageQueue* imageQueue = nullptr;
     ICameraImageFactory* pCameraImageFactory = nullptr;
 
     std::atomic_bool isRun{true};
 
-    virtual void runTask()
+    virtual void run()
     {
         if (imageQueue == nullptr) {
             LogE("TaskGrabOneCamera.runTask():imageQueue == nullptr");
@@ -78,7 +78,7 @@ class CameraGrabMT::Impl
     }
     ~Impl() {}
 
-    Poco::TaskManager taskManager;
+    Poco::ThreadPool threadPool{4, 8};
 
     CameraImageQueue imageQueue;
 
@@ -117,7 +117,7 @@ void CameraGrabMT::startGrab()
                                                             &_impl->imageQueue,
                                                             pCameraImageFactory.get());
             _impl->curTasks.push_back(task);
-            _impl->taskManager.start(task);
+            _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
         }
         catch (const std::exception& e) {
             LogE("CameraGrabMT.startGrab():异常 %s", e.what());
@@ -186,7 +186,11 @@ bool CameraGrabMT::close()
         _impl->curTasks[i]->isRun = false;
     }
     LogI("CameraGrabMT.close():等待所有采图任务退出...");
-    _impl->taskManager.joinAll();
+    _impl->threadPool.joinAll();
+    //删除这些线程
+    for (size_t i = 0; i < _impl->curTasks.size(); i++) {
+        delete _impl->curTasks[i];
+    }
 
     for (size_t i = 0; i < vDevices.size(); i++) {
         if (vDevices[i] != nullptr) {
