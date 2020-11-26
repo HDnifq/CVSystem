@@ -29,7 +29,13 @@ class CamCaptureConfig : XUEXUE_JSON_OBJECT
     // 是否cpu处理计算
     bool isDoProc = false;
 
-    XUEXUE_JSON_OBJECT_M4(exposure, names, islogDebug, isDoProc)
+    // 相机分辨率 - 宽
+    int w = 960;
+
+    // 相机分辨率 - 高
+    int h = 300;
+
+    XUEXUE_JSON_OBJECT_M6(exposure, names, islogDebug, isDoProc, w, h)
   private:
 };
 
@@ -156,9 +162,9 @@ int main(int argc, char* argv[])
     for (auto& camName : config.names) {
         if (DevicesHelper::GetInst()->getIndexWithName(camName, true) >= 0) {
 
-            pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 400), 0));
-            pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 400)));
-            pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 400)));
+            pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(config.w, config.h), 0));
+            pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(config.w / 2, config.h)));
+            pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(config.w / 2, config.h)));
             ICameraImageFactory* pfactory = new StereoCameraImageFactory(device, {cameraL, cameraR});
             pCameraImageFactory factory = pCameraImageFactory(pfactory);
             CameraManger::GetInst()->add(device);
