@@ -15,6 +15,7 @@ class MultiCamera
   public:
     MultiCamera();
     ~MultiCamera();
+
     static MultiCamera* GetInst()
     {
         if (m_pInstance == NULL)
