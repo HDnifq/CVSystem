@@ -27,7 +27,7 @@ class CamImageProc : public FrameProc
     ///
     /// <remarks> Xian Dai, 2018/10/18. </remarks>
     ///-------------------------------------------------------------------------------------------------
-    void process(pCameraImage camImage, int& key) override
+    void process(pCameraImageGroup camImage, int& key) override
     {
         //显示所有校正过的相机图像
         for (auto& item : camImage->vImage) {

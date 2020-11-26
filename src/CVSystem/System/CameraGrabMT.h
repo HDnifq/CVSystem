@@ -15,7 +15,6 @@ namespace dxlib {
 class CameraGrabMT
 {
   public:
-    CameraGrabMT();
     CameraGrabMT(const std::vector<pCamera>& vcameras,
                  const std::vector<pCameraDevice>& vdevices,
                  const std::vector<pCameraImageFactory>& vcameraImageFactory);

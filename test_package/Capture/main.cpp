@@ -35,7 +35,7 @@ class TestProc : public FrameProc
 
     int count = 0;
 
-    void process(pCameraImage camImage, int& key) override
+    void process(pCameraImageGroup camImage, int& key) override
     {
         for (size_t i = 0; i < camImage->vImage.size(); i++) {
             if (camImage->vImage[i].isSuccess == false) {
@@ -148,20 +148,19 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::map<int, pCamera>& camMap = CameraManger::GetInst()->camMap;
-    for (auto& kvp : camMap) {
-        kvp.second->isVirtualCamera = false; //不为逻辑相机
-        kvp.second->size = cv::Size(1280, 400);
-        kvp.second->paramSize = cv::Size(1280, 400);
+    for (auto& dev : CameraManger::GetInst()->vDevice) {
 
-        kvp.second->setProp(cv::CAP_PROP_FPS, 60);
+        dev->size = cv::Size(1280, 400);
+        //dev->paramSize = cv::Size(1280, 400);
+
+        dev->setProp(cv::CAP_PROP_FPS, 60);
         //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
 
         //设置曝光
-        kvp.second->setProp(cv::CAP_PROP_EXPOSURE, config.exposure);
+        dev->setProp(cv::CAP_PROP_EXPOSURE, config.exposure);
 
         //输出一下
-        kvp.second->outputProp();
+        dev->outputProp();
     }
 
     MultiCamera::GetInst()->addProc(new TestProc());

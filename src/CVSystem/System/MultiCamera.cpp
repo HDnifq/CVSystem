@@ -7,7 +7,7 @@
 #include "../Common/FPSCalc.hpp"
 
 #include "CameraManger.h"
-#include "CameraGrab.h"
+#include "CameraGrabMT.h"
 
 #include <map>
 #include <thread>
@@ -36,7 +36,7 @@ class FrameProcRunnable : public Poco::Runnable
     pFrameProc proc;
 
     // 相机采图类.
-    CameraGrab* _cameraGrab = nullptr;
+    CameraGrabMT* _cameraGrab = nullptr;
 
     // 是否保持运行.
     std::atomic_bool _isRun{true};
@@ -63,36 +63,43 @@ class FrameProcRunnable : public Poco::Runnable
                 break;
             }
 
-            LogD("MultiCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
             if (_isGrab.load()) {
-                //提取图片组帧
-                pCameraImage cimg;
                 if (_cameraGrab != nullptr) {
-                    _cameraGrab->grab(cimg);
+                    //尝试采图
+                    pCameraImageGroup cimg;
+                    if (_cameraGrab->tryGet(cimg)) {
+                        LogD("MultiCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
+                        cimg->fnum = frameCount;
+                        cimg->procStartTime = clock(); //标记处理开始时间
 
-                    cimg->fnum = frameCount;
-                    cimg->procStartTime = clock(); //标记处理开始时间
+                        fps = _fpsCalc.update(++frameCount);
 
-                    fps = _fpsCalc.update(++frameCount);
-
-                    //标注一下当前工作相机的FPS
-                    for (size_t i = 0; i < cimg->vImage.size(); i++) {
-                        if (cimg->vImage[i].camera != nullptr) {
-                            cimg->vImage[i].camera->FPS = fps;
+                        //标注一下当前工作相机的FPS
+                        for (size_t i = 0; i < cimg->vImage.size(); i++) {
+                            if (cimg->vImage[i].camera != nullptr) {
+                                cimg->vImage[i].camera->FPS = fps;
+                            }
                         }
-                    }
 
-                    LogD("MultiCamera.run():执行proc!");
-                    int ckey = -1; //让proc去自己想检测keydown就keydown
-                    proc->process(cimg, ckey);
-                    if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                        cvKey.exchange(ckey);
-                    }
+                        LogD("MultiCamera.run():执行proc!");
+                        int ckey = -1; //让proc去自己想检测keydown就keydown
+                        proc->process(cimg, ckey);
+                        if (ckey != -1) { //如果有按键按下那么修改最近的按键值
+                            cvKey.exchange(ckey);
+                        }
 
-                    //干脆用这个线程来驱动检查事件
-                    Event::GetInst()->checkMemEvent();
-                    cimg->procEndTime = clock(); //标记处理结束时间
-                    LogD("MultiCamera.run():采图耗时%.0fms,处理耗时%.0fms", cimg->grabCostTime(), cimg->procCostTime());
+                        //干脆用这个线程来驱动检查事件
+                        Event::GetInst()->checkMemEvent();
+                        cimg->procEndTime = clock(); //标记处理结束时间
+                        LogD("MultiCamera.run():采图耗时%.0fms,处理耗时%.0fms", cimg->grabCostTime(), cimg->procCostTime());
+                    }
+                    else {
+                        //LogD("MultiCamera.run():队列等待...");
+                        //for (size_t i = 0; i < 100; i++) {
+                        //std::this_thread::sleep_for(std::chrono::seconds(1));
+                        std::this_thread::yield();
+                        //}
+                    }
                 }
                 else {
 
@@ -145,7 +152,7 @@ class MultiCamera::Impl
     uint _activeProcIndex = 0;
 
     // 相机采图类.
-    CameraGrab _cameraGrab;
+    CameraGrabMT* _cameraGrab = nullptr;
 
     // 工作线程
     Poco::Thread* pThread = nullptr;
@@ -275,9 +282,11 @@ bool MultiCamera::openCamera()
     _impl->_isOpening.exchange(true); //标记正在打开了
 
     //根据当前录入的相机的东西里的设置来打开相机
-    _impl->_cameraGrab.setCameras(CameraManger::GetInst()->camMap);
+    _impl->_cameraGrab = new CameraGrabMT(CameraManger::GetInst()->vCamera,
+                                          CameraManger::GetInst()->vDevice,
+                                          CameraManger::GetInst()->vCameraImageFactory);
 
-    bool isSuccess = _impl->_cameraGrab.open();
+    bool isSuccess = _impl->_cameraGrab->open();
     if (isSuccess) {
         LogI("MultiCamera.openCamera():cameraGrab相机打开成功！");
 
@@ -304,9 +313,9 @@ void MultiCamera::closeCamera()
     }
     _impl->_isCloseing.exchange(true);
 
-    //释放采图
+    //释放采图任务
     LogI("MultiCamera.closeCamera():关闭相机...");
-    _impl->_cameraGrab.close();
+    _impl->_cameraGrab->close();
 
     _impl->_isOpened.exchange(false);
     _impl->_isCloseing.exchange(false);
@@ -318,6 +327,10 @@ void MultiCamera::start(uint activeProcindex)
     if (this->isRunning()) {
         LogW("MultiCamera.start():当前计算线程正在执行,可能导致泄漏!");
     }
+
+    LogI("MultiCamera.start():启动采图线程!");
+    _impl->_cameraGrab->startGrab();
+
     LogI("MultiCamera.start():创建综合分析计算线程!");
     if (_impl->vProc.empty()) {
         LogE("MultiCamera.start():启动失败，输vProc为空,需要先添加proc对象");
@@ -330,7 +343,7 @@ void MultiCamera::start(uint activeProcindex)
     _impl->_activeProcIndex = activeProcindex;
 
     _impl->curRunnable = new FrameProcRunnable();
-    _impl->curRunnable->_cameraGrab = &(_impl->_cameraGrab);
+    _impl->curRunnable->_cameraGrab = _impl->_cameraGrab;
     _impl->curRunnable->proc = _impl->vProc[_impl->_activeProcIndex];
 
     _impl->pThread = new Poco::Thread();

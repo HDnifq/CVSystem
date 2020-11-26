@@ -56,9 +56,13 @@ class TaskGrabOneCamera : public Poco::Task
         }
 
         while (isRun.load()) {
+            LogD("TaskGrabOneCamera.runTask():CameraImageFactory执行采图!");
             std::vector<CameraImage> images = pCameraImageFactory->Create();
             for (size_t i = 0; i < images.size(); i++) {
-                imageQueue->PushImage(images[i]);
+                //如果采图成功才放进队列好了,当相机有切换相机属性的时候是会产生硬件的采图失败的.
+                if (images[i].isSuccess) {
+                    imageQueue->PushImage(images[i]);
+                }
             }
         }
     }
@@ -83,11 +87,6 @@ class CameraGrabMT::Impl
   private:
 };
 
-CameraGrabMT::CameraGrabMT()
-{
-    _impl = new Impl();
-}
-
 CameraGrabMT::CameraGrabMT(const std::vector<pCamera>& vcameras,
                            const std::vector<pCameraDevice>& vdevices,
                            const std::vector<pCameraImageFactory>& vcameraImageFactory)
@@ -110,7 +109,7 @@ CameraGrabMT::~CameraGrabMT()
 
 void CameraGrabMT::startGrab()
 {
-    LogE("CameraGrabMT.startGrab():启动采图任务...");
+    LogI("CameraGrabMT.startGrab():启动采图任务...");
     for (size_t i = 0; i < vCameraImageFactory.size(); i++) {
         auto& pCameraImageFactory = vCameraImageFactory[i];
         try {
@@ -128,7 +127,6 @@ void CameraGrabMT::startGrab()
 
 bool CameraGrabMT::tryGet(pCameraImageGroup& result)
 {
-
     //执行完毕之后就更新相机的属性状态
     for (size_t camIndex = 0; camIndex < vDevices.size(); camIndex++) {
         if (vDevices[camIndex] != nullptr) {
@@ -149,7 +147,7 @@ bool CameraGrabMT::tryGet(pCameraImageGroup& result)
 bool CameraGrabMT::open()
 {
     if (vDevices.size() == 0) {
-        LogW("CameraGrabMT.open():事先没有录入有效的相机（vCameras.size()=0），不做操作直接返回！");
+        LogW("CameraGrabMT.open():事先没有录入有效的相机（vCameras.size()==0），不做操作直接返回！");
         return false;
     }
 
@@ -192,7 +190,7 @@ bool CameraGrabMT::close()
 
     for (size_t i = 0; i < vDevices.size(); i++) {
         if (vDevices[i] != nullptr) {
-            LogI("CameraGrabMT.close():释放相机%s ...", vDevices[i]->devName.c_str());
+            LogI("CameraGrabMT.close():释放相机设备%s ...", vDevices[i]->devName.c_str());
             vDevices[i]->release();
         }
     }
@@ -216,7 +214,6 @@ bool CameraGrabMT::isAllCameraClosed()
 
 void CameraGrabMT::clear()
 {
-
     vCameras.clear();
     vDevices.clear();
     vCameraImageFactory.clear();

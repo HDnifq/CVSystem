@@ -2,6 +2,8 @@
 #include "../System/CameraManger.h"
 #include "../System/MultiCamera.h"
 #include "../System/DevicesHelper.h"
+#include "../Model/MonoCameraImageFactory.h"
+
 #include "CamImageProc.hpp"
 #include "dlog/dlog.h"
 
@@ -31,7 +33,12 @@ class SimpleModule
             return;
         }
         std::string camName = DevicesHelper::GetInst()->devList.begin()->second;
-        CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 720), 16)));
+        pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 16));
+        pCamera camera = pCamera(new Camera(camName, cv::Size(1280, 720)));
+        MonoCameraImageFactory* factory = new MonoCameraImageFactory(device, camera);
+        CameraManger::GetInst()->add(device);
+        CameraManger::GetInst()->add(camera);
+        CameraManger::GetInst()->add(pCameraImageFactory(factory));
 
         //加入proc
         MultiCamera::GetInst()->clearProc();

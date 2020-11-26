@@ -27,6 +27,9 @@ class CameraManger
     // 相机硬件设备.
     std::vector<pCameraDevice> vDevice;
 
+    // 相机index的数组.
+    std::vector<pCamera> vCamera;
+
     // 所有相机的map，以camIndex为key.它实际已经等价于vCamera.
     std::map<int, pCamera> mCamera;
 
@@ -130,6 +133,18 @@ class CameraManger
      * @returns 如果相机不存在那么返回null.
      */
     pCamera getCamera(const std::string& name);
+
+    /**
+     * 通过相机名得到一个设备.
+     *
+     * @author daixian
+     * @date 2020/11/26
+     *
+     * @param  name The name.
+     *
+     * @returns The device.
+     */
+    pCameraDevice getDevice(const std::string& name);
 
     /**
      * 得到当前所有相机的vector数组.
@@ -252,9 +267,6 @@ class CameraManger
   private:
     // 单例.
     static CameraManger* m_pInstance;
-
-    // 相机index的数组.
-    std::vector<pCamera> vCamera;
 };
 
 } // namespace dxlib

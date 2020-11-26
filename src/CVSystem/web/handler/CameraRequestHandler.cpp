@@ -94,7 +94,7 @@ void CameraRequestHandler::handleRequestGetCapProp(HTTPServerRequest& request, H
     }
 
     std::string camName = querys.keyValue["name"];
-    auto camera = CameraManger::GetInst()->getCamera(camName);
+    auto camera = CameraManger::GetInst()->getDevice(camName);
     if (camera == nullptr) {
 
         response.setStatus(HTTPResponse::HTTP_BAD_REQUEST);
@@ -124,7 +124,7 @@ void CameraRequestHandler::handleRequestSetCapProp(HTTPServerRequest& request, H
     std::string camName = querys.keyValue["name"];
     std::string prop = querys.keyValue["prop"];
     std::string value = querys.keyValue["value"];
-    auto camera = CameraManger::GetInst()->getCamera(camName);
+    auto camera = CameraManger::GetInst()->getDevice(camName);
     if (camera == nullptr) {
 
         response.setStatus(HTTPResponse::HTTP_BAD_REQUEST);
@@ -133,7 +133,7 @@ void CameraRequestHandler::handleRequestSetCapProp(HTTPServerRequest& request, H
         out << "正在工作的相机中不存在名为" << camName;
     }
     else {
-        cv::VideoCaptureProperties p = Camera::propStr2Enum(prop);
+        cv::VideoCaptureProperties p = CameraDevice::propStr2Enum(prop);
         if (p == cv::CV__CAP_PROP_LATEST) {
             response.setStatus(HTTPResponse::HTTP_BAD_REQUEST);
             response.setContentType("text/plain");

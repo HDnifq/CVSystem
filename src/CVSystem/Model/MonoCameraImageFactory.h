@@ -9,16 +9,29 @@ namespace dxlib {
  * @author daixian
  * @date 2020/11/12
  */
-class MonoCameraImageFactory : ICameraImageFactory
+class MonoCameraImageFactory : public ICameraImageFactory
 {
   public:
-    MonoCameraImageFactory()
+    MonoCameraImageFactory(const pCameraDevice& device, const std::vector<pCamera>& cameras)
     {
+        //给基类成员赋值
+        this->device = device;
+        this->cameras = cameras;
+    }
+
+    MonoCameraImageFactory(const pCameraDevice& device, const pCamera& cameras)
+    {
+        //给基类成员赋值
+        this->device = device;
+        this->cameras.push_back(cameras);
     }
 
     virtual ~MonoCameraImageFactory()
     {
     }
+
+    // 是否忽略硬件的失败
+    //bool isIgnoreDeviceFailure = true;
 
     /**
      * 这个函数实际上包含了阻塞的读取相机图片.

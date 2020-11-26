@@ -9,11 +9,14 @@ namespace dxlib {
  * @author daixian
  * @date 2020/11/12
  */
-class StereoCameraImageFactory : ICameraImageFactory
+class StereoCameraImageFactory : public ICameraImageFactory
 {
   public:
-    StereoCameraImageFactory()
+    StereoCameraImageFactory(const pCameraDevice& device, const std::vector<pCamera>& cameras)
     {
+        //给基类成员赋值
+        this->device = device;
+        this->cameras = cameras;
     }
 
     virtual ~StereoCameraImageFactory()

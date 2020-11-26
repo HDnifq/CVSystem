@@ -42,7 +42,9 @@ void CameraImageQueue::PushImage(const CameraImage& image)
             break;
         }
     }
+    LogD("CameraImageQueue.PushImage():加入图片,等待锁...");
     vLock[index]->lock();
+    LogD("CameraImageQueue.PushImage():拿到锁,加入图片!");
     //加入这一张图片
     vTempImageQueue[index].push_back(image);
     vLock[index]->unlock();
@@ -54,11 +56,13 @@ pCameraImageGroup CameraImageQueue::GetImage()
     for (size_t i = 0; i < vLock.size(); i++) {
         vLock[i]->lock();
         if (!vTempImageQueue[i].empty()) {
+            LogD("CameraImageQueue.GetImage():当前图片队列长度%zu", vTempImageQueue[i].size());
             doneCount++;
         }
         vLock[i]->unlock();
     }
     if (doneCount == vGrabCamera.size()) {
+        LogD("CameraImageQueue.GetImage():采图完成!");
         pCameraImageGroup imgGroup = std::make_shared<CameraImageGroup>();
         imgGroup->fnum = doneCount++;
 
@@ -75,6 +79,7 @@ pCameraImageGroup CameraImageQueue::GetImage()
             if (imgGroup->grabEndTime == 0 || imgGroup->grabEndTime < img.grabEndTime) {
                 imgGroup->grabEndTime = img.grabEndTime;
             }
+            LogD("CameraImageQueue.GetImage():队列移出最前一项!");
             vTempImageQueue[i].pop_front();
             vLock[i]->unlock();
         }

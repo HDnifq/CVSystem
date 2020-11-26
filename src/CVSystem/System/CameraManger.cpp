@@ -119,6 +119,16 @@ pCamera CameraManger::getCamera(const std::string& name)
     return nullptr;
 }
 
+pCameraDevice CameraManger::getDevice(const std::string& name)
+{
+    for (auto& dev : vDevice) {
+        if (dev->devName == name) {
+            return dev;
+        }
+    }
+    return nullptr;
+}
+
 std::vector<pCamera>& CameraManger::getCameraVec()
 {
     return this->vCamera;

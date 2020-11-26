@@ -70,7 +70,6 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
             camImageR.isSuccess = false;
         }
     }
-
     return result;
 }
 

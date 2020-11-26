@@ -1,4 +1,5 @@
 ﻿#include "MonoCameraImageFactory.h"
+#include "dlog/dlog.h"
 
 namespace dxlib {
 
@@ -16,6 +17,7 @@ std::vector<CameraImage> MonoCameraImageFactory::Create()
         result[i].grabStartTime = clock();
     }
     cv::Mat image;
+    LogD("MonoCameraImageFactory.Create():开始阻塞采图...");
     if (device->read(image)) //阻塞的读取
     {
         //如果采图成功
@@ -32,9 +34,13 @@ std::vector<CameraImage> MonoCameraImageFactory::Create()
             else {
                 result[i].image = image.clone();
             }
+
+            LogD("MonoCameraImageFactory.Create():当前采图消耗时间 %f ms.", result[i].costTime());
         }
     }
     else {
+        //在切换相机属性的时候居然会采图失败
+        LogE("MonoCameraImageFactory.Create():采图失败了!!");
         //如果采图失败
         for (size_t i = 0; i < result.size(); i++) {
             result[i].grabEndTime = clock();
@@ -43,6 +49,7 @@ std::vector<CameraImage> MonoCameraImageFactory::Create()
             result[i].isSuccess = false;
         }
     }
+    return result;
 }
 
 } // namespace dxlib
