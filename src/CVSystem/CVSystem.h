@@ -11,4 +11,7 @@
 #    include "./System/MultiCamera.h"
 #    include "./Proc/SimpleModule.hpp"
 
+#    include "./Model/MonoCameraImageFactory.h"
+#    include "./Model/StereoCameraImageFactory.h"
+
 #endif // !_CVSYSTEM_H_

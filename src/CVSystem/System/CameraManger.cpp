@@ -138,6 +138,8 @@ void CameraManger::clear()
 {
     this->mCamera.clear();
     this->vCamera.clear();
+    this->vDevice.clear();
+    this->vCameraImageFactory.clear();
     this->vStereo.clear();
 }
 

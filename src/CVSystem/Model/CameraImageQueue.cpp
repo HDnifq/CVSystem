@@ -56,7 +56,12 @@ pCameraImageGroup CameraImageQueue::GetImage()
     for (size_t i = 0; i < vLock.size(); i++) {
         vLock[i]->lock();
         if (!vTempImageQueue[i].empty()) {
-            LogD("CameraImageQueue.GetImage():当前图片队列长度%zu", vTempImageQueue[i].size());
+            if (vTempImageQueue[i].size() > 3) {
+                LogW("CameraImageQueue.GetImage():当前%zu号图片队列长度过长...长度为%zu", i, vTempImageQueue[i].size());
+            }
+            else {
+                LogD("CameraImageQueue.GetImage():当前%zu号图片队列长度%zu", i, vTempImageQueue[i].size());
+            }
             doneCount++;
         }
         vLock[i]->unlock();
@@ -79,11 +84,16 @@ pCameraImageGroup CameraImageQueue::GetImage()
             if (imgGroup->grabEndTime == 0 || imgGroup->grabEndTime < img.grabEndTime) {
                 imgGroup->grabEndTime = img.grabEndTime;
             }
-            LogD("CameraImageQueue.GetImage():队列移出最前一项!");
+            LogD("CameraImageQueue.GetImage():队列%zu移出最前一项!", i);
             vTempImageQueue[i].pop_front();
+            LogD("CameraImageQueue.GetImage():当前%zu号图片队列长度%zu", i, vTempImageQueue[i].size());
             vLock[i]->unlock();
         }
         return imgGroup;
+    }
+    else {
+        if (doneCount > 0)
+            LogD("CameraImageQueue.GetImage():采图未全部完成doneCount=%d , vGrabCamera.size()=%zu", doneCount, vGrabCamera.size());
     }
 
     //这里采图没有完成

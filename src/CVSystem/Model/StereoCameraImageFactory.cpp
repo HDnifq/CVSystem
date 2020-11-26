@@ -21,7 +21,9 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
     for (size_t i = 0; i < result.size(); i++) {
         result[i].grabStartTime = clock();
     }
+
     cv::Mat image;
+    LogD("StereoCameraImageFactory.Create():开始阻塞采图...");
     if (device->read(image)) //阻塞的读取
     {
         //如果采图成功
@@ -44,6 +46,8 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
 
             //第一个相机直接赋值,后面的相机图片是要拷贝一下
             if (i == 0) {
+                LogD("StereoCameraImageFactory.Create():当前采图消耗时间 %f ms.", result[i].costTime());
+
                 camImageL.image = cv::Mat(image, cv::Rect(0, 0, w / 2, h));     //等于图的左半边
                 camImageR.image = cv::Mat(image, cv::Rect(w / 2, 0, w / 2, h)); //等于图的右半边
             }
@@ -55,6 +59,7 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
     }
     else {
         //如果采图失败
+        LogE("StereoCameraImageFactory.Create():硬件采图失败!!");
         for (size_t i = 0; i < result.size() / 2; i++) {
             CameraImage& camImageL = result[2 * i];
             CameraImage& camImageR = result[2 * i + 1];

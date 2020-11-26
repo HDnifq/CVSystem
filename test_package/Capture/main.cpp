@@ -42,6 +42,7 @@ class TestProc : public FrameProc
                 LogE("TestProc.process():有个相机采图失败!");
                 continue;
             }
+            //LogI("TestProc.process():执行算法处理!");
             cv::Mat image = camImage->vImage[i].image;
             cv::Mat gray;
             cv::Mat thr40;
@@ -144,16 +145,28 @@ int main(int argc, char* argv[])
 
     for (auto& camName : config.names) {
         if (DevicesHelper::GetInst()->getIndexWithName(camName, true) >= 0) {
-            CameraManger::GetInst()->add(pCamera(new Camera(camName, cv::Size(1280, 400))));
+
+            pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 400), 0));
+            pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 400)));
+            pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 400)));
+            StereoCameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
+            CameraManger::GetInst()->add(device);
+            CameraManger::GetInst()->add(cameraL);
+            CameraManger::GetInst()->add(cameraR);
+            CameraManger::GetInst()->add(pCameraImageFactory(factory));
         }
     }
 
-    for (auto& dev : CameraManger::GetInst()->vDevice) {
+    MultiCamera::GetInst()->addProc(new TestProc());
+    MultiCamera::GetInst()->openCamera(); //打开相机
 
+    for (auto& dev : CameraManger::GetInst()->vDevice) {
         dev->size = cv::Size(1280, 400);
         //dev->paramSize = cv::Size(1280, 400);
 
         dev->setProp(cv::CAP_PROP_FPS, 60);
+        dev->setFourcc("MJPG");
+
         //sc->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
 
         //设置曝光
@@ -162,9 +175,6 @@ int main(int argc, char* argv[])
         //输出一下
         dev->outputProp();
     }
-
-    MultiCamera::GetInst()->addProc(new TestProc());
-    MultiCamera::GetInst()->openCamera(); //打开相机
 
     //启动计算线程
     MultiCamera::GetInst()->start();

@@ -81,7 +81,7 @@ class FrameProcRunnable : public Poco::Runnable
                             }
                         }
 
-                        LogD("MultiCamera.run():执行proc!");
+                        LogD("MultiCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
                         int ckey = -1; //让proc去自己想检测keydown就keydown
                         proc->process(cimg, ckey);
                         if (ckey != -1) { //如果有按键按下那么修改最近的按键值

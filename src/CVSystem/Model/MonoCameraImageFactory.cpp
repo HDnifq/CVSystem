@@ -29,13 +29,12 @@ std::vector<CameraImage> MonoCameraImageFactory::Create()
 
             //第一个相机直接赋值,后面的相机图片是要拷贝一下
             if (i == 0) {
+                LogD("MonoCameraImageFactory.Create():当前采图消耗时间 %f ms.", result[i].costTime());
                 result[i].image = image;
             }
             else {
                 result[i].image = image.clone();
             }
-
-            LogD("MonoCameraImageFactory.Create():当前采图消耗时间 %f ms.", result[i].costTime());
         }
     }
     else {
