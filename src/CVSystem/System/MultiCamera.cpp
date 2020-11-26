@@ -97,7 +97,8 @@ class FrameProcRunnable : public Poco::Runnable
                         //LogD("MultiCamera.run():队列等待...");
                         //for (size_t i = 0; i < 100; i++) {
                         //std::this_thread::sleep_for(std::chrono::seconds(1));
-                        std::this_thread::yield();
+                        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+                        //std::this_thread::yield();
                         //}
                     }
                 }
