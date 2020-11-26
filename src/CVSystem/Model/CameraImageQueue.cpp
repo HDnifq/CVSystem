@@ -74,6 +74,11 @@ pCameraImageGroup CameraImageQueue::GetImage()
         //这表示采图完成了,所有的相机都已经采图OK
         for (size_t i = 0; i < vLock.size(); i++) {
             vLock[i]->lock();
+            //如果不同相机采图的快慢速度不同了,那么舍弃掉所有很老的图片,只留最后两张,把倒数第二张作为结果传出.
+            while (vTempImageQueue[i].size() > 2) {
+                LogW("CameraImageQueue.GetImage():当前%zu号图片队列丢弃一帧", i);
+                vTempImageQueue[i].pop_front();
+            }
             CameraImage& img = vTempImageQueue[i].front();
             imgGroup->addCameraImage(img);
 
