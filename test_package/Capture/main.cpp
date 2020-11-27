@@ -27,7 +27,7 @@ class CamCaptureConfig : XUEXUE_JSON_OBJECT
     bool islogDebug = false;
 
     // 是否cpu处理计算
-    bool isDoProc = false;
+    int doProcCount = 5;
 
     // 相机分辨率 - 宽
     int w = 960;
@@ -35,7 +35,7 @@ class CamCaptureConfig : XUEXUE_JSON_OBJECT
     // 相机分辨率 - 高
     int h = 300;
 
-    XUEXUE_JSON_OBJECT_M6(exposure, names, islogDebug, isDoProc, w, h)
+    XUEXUE_JSON_OBJECT_M6(exposure, names, islogDebug, doProcCount, w, h)
   private:
 };
 
@@ -47,7 +47,13 @@ class TestProc : public FrameProc
 
     int count = 0;
 
-    bool isDoProc = false;
+    int runCount = 5;
+
+    cv::Mat image;
+    cv::Mat gray;
+    cv::Mat thr40;
+    cv::Mat thr110;
+    cv::Mat thr180;
 
     void process(pCameraImageGroup camImage, int& key) override
     {
@@ -57,12 +63,8 @@ class TestProc : public FrameProc
                 continue;
             }
             //LogI("TestProc.process():执行算法处理!");
-            cv::Mat image = camImage->vImage[i].image;
-            if (isDoProc) {
-                cv::Mat gray;
-                cv::Mat thr40;
-                cv::Mat thr110;
-                cv::Mat thr180;
+            image = camImage->vImage[i].image;
+            for (size_t i = 0; i < runCount; i++) {
                 thresholdOnce(image, gray, thr40, thr110, thr180);
             }
         }
@@ -174,7 +176,7 @@ int main(int argc, char* argv[])
         }
     }
     TestProc* testProc = new TestProc();
-    testProc->isDoProc = config.isDoProc;
+    testProc->runCount = config.doProcCount;
     MultiCamera::GetInst()->addProc(testProc);
 
     MultiCamera::GetInst()->openCamera(); //打开相机
