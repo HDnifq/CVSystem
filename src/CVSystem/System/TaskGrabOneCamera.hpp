@@ -104,6 +104,11 @@ class TaskGrabOneCamera : public Poco::Runnable
                 if (pCameraImageFactory->device->open()) {
                     LogI("TaskGrabOneCamera.runTask():相机打开成功!");
                 }
+                else {
+                    LogE("TaskGrabOneCamera.runTask():打开相机失败无法采图...");
+                    isRun = false;
+                    return;
+                }
             }
         }
 
