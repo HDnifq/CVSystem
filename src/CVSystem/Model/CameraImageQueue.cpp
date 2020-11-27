@@ -53,8 +53,8 @@ void CameraImageQueue::PushImage(const CameraImage& image)
 pCameraImageGroup CameraImageQueue::GetImage()
 {
     int doneCount = 0;
-    for (size_t i = 0; i < vLock.size(); i++) {
-        vLock[i]->lock();
+    for (size_t i = 0; i < vTempImageQueue.size(); i++) {
+        //    vLock[i]->lock();
         if (!vTempImageQueue[i].empty()) {
             if (vTempImageQueue[i].size() > 3) {
                 LogW("CameraImageQueue.GetImage():当前%zu号图片队列长度过长...长度为%zu", i, vTempImageQueue[i].size());
@@ -64,7 +64,7 @@ pCameraImageGroup CameraImageQueue::GetImage()
             }
             doneCount++;
         }
-        vLock[i]->unlock();
+        //vLock[i]->unlock();
     }
     if (doneCount == vGrabCamera.size()) {
         LogD("CameraImageQueue.GetImage():采图完成!");
