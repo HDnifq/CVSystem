@@ -58,6 +58,15 @@ void CameraImageQueue::PushImage(const CameraImage& image)
     vTempImageQueue[index].push_back(image);
     vLock[index]->unlock();
 #else
+    //此时肯定是系统发生了问题,丢弃,防止队列过长
+    CameraImage img;
+    while (vTempImageQueue[index].size_approx() >= maxQueueLen) {
+        if (vTempImageQueue[index].try_dequeue(img)) {
+#    if defined(_WIN32) || defined(_WIN64)
+            LogW("CameraImageQueue.PushImage():队列长度大于maxQueueLen,这可能在等待其他相机采图...");
+#    endif
+        }
+    }
     //加入这一张图片,一定要加入
     while (!vTempImageQueue[index].enqueue(image)) {
     }
@@ -137,6 +146,7 @@ pCameraImageGroup CameraImageQueue::GetImage()
 
 #endif // STLQueue
         }
+        frameCount++;
         return imgGroup;
     }
     else {

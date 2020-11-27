@@ -21,18 +21,16 @@ pCameraDevice CameraManger::add(const pCameraDevice& device)
     //检察重复
     for (size_t i = 0; i < vDevice.size(); i++) {
         if (vDevice[i] == device) {
-            LogE("CameraManger.add():传入了一个重复设备指针%s,当前相机个数%d,直接返回！", device->devName.c_str(), vDevice.size());
+            LogE("CameraManger.add():传入了一个重复设备指针%s,当前相机个数%zu,直接返回！", device->devName.c_str(), vDevice.size());
             return device;
         }
         if (vDevice[i]->devName == device->devName) {
-            LogE("CameraManger.add():传入了一个重复设备名称%s,当前相机个数%d,直接返回！", device->devName.c_str(), vDevice.size());
+            LogE("CameraManger.add():传入了一个重复设备名称%s,当前相机个数%zu,直接返回！", device->devName.c_str(), vDevice.size());
             return device;
         }
     }
-
     vDevice.push_back(device);
-
-    LogI("CameraManger.add():添加了一个设备%s,当前设备格式个数%d！", device->devName.c_str(), vDevice.size());
+    LogI("CameraManger.add():添加了一个设备%s,当前设备个数%d！", device->devName.c_str(), vDevice.size());
     return device;
 }
 
@@ -51,7 +49,7 @@ pCamera CameraManger::add(const pCamera& camera)
     for (int i = 0; i < vCamera.size(); i++) {
         CV_Assert(vCamera[i]->camIndex == i);
     }
-    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%d！", camera->name.c_str(), mCamera.size());
+    LogI("CameraManger.add():添加了一个相机%s,当前相机个数%zu！", camera->name.c_str(), mCamera.size());
     return camera;
 }
 
@@ -60,14 +58,13 @@ pCameraImageFactory CameraManger::add(const pCameraImageFactory& cmf)
     //检察重复
     for (size_t i = 0; i < vCameraImageFactory.size(); i++) {
         if (vCameraImageFactory[i] == cmf) {
-            LogE("CameraManger.add():传入了一个重复图片转换器%s,直接返回！", cmf->device->devName.c_str(), vDevice.size());
+            LogE("CameraManger.add():传入了一个重复图片转换器%s,直接返回！", cmf->device->devName.c_str());
             return cmf;
         }
     }
 
     vCameraImageFactory.push_back(cmf);
-
-    LogI("CameraManger.add():添加了一个图片转换器%s,当前设备格式个数%d！", cmf->device->devName.c_str(), vDevice.size());
+    LogI("CameraManger.add():添加了一个图片转换器%s,当前ImageFactory个数%zu！", cmf->device->devName.c_str(), vCameraImageFactory.size());
     return cmf;
 }
 

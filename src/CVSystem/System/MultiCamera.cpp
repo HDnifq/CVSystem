@@ -252,7 +252,7 @@ void MultiCamera::closeCamera()
     LogI("MultiCamera.closeCamera():关闭相机...");
     for (size_t i = 0; i < _impl->vDevices.size(); i++) {
         if (_impl->vDevices[i] != nullptr) {
-            LogI("CameraGrabMT.close():释放相机设备%s ...", _impl->vDevices[i]->devName.c_str());
+            LogI("MultiCamera.close():释放相机设备%s ...", _impl->vDevices[i]->devName.c_str());
             _impl->vDevices[i]->release();
         }
     }
@@ -288,13 +288,13 @@ void MultiCamera::start(uint activeProcindex)
                                                             pCameraImageFactory.get());
             //把第一个设为主采图.
             if (i == 0) {
-                task->isDoProc = true;
-                task->proc = _impl->vProc[activeProcindex];
+                task->isMainTask = true;
                 _impl->mainGrabTask = task;
             }
-            else {
-                task->isDoProc = false;
-            }
+
+            task->isDoProc = true;
+            task->proc = _impl->vProc[activeProcindex];
+
             _impl->vGrabTasks.push_back(task);
             _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
         }
@@ -341,7 +341,7 @@ void MultiCamera::stop()
 uint MultiCamera::frameCount()
 {
     if (_impl->mainGrabTask != nullptr) {
-        return _impl->mainGrabTask->frameCount;
+        return _impl->imageQueue.frameCount;
     }
     return 0;
 }

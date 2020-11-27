@@ -61,7 +61,10 @@ class TaskGrabOneCamera : public Poco::Runnable
     // 是否执行采图(如果不采图了那么会降低cpu开销).
     std::atomic_bool isGrab{true};
 
-    // 是否执行处理(只有主相机才执行处理)
+    // 是否是主任务(只有主任务才执行事件)
+    bool isMainTask = false;
+
+    // 是否执行处理
     bool isDoProc = false;
 
     // proc对象.
@@ -69,9 +72,6 @@ class TaskGrabOneCamera : public Poco::Runnable
 
     // 处理的fps.
     float fps = 0;
-
-    // 帧处理计数.
-    uint frameCount = 0;
 
     // 当前按下的按键记录（看后面要不要删掉）.
     std::atomic_int cvKey{-1};
@@ -93,10 +93,6 @@ class TaskGrabOneCamera : public Poco::Runnable
             return;
         }
 
-        if (isDoProc && proc != nullptr) {
-            proc->onEnable();
-        }
-
         //如果还没有打开相机
         if (isGrab.load()) {
             if (!pCameraImageFactory->device->isOpened()) {
@@ -112,50 +108,87 @@ class TaskGrabOneCamera : public Poco::Runnable
             }
         }
 
+        if (isMainTask && isDoProc && proc != nullptr) {
+            imageQueue->lockGetImage.lock();
+            try {
+                proc->onEnable();
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabOneCamera.run():执行onEnable异常 e=%s", e.what());
+            }
+            imageQueue->lockGetImage.unlock();
+        }
+
         while (isRun.load()) {
-            //TODO:这里要加异常包围
+            try {
+                //使用imageQueue中的提取计数去计算一下处理的fps
+                fps = _fpsCalc.update(imageQueue->frameCount);
 
-            //执行一次采图
-            if (isGrab.load()) {
-                pCameraImageFactory->device->applyCapProp();
-
-                LogD("TaskGrabOneCamera.runTask():CameraImageFactory执行采图!");
-                std::vector<CameraImage> images = pCameraImageFactory->Create();
-                for (size_t i = 0; i < images.size(); i++) {
-                    //如果采图成功才放进队列好了,当相机有切换相机属性的时候是会产生硬件的采图失败的.
-                    if (images[i].isSuccess) {
-                        imageQueue->PushImage(images[i]);
-                    }
-                }
-            }
-
-            // 如果这个采图完了它就去检察是否能够执行proc处理
-            if (isDoProc && proc != nullptr) {
+                //执行一次采图
                 if (isGrab.load()) {
-                    //因为这个主相机有可能采图超前一帧,所以这里执行两次处理
-                    if (doOnceProc())
-                        doOnceProc();
+                    pCameraImageFactory->device->applyCapProp();
+
+                    LogD("TaskGrabOneCamera.runTask():CameraImageFactory执行采图!");
+                    std::vector<CameraImage> images = pCameraImageFactory->Create();
+                    for (size_t i = 0; i < images.size(); i++) {
+                        //如果采图成功才放进队列好了,当相机有切换相机属性的时候是会产生硬件的采图失败的.
+                        if (images[i].isSuccess) {
+                            imageQueue->PushImage(images[i]);
+                        }
+                    }
                 }
-                else {
-                    LogD("MultiCamera.run():执行onLightSleep!");
-                    int ckey = -1; //让proc去自己想检测keydown就keydown
-                    proc->onLightSleep(ckey);
-                    if (ckey != -1) { //如果有按键按下那么修改最近的按键值
-                        cvKey.exchange(ckey);
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabOneCamera.run():采图异常 e=%s", e.what());
+            }
+
+            try {
+                // 如果这个采图完了它就去检察是否能够执行proc处理,如果没有人正在进行帧处理,那么就会持有一个锁
+                if (isDoProc && proc != nullptr &&
+                    imageQueue->lockGetImage.try_lock()) {
+                    if (isGrab.load()) {
+                        //因为这个主相机有可能采图超前一帧,所以这里执行两次处理
+                        if (doOnceProc())
+                            doOnceProc();
+                    }
+                    else {
+                        LogD("TaskGrabOneCamera.run():执行onLightSleep!");
+                        int ckey = -1; //让proc去自己想检测keydown就keydown
+                        proc->onLightSleep(ckey);
+                        if (ckey != -1) { //如果有按键按下那么修改最近的按键值
+                            cvKey.exchange(ckey);
+                        }
+
+                        //如果不抓图那么就睡眠
+                        std::this_thread::sleep_for(std::chrono::milliseconds(300));
                     }
 
-                    //如果不抓图那么就睡眠
-                    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-                }
+                    //干脆用这个线程来驱动检查事件
+                    Event::GetInst()->checkMemEvent();
 
-                //干脆用这个线程来驱动检查事件
-                Event::GetInst()->checkMemEvent();
+                    imageQueue->lockGetImage.unlock(); //解锁
+                }
             }
+            catch (const std::exception& e) {
+                LogE("TaskGrabOneCamera.run():执行proc异常 e=%s", e.what());
+                imageQueue->lockGetImage.unlock(); //异常了也解锁
+            }
+        }
+
+        if (isMainTask && isDoProc && proc != nullptr) {
+            imageQueue->lockGetImage.lock();
+            try {
+                proc->onDisable();
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabOneCamera.run():执行onDisable异常 e=%s", e.what());
+            }
+            imageQueue->lockGetImage.unlock();
         }
     }
 
     /**
-     * 执行一次帧处理
+     * 执行一次帧处理,每个Task在采图完成之后就会去尝试进行帧处理.
      *
      * @author daixian
      * @date 2020/11/27
@@ -167,11 +200,10 @@ class TaskGrabOneCamera : public Poco::Runnable
         //如果是采图过程中
         pCameraImageGroup cimg = imageQueue->GetImage();
         if (cimg != nullptr) {
-            LogD("TaskGrabOneCamera.run():相机采图并处理.frameCount=%u", this->frameCount);
-            cimg->fnum = frameCount;
-            cimg->procStartTime = clock(); //标记处理开始时间
+            cimg->fnum = imageQueue->frameCount;
+            LogD("TaskGrabOneCamera.run():相机采图并处理.frameCount=%u", cimg->fnum);
 
-            fps = _fpsCalc.update(++frameCount);
+            cimg->procStartTime = clock(); //标记处理开始时间
 
             //标注一下当前工作相机的FPS
             for (size_t i = 0; i < cimg->vImage.size(); i++) {
@@ -180,7 +212,8 @@ class TaskGrabOneCamera : public Poco::Runnable
                 }
             }
 
-            LogD("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
+            if (cimg->waitProcTime() > 4)
+                LogW("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
             int ckey = -1; //让proc去自己想检测keydown就keydown
             proc->process(cimg, ckey);
             if (ckey != -1) { //如果有按键按下那么修改最近的按键值
