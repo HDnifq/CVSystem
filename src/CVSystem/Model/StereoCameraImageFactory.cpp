@@ -23,7 +23,6 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
     }
 
     cv::Mat image;
-    LogD("StereoCameraImageFactory.Create():开始阻塞采图...");
     if (device->read(image)) //阻塞的读取
     {
         //如果采图成功

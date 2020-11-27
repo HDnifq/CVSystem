@@ -23,7 +23,7 @@
 namespace dxlib {
 
 /**
- * 4个Task不停的抓图添加图片到队列.
+ * 和相机设备数一样的Task不停的抓图添加图片到队列.
  *
  * @author daixian
  * @date 2020/11/26
@@ -93,8 +93,8 @@ class TaskGrabOneCamera : public Poco::Runnable
             return;
         }
 
-        //如果还没有打开相机
         if (isGrab.load()) {
+            //如果还没有打开相机就打开相机
             if (!pCameraImageFactory->device->isOpened()) {
                 LogI("TaskGrabOneCamera.runTask():设备相机还没有打开,打开相机...");
                 if (pCameraImageFactory->device->open()) {
@@ -124,11 +124,12 @@ class TaskGrabOneCamera : public Poco::Runnable
                 //使用imageQueue中的提取计数去计算一下处理的fps
                 fps = _fpsCalc.update(imageQueue->frameCount);
 
-                //执行一次采图
                 if (isGrab.load()) {
+                    //如果需要采图那就执行一次采图
+                    setCamerasFPS(fps);
+
                     pCameraImageFactory->device->applyCapProp();
 
-                    LogD("TaskGrabOneCamera.runTask():CameraImageFactory执行采图!");
                     std::vector<CameraImage> images = pCameraImageFactory->Create();
                     for (size_t i = 0; i < images.size(); i++) {
                         //如果采图成功才放进队列好了,当相机有切换相机属性的时候是会产生硬件的采图失败的.
@@ -136,6 +137,10 @@ class TaskGrabOneCamera : public Poco::Runnable
                             imageQueue->PushImage(images[i]);
                         }
                     }
+                }
+                else {
+                    //如果不采图那么就标记这些相机的fps为0
+                    setCamerasFPS(0);
                 }
             }
             catch (const std::exception& e) {
@@ -200,10 +205,12 @@ class TaskGrabOneCamera : public Poco::Runnable
         //如果是采图过程中
         pCameraImageGroup cimg = imageQueue->GetImage();
         if (cimg != nullptr) {
+            cimg->procStartTime = clock(); //标记处理开始时间
+            if (cimg->waitProcTime() > 4)
+                LogW("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
+
             cimg->fnum = imageQueue->frameCount;
             LogD("TaskGrabOneCamera.run():相机采图并处理.frameCount=%u", cimg->fnum);
-
-            cimg->procStartTime = clock(); //标记处理开始时间
 
             //标注一下当前工作相机的FPS
             for (size_t i = 0; i < cimg->vImage.size(); i++) {
@@ -212,8 +219,6 @@ class TaskGrabOneCamera : public Poco::Runnable
                 }
             }
 
-            if (cimg->waitProcTime() > 4)
-                LogW("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
             int ckey = -1; //让proc去自己想检测keydown就keydown
             proc->process(cimg, ckey);
             if (ckey != -1) { //如果有按键按下那么修改最近的按键值
@@ -232,6 +237,22 @@ class TaskGrabOneCamera : public Poco::Runnable
   private:
     // 计算fps的辅助.
     FPSCalc _fpsCalc;
+
+    /**
+     * 设置自己的cameras的fps
+     *
+     * @author daixian
+     * @date 2020/11/28
+     *
+     * @param  fps The FPS.
+     */
+    void setCamerasFPS(float fps)
+    {
+        pCameraImageFactory->device->FPS = fps;
+        for (size_t i = 0; i < pCameraImageFactory->cameras.size(); i++) {
+            pCameraImageFactory->cameras[i]->FPS = fps;
+        }
+    }
 };
 
 } // namespace dxlib

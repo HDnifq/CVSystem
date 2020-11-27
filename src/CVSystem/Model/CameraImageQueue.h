@@ -45,8 +45,8 @@ class CameraImageQueue
     // 全局取图+处理锁(特别要注意这是保护proc帧处理的锁)
     std::mutex lockGetImage;
 
-    // 全局提取帧计数
-    std::atomic_uint frameCount{0};
+    // 全局提取帧计数(由于它的使用基本上是在上面的锁的控制范围内,所以它可能不需要原子)
+    uint frameCount = 0;
 
     // 采图队列的最大长度,防止过多的内存占用
     int maxQueueLen = 4;

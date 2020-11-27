@@ -17,7 +17,6 @@ std::vector<CameraImage> MonoCameraImageFactory::Create()
         result[i].grabStartTime = clock();
     }
     cv::Mat image;
-    LogD("MonoCameraImageFactory.Create():开始阻塞采图...");
     if (device->read(image)) //阻塞的读取
     {
         //如果采图成功
