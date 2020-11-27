@@ -204,30 +204,30 @@ bool MultiCamera::openCamera()
     }
 
     bool isSuccess = true;
-    for (size_t camIndex = 0; camIndex < _impl->vDevices.size(); camIndex++) {
-        auto& device = _impl->vDevices[camIndex];
-        if (device == nullptr) {
-            LogI("MultiCamera.open():相机index%d 为null", camIndex);
-            continue;
-        }
+    //for (size_t camIndex = 0; camIndex < _impl->vDevices.size(); camIndex++) {
+    //    auto& device = _impl->vDevices[camIndex];
+    //    if (device == nullptr) {
+    //        LogI("MultiCamera.open():相机index%d 为null", camIndex);
+    //        continue;
+    //    }
 
-        LogI("MultiCamera.open():尝试打开相机 %s ...", device->devName.c_str());
-        clock_t startTime = clock();
-        //打开相机
-        if (device->open()) {
-            double costTime = (clock() - startTime) / CLOCKS_PER_SEC * 1000.;
-            //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
-            cv::Mat img;
-            device->capture->read(img);
-            if (!img.empty())
-                LogI("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
-            else
-                LogE("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
-        }
-        else {
-            isSuccess = false;
-        }
-    }
+    //    LogI("MultiCamera.open():尝试打开相机 %s ...", device->devName.c_str());
+    //    clock_t startTime = clock();
+    //    //打开相机
+    //    if (device->open()) {
+    //        double costTime = (clock() - startTime) / CLOCKS_PER_SEC * 1000.;
+    //        //先读一下看看,因为读第一帧的开销时间较长，可能影响dowork()函数中FPS的计算。
+    //        cv::Mat img;
+    //        device->capture->read(img);
+    //        if (!img.empty())
+    //            LogI("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+    //        else
+    //            LogE("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+    //    }
+    //    else {
+    //        isSuccess = false;
+    //    }
+    //}
 
     _impl->_isOpened.exchange(true);
     _impl->_isOpening.exchange(false);

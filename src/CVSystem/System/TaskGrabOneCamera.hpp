@@ -97,6 +97,16 @@ class TaskGrabOneCamera : public Poco::Runnable
             proc->onEnable();
         }
 
+        //如果还没有打开相机
+        if (isGrab.load()) {
+            if (!pCameraImageFactory->device->isOpened()) {
+                LogI("TaskGrabOneCamera.runTask():设备相机还没有打开,打开相机...");
+                if (pCameraImageFactory->device->open()) {
+                    LogI("TaskGrabOneCamera.runTask():相机打开成功!");
+                }
+            }
+        }
+
         while (isRun.load()) {
             //TODO:这里要加异常包围
 
