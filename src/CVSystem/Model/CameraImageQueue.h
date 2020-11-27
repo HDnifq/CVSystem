@@ -2,8 +2,8 @@
 #include "CameraImage.h"
 #include "CameraImageGroup.h"
 
-//#include "../Common/concurrentqueue.h"
-//#include "../Common/blockingconcurrentqueue.h"
+#include "../Common/concurrentqueue.h"
+#include "../Common/blockingconcurrentqueue.h"
 
 #include <vector>
 #include <deque>
@@ -23,14 +23,20 @@ class CameraImageQueue
     CameraImageQueue();
     ~CameraImageQueue();
 
-    //moodycamel::ConcurrentQueue<pCameraImage> vTempImageQueue;
-    //moodycamel::ConcurrentQueue<pCameraImage> vDoneImageQueue;
+#if STLQueue
 
     // 线程锁
     std::vector<std::mutex*> vLock;
 
     // 相机采的图无脑扔进来
     std::vector<std::deque<CameraImage>> vTempImageQueue;
+
+#else
+
+    // 相机采的图无脑扔进来
+    std::vector<moodycamel::ConcurrentQueue<CameraImage>> vTempImageQueue;
+
+#endif
 
     // 抓图的相机
     std::vector<Camera*> vGrabCamera;
@@ -68,7 +74,7 @@ class CameraImageQueue
     void PushImage(const CameraImage& image);
 
     /**
-     * 提取一个图片组,如果采图还没有结束那么返回null.
+     * 提取一个图片组,如果采图还没有结束那么返回null.不使用STLQueue的话这个函数可能需要由某一个固定线程来调用.
      *
      * @author daixian
      * @date 2020/11/8
