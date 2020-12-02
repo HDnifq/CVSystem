@@ -1,6 +1,5 @@
-﻿#include "MultiCameraRequestHandler.h"
-
-#include "../dto/MCStatusDto.hpp"
+﻿#include "../dto/MCStatusDto.hpp"
+#include "MultiCameraRequestHandler.h"
 
 #include <iostream>
 #include "dlog/dlog.h"

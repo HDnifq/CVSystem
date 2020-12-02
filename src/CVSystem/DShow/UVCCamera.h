@@ -7,6 +7,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 
+// 用于json
+#    include "xuexuejson/Serialize.hpp"
+
 #    include <windows.h>
 #    include <vidcap.h>
 #    include <dshow.h>
@@ -18,9 +21,6 @@
 
 #    include <vector>
 #    include <string>
-
-// 用于json
-#    include "xuexuejson/Serialize.hpp"
 
 namespace dxlib {
 

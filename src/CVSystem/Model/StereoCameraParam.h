@@ -2,9 +2,9 @@
 
 #include "opencv2/opencv.hpp"
 
-#define XUEXUE_JSON_SUPPORT_OPENCV
-#define XUEXUE_JSON_SUPPORT_EIGEN
-#include "xuexuejson/Serialize.hpp"
+//#define XUEXUE_JSON_SUPPORT_OPENCV
+//#define XUEXUE_JSON_SUPPORT_EIGEN
+//#include "xuexuejson/Serialize.hpp"
 #include "CameraParam.h"
 
 namespace dxlib {

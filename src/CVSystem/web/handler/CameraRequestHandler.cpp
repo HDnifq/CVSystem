@@ -1,10 +1,10 @@
-﻿#include "CameraRequestHandler.h"
-#include <iostream>
-#include "dlog/dlog.h"
-
-#define XUEXUE_JSON_SUPPORT_OPENCV
+﻿#define XUEXUE_JSON_SUPPORT_OPENCV
 #define XUEXUE_JSON_SUPPORT_EIGEN
 #include "xuexuejson/Serialize.hpp"
+
+#include "CameraRequestHandler.h"
+#include <iostream>
+#include "dlog/dlog.h"
 
 #include "Poco/URI.h"
 #include <algorithm>

@@ -1,9 +1,6 @@
 ﻿#include "CameraManger.h"
 #include "dlog/dlog.h"
 
-#define XUEXUE_JSON_SUPPORT_OPENCV
-#include "xuexuejson/Serialize.hpp"
-
 namespace dxlib {
 
 CameraManger* CameraManger::m_pInstance = new CameraManger();

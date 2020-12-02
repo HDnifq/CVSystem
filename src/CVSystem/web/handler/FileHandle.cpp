@@ -5,9 +5,10 @@
 #include <Poco/DateTimeFormat.h>
 #include <Poco/FileStream.h>
 
-#include "xuexuejson/Serialize.hpp"
 #include "dlog/dlog.h"
 #include <regex>
+#include <map>
+#include <vector>
 
 #include <Poco/Path.h>
 #include <Poco/File.h>
@@ -17,7 +18,6 @@
 
 using namespace Poco::Net;
 using namespace Poco;
-using namespace xuexue::json;
 
 namespace dxlib {
 

@@ -1,4 +1,5 @@
 ﻿#include "DevicesHelper.h"
+#include "xuexuejson/Serialize.hpp"
 
 #if defined _MSC_VER && _MSC_VER >= 100
 //'sprintf': name was marked as #pragma deprecated
@@ -41,7 +42,6 @@
 
 #include "../Common/StringHelper.h"
 #include "dlog/dlog.h"
-#include "xuexuejson/Serialize.hpp"
 
 #include "Poco/Path.h"
 #include "Poco/File.h"
