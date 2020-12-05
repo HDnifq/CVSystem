@@ -63,6 +63,26 @@ class DBHelper
     static int SELECT(SQLite::Database* db, const std::string& table_name,
                       const std::string& where_col_name, const std::string& where_row_value,
                       const std::string& select_col_name, unsigned int& value);
+
+    /**
+     * 得到当前时间戳字符串."%Y%m%d-%H%M%S"形如20191228-023549
+     *
+     * @author daixian
+     * @date 2020/12/5
+     *
+     * @returns 时间字符串.
+     */ 
+    static std::string SecTimeStr();
+
+    /**
+     * 得到sqlite格式的时间戳字符串,"%Y-%m-%d %H:%M:%S"形如2020-05-23 09:37:26.
+     *
+     * @author daixian
+     * @date 2020/5/23
+     *
+     * @returns 时间字符串.
+     */
+    static std::string SqliteDateTime();
 };
 
 } // namespace dxlib

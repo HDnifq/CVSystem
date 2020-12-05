@@ -1,5 +1,13 @@
 ﻿#include "DBHelper.h"
+
 #include "Poco/Format.h"
+#include "Poco/LocalDateTime.h"
+#include "Poco/DateTime.h"
+#include "Poco/DateTimeFormat.h"
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/DateTimeParser.h"
+#include "Poco/Format.h"
+
 #include "dlog/dlog.h"
 
 namespace dxlib {
@@ -69,6 +77,24 @@ int DBHelper::SELECT(SQLite::Database* SQLiteCppDB, const std::string& table_nam
         }
     }
     return 0;
+}
+
+std::string DBHelper::SecTimeStr()
+{
+    //最后文件的形式如init_close.20191228-023549.log
+    using namespace Poco;
+    LocalDateTime now;
+    std::string str = DateTimeFormatter::format(now, "%Y%m%d-%H%M%S");
+    return str;
+}
+
+std::string DBHelper::SqliteDateTime()
+{
+    //2020-05-23 09:37:26
+    using namespace Poco;
+    LocalDateTime now;
+    std::string str = DateTimeFormatter::format(now, "%Y-%m-%d %H:%M:%S");
+    return str;
 }
 
 } // namespace dxlib
