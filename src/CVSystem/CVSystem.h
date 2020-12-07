@@ -14,4 +14,6 @@
 #    include "./Model/MonoCameraImageFactory.h"
 #    include "./Model/StereoCameraImageFactory.h"
 
+#    include "./Data/DBCommon.h"
+
 #endif // !_CVSYSTEM_H_

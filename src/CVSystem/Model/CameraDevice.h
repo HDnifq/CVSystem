@@ -16,6 +16,9 @@ class CameraDevice
 
     ~CameraDevice();
 
+    // 这个设备的id,也是ImageFactory的id.
+    int id = -1;
+
     // 这个相机的设备名.
     std::string devName;
 
@@ -170,6 +173,9 @@ class CameraDevice
 #pragma endregion
 
 #pragma region 特殊相机扩展
+
+    // 如果这个物理相机是立体相机的采图相机,那么这里需要记录一下scID;
+    int scID = -1;
 
     // 相机的一些特殊安装形式,如安装时翻转了180度等等.
     enum class SpecialTpye

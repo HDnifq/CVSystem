@@ -140,29 +140,4 @@ void Camera::loadParam(const std::string& path, const std::string& nameTargetSiz
     }
 }
 
-void StereoCamera::setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR)
-{
-    this->camPhy = camPhy;
-    this->camL = camL;
-    this->camR = camR;
-
-    //this->camL->physicalCamera = camPhy;
-    //this->camR->physicalCamera = camPhy;
-
-    this->camL->stereoOther = this->camR;
-    this->camR->stereoOther = this->camL;
-
-    this->camPhy->stereoCamIndexL = camL->camIndex;
-    this->camPhy->stereoCamIndexR = camR->camIndex;
-
-    if (this->scID >= 0) {
-        this->camPhy->scID = this->scID;
-        this->camL->scID = this->scID;
-        this->camR->scID = this->scID;
-    }
-    else {
-        LogE("StereoCamera.setCameraPhyLR():未分配scID, 应该先把StereoCamera添加进CameraManger中分配scID!");
-    }
-}
-
 } // namespace dxlib

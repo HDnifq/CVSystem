@@ -44,7 +44,7 @@ void CameraImageQueue::PushImage(const CameraImage& image)
     }
 
     int index = 0;
-    for (size_t i = 0; i < vGrabCamera.size(); i++) {
+    for (int i = 0; i < vGrabCamera.size(); i++) {
         if (vGrabCamera[i] == image.camera) {
             index = i;
             break;

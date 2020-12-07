@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 #include "Camera.h"
+#include "CameraDevice.h"
 #include "StereoCameraParam.h"
 
 namespace dxlib {
@@ -28,7 +29,7 @@ class StereoCamera
     pCamera camR;
 
     // 实际的物理双目相机.
-    pCamera camPhy;
+    pCameraDevice device;
 
     // 相机的参数对应的分辨率size.
     cv::Size paramSize;
@@ -73,33 +74,17 @@ class StereoCamera
     bool isLXLessThanR = true;
 
     /**
-     * 设置左右相机，当没有物理相机或者。两个全是真实相机的时候就可以用这个.
-     *
-     * @author daixian
-     * @date 2020/3/27
-     *
-     * @param [in] camL The camera l.
-     * @param [in] camR The camera r.
-     */
-    void setCameraLR(pCamera& camL, pCamera& camR)
-    {
-        this->camL = camL;
-        this->camR = camR;
-        this->camL->stereoOther = this->camR;
-        this->camR->stereoOther = this->camL;
-    }
-
-    /**
      * 使用一个实际的物理相机和LR相机一起设置个stereo信息.
      *
      * @author daixian
      * @date 2020/4/16
      *
-     * @param [in] camPhy The camera phy.
+     * @param      scID   Identifier for the screen.
+     * @param [in] device The camera phy.
      * @param [in] camL   The camera l.
      * @param [in] camR   The camera r.
      */
-    void setCameraPhyLR(pCamera& camPhy, pCamera& camL, pCamera& camR);
+    void setCamera(int scID, pCameraDevice& device, pCamera& camL, pCamera& camR);
 
     /**
      * 设置投影矩阵.

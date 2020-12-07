@@ -15,6 +15,17 @@ namespace dxlib {
  */
 struct CameraImage
 {
+    // 这个图片的所属类型
+    enum class ImageType
+    {
+        Mono,
+        StereoL,
+        StereoR
+    };
+
+    // 这个图片的类型.
+    ImageType type = CameraImage::ImageType::Mono;
+
     // 采图图片.
     cv::Mat image;
 

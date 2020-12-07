@@ -12,19 +12,8 @@ namespace dxlib {
 class MonoCameraImageFactory : public ICameraImageFactory
 {
   public:
-    MonoCameraImageFactory(const pCameraDevice& device, const std::vector<pCamera>& cameras)
-    {
-        //给基类成员赋值
-        this->device = device;
-        this->cameras = cameras;
-    }
-
-    MonoCameraImageFactory(const pCameraDevice& device, const pCamera& cameras)
-    {
-        //给基类成员赋值
-        this->device = device;
-        this->cameras.push_back(cameras);
-    }
+    MonoCameraImageFactory(const pCameraDevice& device, const std::vector<pCamera>& cameras);
+    MonoCameraImageFactory(const pCameraDevice& device, const pCamera& cameras);
 
     virtual ~MonoCameraImageFactory()
     {
@@ -32,6 +21,19 @@ class MonoCameraImageFactory : public ICameraImageFactory
 
     // 是否忽略硬件的失败
     //bool isIgnoreDeviceFailure = true;
+
+    /**
+     * 类型字符串.
+     *
+     * @author daixian
+     * @date 2020/12/7
+     *
+     * @returns A std::string.
+     */
+    virtual std::string Type()
+    {
+        return "MonoCameraImageFactory";
+    }
 
     /**
      * 这个函数实际上包含了阻塞的读取相机图片.

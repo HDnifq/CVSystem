@@ -3,6 +3,30 @@
 
 namespace dxlib {
 
+MonoCameraImageFactory::MonoCameraImageFactory(const pCameraDevice& device, const std::vector<pCamera>& cameras)
+{
+    //给基类成员赋值
+    this->device = device;
+    this->cameras = cameras;
+
+    this->id = this->device->id;
+    if (this->id < 0) {
+        LogW("MonoCameraImageFactory.构造():目前未给device分配id,可能是错误...");
+    }
+}
+
+MonoCameraImageFactory::MonoCameraImageFactory(const pCameraDevice& device, const pCamera& cameras)
+{
+    //给基类成员赋值
+    this->device = device;
+    this->cameras.push_back(cameras);
+
+    this->id = this->device->id;
+    if (this->id < 0) {
+        LogW("MonoCameraImageFactory.构造():目前未给device分配id,可能是错误...");
+    }
+}
+
 std::vector<CameraImage> MonoCameraImageFactory::Create()
 {
     std::vector<CameraImage> result;

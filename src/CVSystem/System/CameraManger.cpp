@@ -1,6 +1,9 @@
 ﻿#include "CameraManger.h"
 #include "dlog/dlog.h"
 
+#include "../Model/MonoCameraImageFactory.h"
+#include "../Model/StereoCameraImageFactory.h"
+
 namespace dxlib {
 
 CameraManger* CameraManger::m_pInstance = new CameraManger();
@@ -11,6 +14,26 @@ CameraManger::CameraManger()
 
 CameraManger::~CameraManger()
 {
+}
+
+void CameraManger::CreateStereoCamera(const std::string devName, int w, int h, pCameraDevice& device, pStereoCamera& stereo)
+{
+    device = pCameraDevice(new CameraDevice(devName, cv::Size(w, h), 0));
+    CameraManger::GetInst()->add(device);
+
+    pCamera cameraL = pCamera(new Camera(devName + "-L", cv::Size(w / 2, h)));
+    CameraManger::GetInst()->add(cameraL);
+
+    pCamera cameraR = pCamera(new Camera(devName + "-R", cv::Size(w / 2, h)));
+    CameraManger::GetInst()->add(cameraR);
+
+    stereo = pStereoCamera(new StereoCamera());
+    CameraManger::GetInst()->add(stereo);
+    stereo->setCamera(stereo->scID, device, cameraL, cameraR); //设置sc数据
+
+    ICameraImageFactory* pfactory = new StereoCameraImageFactory(device, {cameraL, cameraR});
+    pCameraImageFactory factory = pCameraImageFactory(pfactory);
+    CameraManger::GetInst()->add(factory);
 }
 
 pCameraDevice CameraManger::add(const pCameraDevice& device)
@@ -26,6 +49,9 @@ pCameraDevice CameraManger::add(const pCameraDevice& device)
             return device;
         }
     }
+
+    if (device->id < 0)
+        device->id = (int)vDevice.size(); //分配一个id
     vDevice.push_back(device);
     LogI("CameraManger.add():添加了一个设备%s,当前设备个数%d！", device->devName.c_str(), vDevice.size());
     return device;
@@ -33,12 +59,14 @@ pCameraDevice CameraManger::add(const pCameraDevice& device)
 
 pCamera CameraManger::add(const pCamera& camera)
 {
-    if (mCamera.find(camera->camIndex) != mCamera.end()) {
+    if (camera->camIndex < 0) {
+        camera->camIndex = (int)mCamera.size(); //分配一个camIndex
+    }
+    else if (mCamera.find(camera->camIndex) != mCamera.end()) {
         LogE("CameraManger.add():添加相机有重复的CamIndex=%d，添加失败!", camera->camIndex);
         return nullptr;
     }
 
-    camera->camIndex = (int)mCamera.size(); //分配一个camIndex
     mCamera[camera->camIndex] = camera;
     vCamera.push_back(camera); //添加一个
 

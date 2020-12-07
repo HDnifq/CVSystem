@@ -69,9 +69,9 @@ TEST(MultiCamera, openMono)
 
     pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 16));
     pCamera camera = pCamera(new Camera(camName, cv::Size(1280, 720)));
-    MonoCameraImageFactory* factory = new MonoCameraImageFactory(device, camera);
     CameraManger::GetInst()->add(device);
     CameraManger::GetInst()->add(camera);
+    MonoCameraImageFactory* factory = new MonoCameraImageFactory(device, camera);
     CameraManger::GetInst()->add(pCameraImageFactory(factory));
 
     MultiCamera::GetInst()->addProc(new TestProc());
@@ -83,7 +83,7 @@ TEST(MultiCamera, openMono)
         CameraManger::GetInst()->vDevice[0]->setFourcc("MJPG");
 
         //打开相机成功了
-    /*    ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
+        /*    ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
         ASSERT_TRUE(CameraManger::GetInst()->vDevice[0]->isOpened());*/
 
         //输出一下
@@ -120,14 +120,20 @@ TEST(MultiCamera, openStereo)
     }
     string camName = DevicesHelper::GetInst()->devList.begin()->second;
 
-    pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 0));
-    pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 720)));
-    pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 720)));
-    StereoCameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
-    CameraManger::GetInst()->add(device);
-    CameraManger::GetInst()->add(cameraL);
-    CameraManger::GetInst()->add(cameraR);
-    CameraManger::GetInst()->add(pCameraImageFactory(factory));
+    //pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 0));
+    //pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 720)));
+    //pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 720)));
+    //CameraManger::GetInst()->add(device);
+    //CameraManger::GetInst()->add(cameraL);
+    //CameraManger::GetInst()->add(cameraR);
+
+    //StereoCameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
+    //CameraManger::GetInst()->add(pCameraImageFactory(factory));
+
+    //使用工厂方法
+    pCameraDevice device;
+    pStereoCamera stereo;
+    CameraManger::GetInst()->CreateStereoCamera(camName, 1280, 720, device, stereo);
 
     MultiCamera::GetInst()->addProc(new TestProc());
 

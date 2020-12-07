@@ -51,6 +51,20 @@ class CameraManger
     void clear();
 
     /**
+     * 使用工厂方法创建一个立体相机,能自动分配id.(应该优先使用这样的工厂方法)
+     *
+     * @author daixian
+     * @date 2020/12/7
+     *
+     * @param       devName 设备名字.
+     * @param       w       图像width.
+     * @param       h       图像height.
+     * @param [out] device  工厂创建的设备对象.
+     * @param [out] stereo  工厂创建的Stereo对象.
+     */
+    void CreateStereoCamera(const std::string devName, int w, int h, pCameraDevice& device, pStereoCamera& stereo);
+
+    /**
      * 添加一个设备
      *
      * @author daixian

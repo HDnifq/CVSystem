@@ -3,6 +3,22 @@
 
 namespace dxlib {
 
+StereoCameraImageFactory::StereoCameraImageFactory(const pCameraDevice& device, const std::array<pCamera, 2>& stereoCamera)
+{
+    //给基类成员赋值
+    this->device = device;
+    this->stereoCamera = stereoCamera;
+
+    //这个数据结构实际上没有用了,只是为了兼容ICameraImageFactory中的成员
+    this->cameras.push_back(stereoCamera[0]);
+    this->cameras.push_back(stereoCamera[1]);
+
+    this->id = this->device->id;
+    if (this->id < 0) {
+        LogW("StereoCameraImageFactory.构造():目前未给device分配id,可能是错误...");
+    }
+}
+
 std::vector<CameraImage> StereoCameraImageFactory::Create()
 {
     std::vector<CameraImage> result;
@@ -30,11 +46,13 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
             CameraImage& camImageL = result[2 * i];
             CameraImage& camImageR = result[2 * i + 1];
 
+            camImageL.type = CameraImage::ImageType::StereoL;
             camImageL.grabEndTime = clock();
             camImageL.device = device.get();
             camImageL.camera = cameras[2 * i].get();
             camImageL.isSuccess = true;
 
+            camImageR.type = CameraImage::ImageType::StereoR;
             camImageR.grabEndTime = clock();
             camImageR.device = device.get();
             camImageR.camera = cameras[2 * i + 1].get();

@@ -77,9 +77,6 @@ class Camera
     // 相机在世界空间的旋转(x,y,z,w)(可以从上面的camRT4x4求出,放在这里方便使用).
     cv::Vec4d camRotate;
 
-    // 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用)
-    std::shared_ptr<Camera> stereoOther = nullptr;
-
     // 这是相机采图的帧率.
     float FPS = 0;
 
@@ -125,6 +122,36 @@ class Camera
 
     // 双目相机里的R相机的camIndex.
     int stereoCamIndexR = -1;
+
+    // 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用)
+    std::shared_ptr<Camera> stereoOther = nullptr;
+
+    // 是否是立体相机
+    bool isStereo()
+    {
+        if (scID >= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    // 是否是立体相机的左相机
+    bool isStereoL()
+    {
+        if (stereoCamIndexL == camIndex) {
+            return true;
+        }
+        return false;
+    }
+
+    // 是否是立体相机的右相机
+    bool isStereoR()
+    {
+        if (stereoCamIndexR == camIndex) {
+            return true;
+        }
+        return false;
+    }
 
 #pragma endregion
 

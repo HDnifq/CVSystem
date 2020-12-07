@@ -18,11 +18,24 @@ class ICameraImageFactory
     // 析构函数
     virtual ~ICameraImageFactory(){};
 
+    // ImageFactory的id.它会等于device的id.
+    int id = -1;
+
     // 相机设备
     pCameraDevice device;
 
     // 逻辑相机
     std::vector<pCamera> cameras;
+
+    /**
+     * 这个CameraImageFactory的类型
+     *
+     * @author daixian
+     * @date 2020/12/7
+     *
+     * @returns 它的实际类名吧.
+     */
+    virtual std::string Type() = 0;
 
     /**
      * 创建一组CameraImage,CameraDevice和Camera是一对多的关系.它实际表示了device到Camera的图片映射方法.

@@ -31,8 +31,8 @@ class CameraImageGroup
     // 这一帧里这一组相机的原始图像(其中强制实现了index就是camIndex,如果记录).
     std::vector<CameraImage> vImage;
 
-    //// 立体相机信息. key是scId,后面是LR两个相机指针
-    //std::map<int, std::array<Camera*, 2>> stereoInfo;
+    // 立体相机采图的图片
+    std::vector<std::array<CameraImage, 2>> vStereoImage;
 
     // 这一帧的最早采集开始时间戳.
     clock_t grabStartTime = 0;
@@ -96,20 +96,7 @@ class CameraImageGroup
      *
      * @returns 如果没有找到那么就返回null.
      */
-    CameraImage getImage(int camIndex) const;
-
-    /**
-     * vImage并不一定是一个以camIndex为序号的数据结构，使用camIndex搜索一个ImageItem.
-     *
-     * @author daixian
-     * @date 2019/8/5
-     *
-     * @param          camIndex 相机的index.
-     * @param [in,out] item     结果.
-     *
-     * @returns 如果成功返回true.
-     */
-    bool getImage(int camIndex, CameraImage& item) const;
+    const CameraImage& getImage(int camIndex) const;
 
     /**
      * 第一张有内容的图片的大小,用来简单的获得当前工作图片大小.
