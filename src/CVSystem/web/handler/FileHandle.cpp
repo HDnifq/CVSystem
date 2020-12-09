@@ -27,18 +27,17 @@ class FileHandle::Impl
   public:
     Impl(const std::string& dirPath)
     {
-        Path root = Poco::Path(dirPath).absolute().makeDirectory(); //拼接完整路径
+        dirRoot = Poco::Path(dirPath).absolute().makeDirectory(); //拼接完整路径
 
-        this->dirRoot = root.toString();
-        File dir(root);
+        File dir(dirRoot.toString());
         if (!dir.exists())
-            LogE("FileHandle.Impl():设置文件夹路径%s不存在，web资源可能不存在!", this->dirRoot.c_str());
+            LogE("FileHandle.Impl():设置文件夹路径%s不存在，web资源可能不存在!", this->dirRoot.toString().c_str());
     }
 
     ~Impl() {}
 
     // 文件资源根目录，构造的时候设置.
-    std::string dirRoot;
+    Poco::Path dirRoot;
 
     // 文件扩展名对应的关联类型（静态类型）.
     static std::map<std::string, std::string> content_type;
@@ -60,7 +59,8 @@ class FileHandle::Impl
      */
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
-        Path pfullPath = Poco::Path(dirRoot, relativePath).makeFile();
+        Path pfullPath = dirRoot;
+        pfullPath.append(relativePath); //使用这个append可以加上relativePath是绝对路径的情况
         //返回的文件路径是UTF8的
         //fullPath = JsonHelper::utf16To8(pfullPath.wstring());
         fullPath = pfullPath.absolute().toString();
@@ -101,7 +101,9 @@ class FileHandle::Impl
         }
         html.clear();
 
-        Path pfullPath = Poco::Path(dirRoot, relativePath).makeDirectory();
+        Path pfullPath = dirRoot;
+        pfullPath.append(relativePath); //使用这个append可以加上relativePath是绝对路径的情况
+        //Path pfullPath = Poco::Path(dirRoot, relativePath).makeDirectory();
         File dir(pfullPath);
 
         //如果文件夹存在
@@ -139,37 +141,37 @@ class FileHandle::Impl
 };
 
 //静态的成员在类外初始化
-std::map<std::string, std::string> FileHandle::Impl::content_type = {{".html", "text/html;charset=utf-8"},
-                                                                     {".htm", "text/html;charset=utf-8"},
-                                                                     {".stm", "text/html;charset=utf-8"},
-                                                                     {".css", "text/css"},
-                                                                     {".323", "text/h323"},
-                                                                     {".txt", "text/plain"},
-                                                                     {".rtx", "text/richtext"},
-                                                                     {".json", "application/json;charset=utf-8"},
-                                                                     {".js", "application/x-javascript"},
-                                                                     {".mp3", "audio/mp3"},
-                                                                     {".wav", "audio/x-wav"},
-                                                                     {".m3u", "audio/x-mpegurl"},
-                                                                     {".mp2", "video/mpeg"},
-                                                                     {".mpa", "video/mpeg"},
-                                                                     {".mpe", "video/mpeg"},
-                                                                     {".mpeg", "video/mpeg"},
-                                                                     {".mpg", "video/mpeg"},
-                                                                     {".mpv2", "video/mpeg"},
-                                                                     {".m4e", "video/mp4"},
-                                                                     {".m4a", "video/mp4"},
-                                                                     {".mp4", "video/mp4"},
-                                                                     {".mkv", "video/x-matroska"},
-                                                                     {".bmp", "image/bmp"},
-                                                                     {".gif", "image/gif"},
-                                                                     {".mid", "image/mid"},
-                                                                     {".jpe", "image/jpeg"},
-                                                                     {".jpeg", "image/jpeg"},
-                                                                     {".jpg", "image/jpeg"},
-                                                                     {".tif", "image/tiff"},
-                                                                     {".tiff", "image/tiff"},
-                                                                     {".ico", "image/x-icon"}};
+std::map<std::string, std::string> FileHandle::Impl::content_type = {{"html", "text/html;charset=utf-8"},
+                                                                     {"htm", "text/html;charset=utf-8"},
+                                                                     {"stm", "text/html;charset=utf-8"},
+                                                                     {"css", "text/css"},
+                                                                     {"323", "text/h323"},
+                                                                     {"txt", "text/plain"},
+                                                                     {"rtx", "text/richtext"},
+                                                                     {"json", "application/json;charset=utf-8"},
+                                                                     {"js", "application/x-javascript"},
+                                                                     {"mp3", "audio/mp3"},
+                                                                     {"wav", "audio/x-wav"},
+                                                                     {"m3u", "audio/x-mpegurl"},
+                                                                     {"mp2", "video/mpeg"},
+                                                                     {"mpa", "video/mpeg"},
+                                                                     {"mpe", "video/mpeg"},
+                                                                     {"mpeg", "video/mpeg"},
+                                                                     {"mpg", "video/mpeg"},
+                                                                     {"mpv2", "video/mpeg"},
+                                                                     {"m4e", "video/mp4"},
+                                                                     {"m4a", "video/mp4"},
+                                                                     {"mp4", "video/mp4"},
+                                                                     {"mkv", "video/x-matroska"},
+                                                                     {"bmp", "image/bmp"},
+                                                                     {"gif", "image/gif"},
+                                                                     {"mid", "image/mid"},
+                                                                     {"jpe", "image/jpeg"},
+                                                                     {"jpeg", "image/jpeg"},
+                                                                     {"jpg", "image/jpeg"},
+                                                                     {"tif", "image/tiff"},
+                                                                     {"tiff", "image/tiff"},
+                                                                     {"ico", "image/x-icon"}};
 
 FileHandle::FileHandle(const std::string& rootDir)
 {
@@ -185,7 +187,7 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
 {
     using namespace std;
     try {
-        LogI("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
+        LogD("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
 
         //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
         string decStr;
@@ -193,12 +195,12 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
         URI::decode(req.getURI(), decStr);
         string path = URI(decStr).getPath();
 
-        LogI("FileHandle::handleRequest():解码uri=%s", decStr.c_str());
+        LogD("FileHandle::handleRequest():解码uri=%s,filePath=%s", decStr.c_str(), path.c_str());
         //wstring wuri = json::JsonHelper::utf8To16(uri);
 
         //输出一下http的key
         for (auto& kvp : req) {
-            LogI("FileHandle::handleRequest():key=%s,value=%s", kvp.first.c_str(), kvp.second.c_str());
+            LogD("FileHandle::handleRequest():key=%s,value=%s", kvp.first.c_str(), kvp.second.c_str());
         }
 
         bool hasContentLength = req.hasContentLength();
@@ -215,6 +217,7 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
         }
 
         if (_impl->isFileExist(path, fullPath, con_type)) { //如果存在文件那么就返回文件流
+            LogD("FileHandle::handleRequest():进入了文件处理path=%s,fullPath=%s,con_type=%s", path.c_str(), fullPath.c_str(), con_type.c_str());
             //这是支持range的文件流
             Poco::File mediaFile(fullPath);
             Poco::Timestamp dateTime = mediaFile.getLastModified();
@@ -271,7 +274,7 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
             out << _impl->html404;
             //out.flush();
         }
-        LogI("FileHandle::handleRequest():handle处理结束!");
+        LogD("FileHandle::handleRequest():handle处理结束!");
     }
     catch (const Poco::Exception& pe) {
         LogE("FileHandle.handleRequest():异常:%s,%s ", pe.what(), pe.message().c_str());

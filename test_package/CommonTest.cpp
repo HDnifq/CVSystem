@@ -12,6 +12,7 @@
 
 #include "CVSystem/Common/base64.h"
 #include "Poco/File.h"
+#include "Poco/Path.h"
 
 using namespace dxlib;
 using namespace std;
@@ -144,4 +145,14 @@ TEST(Common, Font)
     // then put the text itself
     ft2->putText(img, text, textOrg, fontHeight,
                  Scalar::all(255), thickness, linestyle, true);
+}
+
+TEST(Common, Path)
+{
+    using namespace Poco;
+    Path dirRoot = Path("D:\\Work\\ImageCapture\\build\\bin").makeDirectory();
+    Path p2 = Path("/index.html");
+    Path pfullPath = Poco::Path(dirRoot, p2).makeFile();
+    Path pfullPath2 = dirRoot.append(p2).makeFile();
+    string ext = p2.getExtension();
 }
