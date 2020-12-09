@@ -51,7 +51,7 @@ class FileHandle::Impl
      * @author daixian
      * @date 2019/2/19
      *
-     * @param [in]  relativePath 相对路径(UTF8).
+     * @param [in]  relativePath uri相对路径(UTF8).
      * @param [out] fullPath     输出完整路径.
      * @param [out] content_type content_type文本.
      *
@@ -60,13 +60,12 @@ class FileHandle::Impl
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
         Path pfullPath = dirRoot;
-        pfullPath.append(relativePath); //使用这个append可以加上relativePath是绝对路径的情况
+        pfullPath.append(relativePath).makeFile(); //使用这个append可以加上relativePath是绝对路径的情况
         //返回的文件路径是UTF8的
-        //fullPath = JsonHelper::utf16To8(pfullPath.wstring());
         fullPath = pfullPath.absolute().toString();
         File file(pfullPath);
 
-        //如果文件存在
+        //如果尝试文件路径存在
         if (file.exists() && file.isFile()) {
             if (pfullPath.getBaseName() != pfullPath.getFileName()) { //如果文件有扩展名
                 std::string ext = pfullPath.getExtension();
@@ -89,7 +88,7 @@ class FileHandle::Impl
      * @author daixian
      * @date 2019/2/19
      *
-     * @param       relativePath 相对路径(UTF8).
+     * @param       relativePath uri相对路径(UTF8).
      * @param [out] html         HTML文本.
      *
      * @returns 文件夹存在返回true.
@@ -102,8 +101,7 @@ class FileHandle::Impl
         html.clear();
 
         Path pfullPath = dirRoot;
-        pfullPath.append(relativePath); //使用这个append可以加上relativePath是绝对路径的情况
-        //Path pfullPath = Poco::Path(dirRoot, relativePath).makeDirectory();
+        pfullPath.append(relativePath).makeDirectory(); //使用这个append可以加上relativePath是绝对路径的情况
         File dir(pfullPath);
 
         //如果文件夹存在
@@ -122,14 +120,12 @@ class FileHandle::Impl
                     std::string fname = Path(file.path()).getFileName();
                     size_t filesize = file.getSize();
                     std::string uri = relativePath + fname;
-                    //html += (boost::wformat(L"%10i  <A HREF=\"%s\">%s</A><br>") % filesize % uri % fname).str();
-                    html += Poco::format("%10i  <A HREF=\"%s\">%s</A><br>", filesize, uri, fname);
+                    html += Poco::format("%14z  <A HREF=\"%s\">%s</A><br>", filesize, uri, fname);
                 }
                 else if (file.exists() && file.isDirectory()) { //如果这个是文件夹
                     std::string fname = Path(file.path()).getFileName();
                     std::string uri = relativePath + fname + "/";
-                    //whtml += (boost::wformat(L"     &lt;dir&gt;  <A HREF=\"%s\">%s</A><br>") % uri % fname).str();
-                    html += format("     &lt;dir&gt;  <A HREF=\"%s\">%s</A><br>", uri, fname);
+                    html += format("       &lt;dir&gt;    <A HREF=\"%s\">%s</A><br>", uri, fname);
                 }
             }
 

@@ -13,6 +13,7 @@
 #include "CVSystem/Common/base64.h"
 #include "Poco/File.h"
 #include "Poco/Path.h"
+#include "Poco/Format.h"
 
 using namespace dxlib;
 using namespace std;
@@ -154,5 +155,8 @@ TEST(Common, Path)
     Path p2 = Path("/index.html");
     Path pfullPath = Poco::Path(dirRoot, p2).makeFile();
     Path pfullPath2 = dirRoot.append(p2).makeFile();
+    pfullPath2.makeDirectory();
     string ext = p2.getExtension();
+
+    string text = Poco::format("%10z", (size_t)123);
 }
