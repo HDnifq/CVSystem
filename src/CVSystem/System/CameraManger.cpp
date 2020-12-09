@@ -34,6 +34,7 @@ void CameraManger::CreateStereoCamera(const std::string devName, int w, int h, p
     ICameraImageFactory* pfactory = new StereoCameraImageFactory(device, {cameraL, cameraR});
     pCameraImageFactory factory = pCameraImageFactory(pfactory);
     CameraManger::GetInst()->add(factory);
+    LogI("CameraManger.CreateStereoCamera():工厂方法创建一个立体相机,scID=%d", stereo->scID);
 }
 
 pCameraDevice CameraManger::add(const pCameraDevice& device)

@@ -27,6 +27,24 @@ void StereoCamera::setCamera(int scID, pCameraDevice& device, pCamera& camL, pCa
     this->camR->stereoCamIndexR = this->camR->camIndex;
 }
 
+void StereoCamera::setCamera(int scID, pCamera& camL, pCamera& camR)
+{
+    this->scID = scID;
+    this->camL = camL;
+    this->camR = camR;
+
+    this->camL->scID = scID;
+    this->camR->scID = scID;
+
+    this->camL->stereoOther = this->camR;
+    this->camR->stereoOther = this->camL;
+
+    this->camL->stereoCamIndexL = this->camL->camIndex;
+    this->camL->stereoCamIndexR = this->camR->camIndex;
+    this->camR->stereoCamIndexL = this->camL->camIndex;
+    this->camR->stereoCamIndexR = this->camR->camIndex;
+}
+
 void StereoCamera::loadParam(const std::string& path, const std::string& nameTargetSize,
                              const std::string& nameCamMatrixL,
                              const std::string& nameDistCoeffsL,

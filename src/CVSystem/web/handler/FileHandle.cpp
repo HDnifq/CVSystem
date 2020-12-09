@@ -13,6 +13,7 @@
 #include <Poco/Path.h>
 #include <Poco/File.h>
 #include <Poco/Format.h>
+#include <Poco/String.h>
 
 #include <stdlib.h>
 
@@ -24,13 +25,9 @@ namespace dxlib {
 class FileHandle::Impl
 {
   public:
-    Impl(std::string dirPath)
+    Impl(const std::string& dirPath)
     {
-        //剔除最后一个
-        if (dirPath.back() == '\\' || dirPath.back() == '/')
-            dirPath.erase(dirPath.end() - 1);
-
-        Path root = Poco::Path(dirPath).absolute().makeDirectory().toString(); //拼接完整路径
+        Path root = Poco::Path(dirPath).absolute().makeDirectory(); //拼接完整路径
 
         this->dirRoot = root.toString();
         File dir(root);
@@ -40,13 +37,13 @@ class FileHandle::Impl
 
     ~Impl() {}
 
-    /** 文件资源根目录，构造的时候设置. */
+    // 文件资源根目录，构造的时候设置.
     std::string dirRoot;
 
-    /** 文件扩展名对应的关联类型（静态类型）. */
+    // 文件扩展名对应的关联类型（静态类型）.
     static std::map<std::string, std::string> content_type;
 
-    /** The HTML 404. */
+    // The HTML 404.
     const char* html404 = "<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>poco/1.10.1 - dx's server</center></body></html>";
 
     /**
@@ -56,7 +53,7 @@ class FileHandle::Impl
      * @date 2019/2/19
      *
      * @param [in]  relativePath 相对路径(UTF8).
-     * @param [out] fullPath     输入完整路径.
+     * @param [out] fullPath     输出完整路径.
      * @param [out] content_type content_type文本.
      *
      * @returns 如果文件存在返回true.
@@ -64,8 +61,9 @@ class FileHandle::Impl
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
         Path pfullPath = Poco::Path(dirRoot, relativePath).makeFile();
-        ////返回的文件路径是UTF8的
+        //返回的文件路径是UTF8的
         //fullPath = JsonHelper::utf16To8(pfullPath.wstring());
+        fullPath = pfullPath.absolute().toString();
         File file(pfullPath);
 
         //如果文件存在

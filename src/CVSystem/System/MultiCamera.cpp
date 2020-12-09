@@ -279,7 +279,10 @@ void MultiCamera::start(uint activeProcindex)
     _impl->_activeProcIndex = activeProcindex; //记录一下
     _impl->vGrabTasks.clear();
 
-    LogI("MultiCamera.start():启动各个采图Task...");
+    LogI("MultiCamera.start():启动各个采图Task...有%d个Task", _impl->vCameraImageFactory.size());
+    if (_impl->vCameraImageFactory.size() == 0) {
+        LogE("MultiCamera.start():启动采图Task失败,未添加CameraImageFactory!可能程序未对接新接口...");
+    }
     for (size_t i = 0; i < _impl->vCameraImageFactory.size(); i++) {
         auto& pCameraImageFactory = _impl->vCameraImageFactory[i];
         try {

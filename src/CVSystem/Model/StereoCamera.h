@@ -87,6 +87,18 @@ class StereoCamera
     void setCamera(int scID, pCameraDevice& device, pCamera& camL, pCamera& camR);
 
     /**
+     * Sets a camera
+     *
+     * @author daixian
+     * @date 2020/12/9
+     *
+     * @param          scID Identifier for the screen.
+     * @param [in,out] camL The camera l.
+     * @param [in,out] camR The camera r.
+     */
+    void setCamera(int scID, pCamera& camL, pCamera& camR);
+
+    /**
      * 设置投影矩阵.
      *
      * @author daixian
