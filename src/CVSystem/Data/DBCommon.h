@@ -98,6 +98,16 @@ class DBCommon
      */
     bool openRW(const std::string& path, bool isKey = true);
 
+        /**
+     * 打开一个数据库读写如果不存在数据库那么就创建.
+     *
+     * @author daixian
+     * @date 2020/12/14
+     *
+     * @returns True if it succeeds, false if it fails.
+     */
+    bool openRWOrCreate(const std::string& path, bool isKey = true);
+
     /**
      * 关闭数据库.
      *

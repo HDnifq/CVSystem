@@ -111,12 +111,35 @@ bool DBCommon::openRW(const std::string& path, bool isKey)
             db.exec("PRAGMA locking_mode = EXCLUSIVE;");
             return true;
         }
+        LogE("DBCommon.openRW():打开数据库文件失败!");
     }
     else {
         LogE("DBCommon.openRW():数据库文件不存在path=%s !", path.c_str());
     }
-    LogE("DBCommon.openRW():打开数据库失败!");
     return false;
+}
+
+bool DBCommon::openRWOrCreate(const std::string& path, bool isKey)
+{
+    using namespace xuexue::csharp;
+    //打开数据库
+    if (isOpened())
+        close();
+
+    if (File::Exists(path)) {
+        openRW(path, isKey);
+    }
+    else {
+        Directory::createDirectory(Path::GetDirectoryName(path)); //确保文件夹存在一下
+        createNew(path, isKey);
+    }
+
+    if (isOpened()) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void DBCommon::close()
