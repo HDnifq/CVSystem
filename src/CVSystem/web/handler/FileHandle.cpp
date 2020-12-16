@@ -181,14 +181,12 @@ FileHandle::~FileHandle()
 void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
 {
     using namespace std;
-    //using namespace Poco::Net;
-    //using namespace Poco;
+
     try {
         LogD("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
 
         //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
         string decStr;
-
         Poco::URI::decode(req.getURI(), decStr);
         string path = Poco::URI(decStr).getPath();
 
@@ -199,8 +197,6 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
         for (auto& kvp : req) {
             LogD("FileHandle::handleRequest():[Headers]%s: %s", kvp.first.c_str(), kvp.second.c_str());
         }
-
-        bool hasContentLength = req.hasContentLength();
 
         string fullPath;
         string con_type;
@@ -243,14 +239,10 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
                 if (req.has("Range") && ifRangePass) {
                     std::vector<std::array<Poco::File::FileSize, 2>> rangeResult;
                     if (parseRange(req.get("Range"), length, rangeResult)) {
-                        if (rangeResult.size() <= 1) {
+                        if (rangeResult.size() == 1) {
                             LogD("FileHandle::handleRequest():解析Range是 start=%llu , end=%llu", rangeResult[0][0], rangeResult[0][1]);
                             int rangeStart = rangeResult[0][0];
                             int rangeLength = rangeResult[0][1] - rangeStart + 1;
-                            //Range的上限是4M一次
-                            if (rangeLength > 1024 * 1024 * 4) {
-                                rangeLength = 1024 * 1024 * 4;
-                            }
                             sendFileRange(response, fullPath, length, rangeStart, rangeLength);
                         }
                         else {
@@ -300,6 +292,7 @@ bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileS
                             std::vector<std::array<Poco::File::FileSize, 2>>& result)
 {
     using namespace std;
+
     result.clear();
     std::smatch sm;
 
@@ -335,6 +328,16 @@ bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileS
         }
     }
 
+    //人为的限制范围,防止range过长吧
+    for (size_t i = 0; i < result.size(); i++) {
+        Poco::File::FileSize& rangeStart = result[i][0];
+        Poco::File::FileSize& rangeEnd = result[i][1];
+        //Range的上限是4M一次
+        if (rangeEnd - rangeStart > 1024 * 1024 * 4) {
+            rangeEnd = rangeStart + 1024 * 1024 * 4;
+        }
+    }
+
     if (result.size() > 0)
         return true;
     else
@@ -345,7 +348,9 @@ void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const st
                                Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength)
 {
     using namespace std;
+
     int BUFFER_SIZE = 8192;
+
     response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_PARTIAL_CONTENT);
     response.setContentLength64(rangeLength);
     string contentRange = Poco::format("bytes %?d-%?d/%?d", rangeStart, rangeStart + rangeLength - 1, length);
@@ -371,6 +376,7 @@ void FileHandle::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response,
                                         Poco::File::FileSize length, std::vector<std::array<Poco::File::FileSize, 2>>& result)
 {
     using namespace std;
+
     int BUFFER_SIZE = 8192;
 
     response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_PARTIAL_CONTENT);
