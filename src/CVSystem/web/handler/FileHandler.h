@@ -35,7 +35,7 @@ namespace dxlib {
  * @author daixian
  * @date 2020/3/14
  */
-class FileHandle : public HTTPRequestHandler
+class FileHandler : public HTTPRequestHandler
 {
   public:
     /**
@@ -46,7 +46,7 @@ class FileHandle : public HTTPRequestHandler
      *
      * @param  rootDir 文件资源的路径.
      */
-    FileHandle(const std::string& rootDir);
+    FileHandler(const std::string& rootDir);
 
     /**
      * 析构
@@ -54,7 +54,7 @@ class FileHandle : public HTTPRequestHandler
      * @author daixian
      * @date 2020/4/30
      */
-    ~FileHandle();
+    ~FileHandler();
 
     /**
      * override处理.

@@ -1,4 +1,4 @@
-﻿#include "FileHandle.h"
+﻿#include "FileHandler.h"
 #include <iostream>
 #include <fstream>
 #include <Poco/DateTimeFormatter.h>
@@ -18,7 +18,7 @@
 
 namespace dxlib {
 
-class FileHandle::Impl
+class FileHandler::Impl
 {
   public:
     Impl(const std::string& dirPath)
@@ -136,49 +136,49 @@ class FileHandle::Impl
 };
 
 //静态的成员在类外初始化
-std::map<std::string, std::string> FileHandle::Impl::content_type = {{"html", "text/html;charset=utf-8"},
-                                                                     {"htm", "text/html;charset=utf-8"},
-                                                                     {"stm", "text/html;charset=utf-8"},
-                                                                     {"css", "text/css"},
-                                                                     {"323", "text/h323"},
-                                                                     {"txt", "text/plain"},
-                                                                     {"rtx", "text/richtext"},
-                                                                     {"json", "application/json;charset=utf-8"},
-                                                                     {"js", "application/x-javascript"},
-                                                                     {"mp3", "audio/mp3"},
-                                                                     {"wav", "audio/x-wav"},
-                                                                     {"m3u", "audio/x-mpegurl"},
-                                                                     {"mp2", "video/mpeg"},
-                                                                     {"mpa", "video/mpeg"},
-                                                                     {"mpe", "video/mpeg"},
-                                                                     {"mpeg", "video/mpeg"},
-                                                                     {"mpg", "video/mpeg"},
-                                                                     {"mpv2", "video/mpeg"},
-                                                                     {"m4e", "video/mp4"},
-                                                                     {"m4a", "video/mp4"},
-                                                                     {"mp4", "video/mp4"},
-                                                                     {"mkv", "video/x-matroska"},
-                                                                     {"bmp", "image/bmp"},
-                                                                     {"gif", "image/gif"},
-                                                                     {"mid", "image/mid"},
-                                                                     {"jpe", "image/jpeg"},
-                                                                     {"jpeg", "image/jpeg"},
-                                                                     {"jpg", "image/jpeg"},
-                                                                     {"tif", "image/tiff"},
-                                                                     {"tiff", "image/tiff"},
-                                                                     {"ico", "image/x-icon"}};
+std::map<std::string, std::string> FileHandler::Impl::content_type = {{"html", "text/html;charset=utf-8"},
+                                                                      {"htm", "text/html;charset=utf-8"},
+                                                                      {"stm", "text/html;charset=utf-8"},
+                                                                      {"css", "text/css"},
+                                                                      {"323", "text/h323"},
+                                                                      {"txt", "text/plain"},
+                                                                      {"rtx", "text/richtext"},
+                                                                      {"json", "application/json;charset=utf-8"},
+                                                                      {"js", "application/x-javascript"},
+                                                                      {"mp3", "audio/mp3"},
+                                                                      {"wav", "audio/x-wav"},
+                                                                      {"m3u", "audio/x-mpegurl"},
+                                                                      {"mp2", "video/mpeg"},
+                                                                      {"mpa", "video/mpeg"},
+                                                                      {"mpe", "video/mpeg"},
+                                                                      {"mpeg", "video/mpeg"},
+                                                                      {"mpg", "video/mpeg"},
+                                                                      {"mpv2", "video/mpeg"},
+                                                                      {"m4e", "video/mp4"},
+                                                                      {"m4a", "video/mp4"},
+                                                                      {"mp4", "video/mp4"},
+                                                                      {"mkv", "video/x-matroska"},
+                                                                      {"bmp", "image/bmp"},
+                                                                      {"gif", "image/gif"},
+                                                                      {"mid", "image/mid"},
+                                                                      {"jpe", "image/jpeg"},
+                                                                      {"jpeg", "image/jpeg"},
+                                                                      {"jpg", "image/jpeg"},
+                                                                      {"tif", "image/tiff"},
+                                                                      {"tiff", "image/tiff"},
+                                                                      {"ico", "image/x-icon"}};
 
-FileHandle::FileHandle(const std::string& rootDir)
+FileHandler::FileHandler(const std::string& rootDir)
 {
     _impl = new Impl(rootDir);
 }
 
-FileHandle::~FileHandle()
+FileHandler::~FileHandler()
 {
     delete _impl;
 }
 
-void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
+void FileHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
 {
     using namespace std;
 
@@ -241,8 +241,8 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
                     if (parseRange(req.get("Range"), length, rangeResult)) {
                         if (rangeResult.size() == 1) {
                             LogD("FileHandle::handleRequest():解析Range是 start=%llu , end=%llu", rangeResult[0][0], rangeResult[0][1]);
-                            int rangeStart = rangeResult[0][0];
-                            int rangeLength = rangeResult[0][1] - rangeStart + 1;
+                            Poco::File::FileSize rangeStart = rangeResult[0][0];
+                            Poco::File::FileSize rangeLength = rangeResult[0][1] - rangeStart + 1;
                             sendFileRange(response, fullPath, length, rangeStart, rangeLength);
                         }
                         else {
@@ -288,8 +288,8 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
     }
 }
 
-bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileSize,
-                            std::vector<std::array<Poco::File::FileSize, 2>>& result)
+bool FileHandler::parseRange(const std::string& range, Poco::File::FileSize fileSize,
+                             std::vector<std::array<Poco::File::FileSize, 2>>& result)
 {
     using namespace std;
 
@@ -344,8 +344,8 @@ bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileS
         return false;
 }
 
-void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path, Poco::File::FileSize length,
-                               Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength)
+void FileHandler::sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path, Poco::File::FileSize length,
+                                Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength)
 {
     using namespace std;
 
@@ -372,8 +372,8 @@ void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const st
     }
 }
 
-void FileHandle::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response, const std::string& path, const std::string& con_type,
-                                        Poco::File::FileSize length, std::vector<std::array<Poco::File::FileSize, 2>>& result)
+void FileHandler::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response, const std::string& path, const std::string& con_type,
+                                         Poco::File::FileSize length, std::vector<std::array<Poco::File::FileSize, 2>>& result)
 {
     using namespace std;
 
@@ -403,8 +403,8 @@ void FileHandle::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response,
     Poco::FileInputStream istr(path);
     for (size_t i = 0; i < result.size(); i++) {
         ostr << vHeadstr[i];
-        int rangeStart = result[i][0];
-        int rangeLength = result[i][1] - rangeStart + 1;
+        Poco::File::FileSize rangeStart = result[i][0];
+        Poco::File::FileSize rangeLength = result[i][1] - rangeStart + 1;
 
         istr.seekg(static_cast<std::streampos>(rangeStart));
         Poco::Buffer<char> buffer(BUFFER_SIZE);

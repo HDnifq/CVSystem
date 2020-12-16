@@ -22,7 +22,7 @@
 
 #include "./handler/MultiCameraRequestHandler.h"
 #include "./handler/CameraRequestHandler.h"
-#include "./handler/FileHandle.h"
+#include "./handler/FileHandler.h"
 
 #include "dlog/dlog.h"
 #include "xuexue/csharp/csharp.h"
@@ -89,7 +89,7 @@ class CVSystemRequestHandlerFactory : public HTTPRequestHandlerFactory
 
         if (isUseFileServer) {
             using namespace xuexue::csharp;
-            return new FileHandle(Path::Combine(Path::ModuleDir(), "static"));
+            return new FileHandler(Path::Combine(Path::ModuleDir(), "static"));
         }
         else {
             // 按照Poco的API这里可能不能空
