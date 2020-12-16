@@ -8,7 +8,6 @@
 #include "dlog/dlog.h"
 #include <regex>
 #include <map>
-#include <vector>
 
 #include <Poco/Path.h>
 #include <Poco/File.h>
@@ -17,9 +16,6 @@
 
 #include <stdlib.h>
 
-using namespace Poco::Net;
-using namespace Poco;
-
 namespace dxlib {
 
 class FileHandle::Impl
@@ -27,6 +23,7 @@ class FileHandle::Impl
   public:
     Impl(const std::string& dirPath)
     {
+        using namespace Poco;
         dirRoot = Poco::Path(dirPath).absolute().makeDirectory(); //拼接完整路径
 
         File dir(dirRoot.toString());
@@ -59,6 +56,7 @@ class FileHandle::Impl
      */
     bool isFileExist(const std::string& relativePath, std::string& fullPath, std::string& content_type)
     {
+        using namespace Poco;
         Path pfullPath = dirRoot;
         pfullPath.append(relativePath).makeFile(); //使用这个append可以加上relativePath是绝对路径的情况
         //返回的文件路径是UTF8的
@@ -95,6 +93,7 @@ class FileHandle::Impl
      */
     bool isDirExist(const std::string& relativePath, std::string& html)
     {
+        using namespace Poco;
         if (relativePath.back() != '/') {
             return false;
         }
@@ -182,21 +181,23 @@ FileHandle::~FileHandle()
 void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& response)
 {
     using namespace std;
+    //using namespace Poco::Net;
+    //using namespace Poco;
     try {
         LogD("FileHandle::handleRequest():进入了处理%s", req.getURI().c_str());
 
         //这里这个东西解码出来是UTF8的(直接看上去会像是乱码)
         string decStr;
 
-        URI::decode(req.getURI(), decStr);
-        string path = URI(decStr).getPath();
+        Poco::URI::decode(req.getURI(), decStr);
+        string path = Poco::URI(decStr).getPath();
 
         LogD("FileHandle::handleRequest():解码uri=%s,filePath=%s", decStr.c_str(), path.c_str());
         //wstring wuri = json::JsonHelper::utf8To16(uri);
 
         //输出一下http的key
         for (auto& kvp : req) {
-            LogD("FileHandle::handleRequest():key=%s,value=%s", kvp.first.c_str(), kvp.second.c_str());
+            LogD("FileHandle::handleRequest():[Headers]%s: %s", kvp.first.c_str(), kvp.second.c_str());
         }
 
         bool hasContentLength = req.hasContentLength();
@@ -217,33 +218,48 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
             //这是支持range的文件流
             Poco::File mediaFile(fullPath);
             Poco::Timestamp dateTime = mediaFile.getLastModified();
+            string lastModified = Poco::DateTimeFormatter::format(dateTime, Poco::DateTimeFormat::HTTP_FORMAT);
             Poco::File::FileSize length = mediaFile.getSize();
 
-            if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD ||
-                req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
-                response.set("Last-Modified", Poco::DateTimeFormatter::format(dateTime, Poco::DateTimeFormat::HTTP_FORMAT));
+            if (req.getMethod() == HTTPRequest::HTTP_HEAD ||
+                req.getMethod() == HTTPRequest::HTTP_GET) {
+                response.set("Last-Modified", lastModified);
                 response.set("Accept-Ranges", "bytes"); //表示服务器自己支持Range
                 response.setContentType(con_type);
             }
 
-            if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD) {
+            if (req.getMethod() == HTTPRequest::HTTP_HEAD) {
                 response.setContentLength64(length);
                 response.send();
             }
-            else if (req.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
-                if (req.has("Range")) {
-                    Poco::File::FileSize rangeStart = 0;
-                    Poco::File::FileSize rangeLength = 0;
-                    if (parseRange(req.get("Range"), length, rangeStart, rangeLength)) {
-                        LogD("FileHandle::handleRequest():解析Range是 start=%llu , len=%llu", rangeStart, rangeLength);
-                        //Range的上限是4M一次
-                        if (rangeLength > 1024 * 1024 * 4) {
-                            rangeLength = 1024 * 1024 * 4;
+            else if (req.getMethod() == HTTPRequest::HTTP_GET) {
+                bool ifRangePass = true;
+                if (req.has("If-Range")) {
+                    //If-Range目前只支持LastModified
+                    if (req.get("If-Range") != lastModified) {
+                        ifRangePass = false;
+                    }
+                }
+                if (req.has("Range") && ifRangePass) {
+                    std::vector<std::array<Poco::File::FileSize, 2>> rangeResult;
+                    if (parseRange(req.get("Range"), length, rangeResult)) {
+                        if (rangeResult.size() <= 1) {
+                            LogD("FileHandle::handleRequest():解析Range是 start=%llu , end=%llu", rangeResult[0][0], rangeResult[0][1]);
+                            int rangeStart = rangeResult[0][0];
+                            int rangeLength = rangeResult[0][1] - rangeStart + 1;
+                            //Range的上限是4M一次
+                            if (rangeLength > 1024 * 1024 * 4) {
+                                rangeLength = 1024 * 1024 * 4;
+                            }
+                            sendFileRange(response, fullPath, length, rangeStart, rangeLength);
                         }
-                        sendFileRange(response, fullPath, length, rangeStart, rangeLength);
+                        else {
+                            sendFileRangeMultipart(response, fullPath, con_type, length, rangeResult);
+                        }
                     }
                     else {
-                        response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
+                        //如果超出了文件返回返回416
+                        response.setStatusAndReason(HTTPResponse::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
                         response.send();
                     }
                 }
@@ -252,7 +268,7 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
                 }
             }
             else {
-                response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED);
+                response.setStatusAndReason(HTTPResponse::HTTP_METHOD_NOT_ALLOWED);
                 response.send();
             }
         }
@@ -280,41 +296,60 @@ void FileHandle::handleRequest(HTTPServerRequest& req, HTTPServerResponse& respo
     }
 }
 
-bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileSize, Poco::File::FileSize& rangeStart, Poco::File::FileSize& rangeLength)
+bool FileHandle::parseRange(const std::string& range, Poco::File::FileSize fileSize,
+                            std::vector<std::array<Poco::File::FileSize, 2>>& result)
 {
     using namespace std;
+    result.clear();
     std::smatch sm;
-    //实际上也就只需要提取被分割的两个整数就完了
-    if (regex_search(range, sm, std::regex("[0-9]+"))) {
-        rangeStart = std::stoull(sm[0].str()); //第一个是起点
-        if (sm.size() >= 2) {
-            rangeLength = std::stoull(sm[1].str()); //第二个是获取长度
+
+    string str = range;
+    while (regex_search(str, sm, std::regex("(\\d+)-(\\d+)"))) {
+        //[0]表示这匹配的一段字符串
+        Poco::File::FileSize rangeStart = std::stoull(sm[1].str()); //第一个是起点
+        Poco::File::FileSize rangeEnd = std::stoull(sm[2].str());   //第二个是终点
+
+        if (rangeStart >= fileSize ||
+            rangeEnd >= fileSize ||
+            rangeEnd < rangeStart) {
+            return false; //检测规范不通过
         }
         else {
-            rangeLength = fileSize - rangeStart;
+            result.push_back({rangeStart, rangeEnd});
+        }
+        str = sm.suffix(); //向后继续寻找
+    }
+
+    if (std::regex_search(range, sm, std::regex("(\\d+)-$"))) {
+
+        Poco::File::FileSize rangeStart = std::stoull(sm[1].str()); //第一个是起点
+        Poco::File::FileSize rangeEnd = fileSize - 1;               //第二个是终点(文件末尾)
+
+        if (rangeStart >= fileSize ||
+            rangeEnd >= fileSize ||
+            rangeEnd < rangeStart) {
+            return false; //检测规范不通过
+        }
+        else {
+            result.push_back({rangeStart, rangeEnd});
         }
     }
-    else {
+
+    if (result.size() > 0)
+        return true;
+    else
         return false;
-    }
-    //安全检查
-    if (rangeStart >= fileSize) {
-        return false;
-    }
-    if (rangeStart + rangeLength > fileSize) {
-        rangeLength = fileSize - rangeStart;
-    }
-    return true;
 }
 
-void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path, Poco::File::FileSize length, Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength)
+void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path, Poco::File::FileSize length,
+                               Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength)
 {
     using namespace std;
     int BUFFER_SIZE = 8192;
     response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_PARTIAL_CONTENT);
     response.setContentLength64(rangeLength);
     string contentRange = Poco::format("bytes %?d-%?d/%?d", rangeStart, rangeStart + rangeLength - 1, length);
-    LogD("FileHandle.sendFileRange():返回contentRange%s", contentRange.c_str());
+    LogD("FileHandle.sendFileRange():返回Content-Range: %s", contentRange.c_str());
     response.set("Content-Range", contentRange);
     std::ostream& ostr = response.send();
 
@@ -330,6 +365,55 @@ void FileHandle::sendFileRange(Poco::Net::HTTPServerResponse& response, const st
         ostr.write(buffer.begin(), n);
         rangeLength -= n;
     }
+}
+
+void FileHandle::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response, const std::string& path, const std::string& con_type,
+                                        Poco::File::FileSize length, std::vector<std::array<Poco::File::FileSize, 2>>& result)
+{
+    using namespace std;
+    int BUFFER_SIZE = 8192;
+
+    response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_PARTIAL_CONTENT);
+    size_t addLen = 0;   //在分部的头里面添加的了的长度
+    size_t rangeLen = 0; //实际数据长度
+    vector<string> vHeadstr;
+    for (size_t i = 0; i < result.size(); i++) {
+        string heads;
+        heads.append("\r\n--string_separator\r\n");
+        heads.append("Content-Type: " + con_type + "\r\n");
+        heads.append(Poco::format("Content-Range: bytes %?d-%?d/%?d\r\n", result[i][0], result[i][1], length));
+        heads.append("\r\n");
+        vHeadstr.push_back(heads);
+        addLen += heads.size();
+        rangeLen += result[i][1] - result[i][0] + 1;
+    }
+    string end = "\r\n--string_separator--\r\n";
+    addLen += end.size();
+
+    response.setContentLength(addLen + rangeLen);
+    response.setContentType("multipart/byteranges; boundary=string_separator");
+
+    std::ostream& ostr = response.send();
+    Poco::FileInputStream istr(path);
+    for (size_t i = 0; i < result.size(); i++) {
+        ostr << vHeadstr[i];
+        int rangeStart = result[i][0];
+        int rangeLength = result[i][1] - rangeStart + 1;
+
+        istr.seekg(static_cast<std::streampos>(rangeStart));
+        Poco::Buffer<char> buffer(BUFFER_SIZE);
+        while (rangeLength > 0) {
+            std::streamsize chunk = BUFFER_SIZE;
+            if (chunk > rangeLength) chunk = static_cast<std::streamsize>(rangeLength);
+            istr.read(buffer.begin(), chunk);
+            std::streamsize n = istr.gcount();
+            if (n == 0) break;
+            ostr.write(buffer.begin(), n);
+            rangeLength -= n;
+        }
+    }
+
+    ostr << "\r\n--string_separator--\r\n";
 }
 
 } // namespace dxlib

@@ -14,8 +14,13 @@
 #include "Poco/URI.h"
 #include "Poco/File.h"
 
+#include <vector>
+#include <array>
+
+using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
+using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPServer;
 using Poco::Net::HTTPServerParams;
 using Poco::Net::HTTPServerRequest;
@@ -71,12 +76,12 @@ class FileHandle : public HTTPRequestHandler
      *
      * @param       range       range文本.
      * @param       fileSize    资源文件大小.
-     * @param [out] rangeStart  range的起始.
-     * @param [out] rangeLength range的长度.
+     * @param [out] result      [起始,结束]的数组.
      *
      * @returns 成功的解析出了range.
      */
-    bool parseRange(const std::string& range, Poco::File::FileSize fileSize, Poco::File::FileSize& rangeStart, Poco::File::FileSize& rangeLength);
+    bool parseRange(const std::string& range, Poco::File::FileSize fileSize,
+                    std::vector<std::array<Poco::File::FileSize, 2>>& result);
 
     /**
      * 按Range发送这个文件.
@@ -92,6 +97,9 @@ class FileHandle : public HTTPRequestHandler
      */
     void sendFileRange(Poco::Net::HTTPServerResponse& response, const std::string& path,
                        Poco::File::FileSize length, Poco::File::FileSize rangeStart, Poco::File::FileSize rangeLength);
+
+    void sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response, const std::string& path, const std::string& con_type,
+                                Poco::File::FileSize length, std::vector<std::array<Poco::File::FileSize, 2>>& result);
 
     class Impl;
     Impl* _impl;

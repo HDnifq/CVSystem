@@ -14,6 +14,7 @@
 #include "Poco/File.h"
 #include "Poco/Path.h"
 #include "Poco/Format.h"
+#include <regex>
 
 using namespace dxlib;
 using namespace std;
@@ -159,4 +160,47 @@ TEST(Common, Path)
     string ext = p2.getExtension();
 
     string text = Poco::format("%10z", (size_t)123);
+}
+
+TEST(Common, range)
+{
+    using namespace std;
+    std::array<int, 3> a2 = {1, 2, 3};
+    string str = "bytes=0-9502719";
+    std::smatch sm;
+    //实际上也就只需要提取被分割的两个整数就完了
+    if (std::regex_search(str, sm, std::regex("([0-9]+)-([0-9]+)"))) {
+
+        int rangeStart = std::stoull(sm[0].str()); //第一个是起点
+        if (sm.size() >= 2) {
+            int rangeLength = std::stoull(sm[1].str()); //第二个是获取长度
+        }
+        //else {
+        //    int rangeLength = fileSize - rangeStart;
+        //}
+    }
+    //else {
+    //    return false;
+    //}
+}
+
+TEST(Common, range2)
+{
+    using namespace std;
+    std::array<int, 3> a2 = {1, 2, 3};
+    string str = "bytes=200-1000, 2000-6576, 19000-";
+    std::smatch sm;
+
+    string str2 = str;
+    while (regex_search(str2, sm, std::regex("(\\d+)-(\\d+)"))) {
+        std::cout << sm.str() << '\n';
+        int rangeStart = std::stoull(sm[1].str()); //第一个是起点
+        int rangeEnd = std::stoull(sm[2].str()); //第二个是终点
+        str2 = sm.suffix();
+    }
+
+    if (std::regex_search(str, sm, std::regex("(\\d+)-$"))) {
+        std::cout << sm.str() << '\n';
+        int rangeStart = std::stoull(sm[0].str()); //第一个是起点
+    }
 }
