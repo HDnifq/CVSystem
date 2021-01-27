@@ -18,8 +18,6 @@ class MultiCamera
 
     static MultiCamera* GetInst()
     {
-        if (m_pInstance == NULL)
-            m_pInstance = new MultiCamera();
         return m_pInstance;
     }
 
@@ -42,7 +40,7 @@ class MultiCamera
     void closeCamera();
 
     /**
-     * 启动计算线程.
+     * 启动采图-计算线程(单线程模式).
      *
      * @author daixian
      * @date 2020/2/26
@@ -50,6 +48,16 @@ class MultiCamera
      * @param  activeProcindex (Optional) 活动的proc的index.
      */
     void start(uint activeProcindex = 0);
+
+    /**
+     * 启动采图计算线程(多线程模式).
+     *
+     * @author daixian
+     * @date 2020/2/26
+     *
+     * @param  activeProcindex (Optional) 活动的proc的index.
+     */
+    void startMT(uint activeProcindex = 0);
 
     /**
      * 停止计算线程.

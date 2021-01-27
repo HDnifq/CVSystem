@@ -20,6 +20,8 @@
 #include "../Common/Event.h"
 #include "../Common/FPSCalc.hpp"
 
+#include "IGrabTask.h"
+
 namespace dxlib {
 
 /**
@@ -28,7 +30,7 @@ namespace dxlib {
  * @author daixian
  * @date 2020/11/26
  */
-class TaskGrabOneCamera : public Poco::Runnable
+class TaskGrabOneCamera : public IGrabTask
 {
   public:
     /**
@@ -49,32 +51,11 @@ class TaskGrabOneCamera : public Poco::Runnable
 
     virtual ~TaskGrabOneCamera() {}
 
-    // 是否运行
-    std::atomic_bool isRun{true};
-
     // 图片队列
     CameraImageQueue* imageQueue = nullptr;
 
     // 图片工厂
     ICameraImageFactory* pCameraImageFactory = nullptr;
-
-    // 是否执行采图(如果不采图了那么会降低cpu开销).
-    std::atomic_bool isGrab{true};
-
-    // 是否是主任务(只有主任务才执行事件)
-    bool isMainTask = false;
-
-    // 是否执行处理
-    bool isDoProc = false;
-
-    // proc对象.
-    pFrameProc proc = nullptr;
-
-    // 处理的fps.
-    float fps = 0;
-
-    // 当前按下的按键记录（看后面要不要删掉）.
-    std::atomic_int cvKey{-1};
 
     /**
      * 线程执行函数.

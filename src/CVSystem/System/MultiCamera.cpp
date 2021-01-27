@@ -24,6 +24,7 @@
 #include "Poco/RunnableAdapter.h"
 
 #include "TaskGrabOneCamera.hpp"
+#include "TaskGrabManyCamera.hpp"
 
 namespace dxlib {
 
@@ -53,10 +54,10 @@ class MultiCamera::Impl
     std::vector<pCameraImageFactory> vCameraImageFactory;
 
     // 主相机采图.
-    TaskGrabOneCamera* mainGrabTask = nullptr;
+    IGrabTask* mainGrabTask = nullptr;
 
     // 所有相机采图
-    std::vector<TaskGrabOneCamera*> vGrabTasks;
+    std::vector<IGrabTask*> vGrabTasks;
 
     // 采图队列
     CameraImageQueue imageQueue;
@@ -89,7 +90,7 @@ MultiCamera::~MultiCamera()
     delete _impl;
 }
 
-MultiCamera* MultiCamera::m_pInstance = NULL;
+MultiCamera* MultiCamera::m_pInstance = new MultiCamera();
 
 uint MultiCamera::activeProcIndex()
 {
@@ -199,7 +200,7 @@ bool MultiCamera::openCamera()
     //根据当前录入的相机的东西里的设置来打开相机
 
     if (_impl->vDevices.size() == 0) {
-        LogW("MultiCamera.open():事先没有录入有效的相机（vCameras.size()==0），不做操作直接返回！");
+        LogW("MultiCamera.openCamera():事先没有录入有效的相机（vCameras.size()==0），不做操作直接返回！");
         return false;
     }
 
@@ -207,11 +208,11 @@ bool MultiCamera::openCamera()
     for (size_t camIndex = 0; camIndex < _impl->vDevices.size(); camIndex++) {
         auto& device = _impl->vDevices[camIndex];
         if (device == nullptr) {
-            LogI("MultiCamera.open():相机index%d 为null", camIndex);
+            LogI("MultiCamera.openCamera():相机index%d 为null", camIndex);
             continue;
         }
 
-        LogI("MultiCamera.open():尝试打开相机 %s ...", device->devName.c_str());
+        LogI("MultiCamera.openCamera():尝试打开相机 %s ...", device->devName.c_str());
         clock_t startTime = clock();
         //打开相机
         if (device->open()) {
@@ -220,9 +221,9 @@ bool MultiCamera::openCamera()
             cv::Mat img;
             device->capture->read(img);
             if (!img.empty())
-                LogI("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+                LogI("MultiCamera.openCamera():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
             else
-                LogE("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+                LogE("MultiCamera.openCamera():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
         }
         else {
             isSuccess = false;
@@ -262,26 +263,26 @@ void MultiCamera::closeCamera()
     LogI("MultiCamera.closeCamera():终于执行完了,close()返回...");
 }
 
-void MultiCamera::start(uint activeProcindex)
+void MultiCamera::startMT(uint activeProcindex)
 {
     if (this->isRunning()) {
-        LogW("MultiCamera.start():当前计算线程正在执行,可能导致泄漏!");
+        LogW("MultiCamera.startMT():当前计算线程正在执行,可能导致泄漏!");
     }
 
     if (_impl->vProc.empty()) {
-        LogE("MultiCamera.start():启动失败，输vProc为空,需要先添加proc对象");
+        LogE("MultiCamera.startMT():启动失败，输vProc为空,需要先添加proc对象");
         return;
     }
     if (activeProcindex >= _impl->vProc.size()) {
-        LogE("MultiCamera.start():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
+        LogE("MultiCamera.startMT():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
         return;
     }
     _impl->_activeProcIndex = activeProcindex; //记录一下
     _impl->vGrabTasks.clear();
 
-    LogI("MultiCamera.start():启动各个采图Task...有%d个Task", _impl->vCameraImageFactory.size());
+    LogI("MultiCamera.startMT():启动各个采图Task...有%d个Task", _impl->vCameraImageFactory.size());
     if (_impl->vCameraImageFactory.size() == 0) {
-        LogE("MultiCamera.start():启动采图Task失败,未添加CameraImageFactory!可能程序未对接新接口...");
+        LogE("MultiCamera.startMT():启动采图Task失败,未添加CameraImageFactory!可能程序未对接新接口...");
     }
     for (size_t i = 0; i < _impl->vCameraImageFactory.size(); i++) {
         auto& pCameraImageFactory = _impl->vCameraImageFactory[i];
@@ -302,8 +303,45 @@ void MultiCamera::start(uint activeProcindex)
             _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
         }
         catch (const std::exception& e) {
-            LogE("MultiCamera.start():异常 %s", e.what());
+            LogE("MultiCamera.startMT():异常 %s", e.what());
         }
+    }
+}
+
+void MultiCamera::start(uint activeProcindex)
+{
+    if (this->isRunning()) {
+        LogW("MultiCamera.start():当前计算线程正在执行,可能导致泄漏!");
+    }
+
+    if (_impl->vProc.empty()) {
+        LogE("MultiCamera.start():启动失败，输vProc为空,需要先添加proc对象");
+        return;
+    }
+    if (activeProcindex >= _impl->vProc.size()) {
+        LogE("MultiCamera.start():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
+        return;
+    }
+    _impl->_activeProcIndex = activeProcindex; //记录一下
+    _impl->vGrabTasks.clear();
+
+    LogI("MultiCamera.start():启动采图Task...有%d个CameraImageFactory", _impl->vCameraImageFactory.size());
+    if (_impl->vCameraImageFactory.size() == 0) {
+        LogE("MultiCamera.start():启动采图Task失败,未添加CameraImageFactory!可能程序未对接新接口...");
+    }
+    try {
+        TaskGrabManyCamera* task = new TaskGrabManyCamera("TaskGrabManyCamera",
+                                                          &_impl->imageQueue,
+                                                          _impl->vCameraImageFactory);
+        task->isMainTask = true;
+        _impl->mainGrabTask = task;
+        task->isDoProc = true;
+        task->proc = _impl->vProc[activeProcindex];
+        _impl->vGrabTasks.push_back(task);
+        _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
+    }
+    catch (const std::exception& e) {
+        LogE("MultiCamera.start():异常 %s", e.what());
     }
 }
 

@@ -20,6 +20,8 @@
 #include "../Common/Event.h"
 #include "../Common/FPSCalc.hpp"
 
+#include "IGrabTask.h"
+
 namespace dxlib {
 
 /**
@@ -28,53 +30,32 @@ namespace dxlib {
  * @author daixian
  * @date 2020/11/26
  */
-class TaskGrabManyCamera : public Poco::Runnable
+class TaskGrabManyCamera : public IGrabTask
 {
   public:
     /**
-     * 构造,需要指定一个图片队列,一个采图方法工厂.
+     * 构造,需要指定一个图片队列,若干个采图方法工厂.
      *
      * @author daixian
      * @date 2020/11/26
      *
      * @param      name                The name.
      * @param [in] imageQueue          If non-null, queue of images.
-     * @param [in] pCameraImageFactory If non-null, the camera image factory.
+     * @param [in] vCameraImageFactory 一组采图方法工厂.
      */
     TaskGrabManyCamera(const std::string& name,
                        CameraImageQueue* imageQueue,
-                       const std::vector<ICameraImageFactory*>& vCameraImageFactory)
+                       const std::vector<pCameraImageFactory>& vCameraImageFactory)
         : imageQueue(imageQueue),
           vCameraImageFactory(vCameraImageFactory) {}
 
     virtual ~TaskGrabManyCamera() {}
 
-    // 是否运行
-    std::atomic_bool isRun{true};
-
     // 图片队列
     CameraImageQueue* imageQueue = nullptr;
 
     // 图片工厂
-    std::vector<ICameraImageFactory*> vCameraImageFactory;
-
-    // 是否执行采图(如果不采图了那么会降低cpu开销).
-    std::atomic_bool isGrab{true};
-
-    // 是否是主任务(只有主任务才执行事件)
-    bool isMainTask = false;
-
-    // 是否执行处理
-    bool isDoProc = false;
-
-    // proc对象.
-    pFrameProc proc = nullptr;
-
-    // 处理的fps.
-    float fps = 0;
-
-    // 当前按下的按键记录（看后面要不要删掉）.
-    std::atomic_int cvKey{-1};
+    std::vector<pCameraImageFactory> vCameraImageFactory;
 
     /**
      * 线程执行函数.
@@ -96,10 +77,10 @@ class TaskGrabManyCamera : public Poco::Runnable
         if (isGrab.load()) {
             //如果还没有打开相机就打开相机
             for (size_t factoryIndex = 0; factoryIndex < vCameraImageFactory.size(); factoryIndex++) {
-                ICameraImageFactory* pCameraImageFactory = vCameraImageFactory[factoryIndex];
-                if (!pCameraImageFactory->device->isOpened()) {
+                pCameraImageFactory ptrCameraImageFactory = vCameraImageFactory[factoryIndex];
+                if (!ptrCameraImageFactory->device->isOpened()) {
                     LogI("TaskGrabManyCamera.runTask():设备相机还没有打开,打开相机...");
-                    if (pCameraImageFactory->device->open()) {
+                    if (ptrCameraImageFactory->device->open()) {
                         LogI("TaskGrabManyCamera.runTask():相机打开成功!");
                     }
                     else {
@@ -112,14 +93,14 @@ class TaskGrabManyCamera : public Poco::Runnable
         }
 
         if (isMainTask && isDoProc && proc != nullptr) {
-            imageQueue->lockGetImage.lock();
+            //imageQueue->lockGetImage.lock();
             try {
                 proc->onEnable();
             }
             catch (const std::exception& e) {
                 LogE("TaskGrabManyCamera.run():执行onEnable异常 e=%s", e.what());
             }
-            imageQueue->lockGetImage.unlock();
+            //imageQueue->lockGetImage.unlock();
         }
 
         while (isRun.load()) {
@@ -132,10 +113,10 @@ class TaskGrabManyCamera : public Poco::Runnable
                     setCamerasFPS(fps);
 
                     for (size_t factoryIndex = 0; factoryIndex < vCameraImageFactory.size(); factoryIndex++) {
-                        ICameraImageFactory* pCameraImageFactory = vCameraImageFactory[factoryIndex];
-                        pCameraImageFactory->device->applyCapProp();
+                        pCameraImageFactory ptrCameraImageFactory = vCameraImageFactory[factoryIndex];
+                        ptrCameraImageFactory->device->applyCapProp();
 
-                        std::vector<CameraImage> images = pCameraImageFactory->Create();
+                        std::vector<CameraImage> images = ptrCameraImageFactory->Create();
                         for (size_t i = 0; i < images.size(); i++) {
                             //如果采图成功才放进队列好了,当相机有切换相机属性的时候是会产生硬件的采图失败的.
                             if (images[i].isSuccess) {
@@ -155,8 +136,9 @@ class TaskGrabManyCamera : public Poco::Runnable
 
             try {
                 // 如果这个采图完了它就去检察是否能够执行proc处理,如果没有人正在进行帧处理,那么就会持有一个锁
-                if (isDoProc && proc != nullptr &&
-                    imageQueue->lockGetImage.try_lock()) {
+                if (isDoProc && proc != nullptr) {
+                    //imageQueue->lockGetImage.try_lock()
+
                     if (isGrab.load()) {
                         //因为这个主相机有可能采图超前一帧,所以这里执行两次处理
                         if (doOnceProc())
@@ -177,24 +159,24 @@ class TaskGrabManyCamera : public Poco::Runnable
                     //干脆用这个线程来驱动检查事件
                     Event::GetInst()->checkMemEvent();
 
-                    imageQueue->lockGetImage.unlock(); //解锁
+                    //imageQueue->lockGetImage.unlock(); //解锁
                 }
             }
             catch (const std::exception& e) {
                 LogE("TaskGrabManyCamera.run():执行proc异常 e=%s", e.what());
-                imageQueue->lockGetImage.unlock(); //异常了也解锁
+                //imageQueue->lockGetImage.unlock(); //异常了也解锁
             }
         }
 
         if (isMainTask && isDoProc && proc != nullptr) {
-            imageQueue->lockGetImage.lock();
+            //imageQueue->lockGetImage.lock();
             try {
                 proc->onDisable();
             }
             catch (const std::exception& e) {
                 LogE("TaskGrabManyCamera.run():执行onDisable异常 e=%s", e.what());
             }
-            imageQueue->lockGetImage.unlock();
+            //imageQueue->lockGetImage.unlock();
         }
     }
 
@@ -255,10 +237,10 @@ class TaskGrabManyCamera : public Poco::Runnable
     void setCamerasFPS(float fps)
     {
         for (size_t factoryIndex = 0; factoryIndex < vCameraImageFactory.size(); factoryIndex++) {
-            ICameraImageFactory* pCameraImageFactory = vCameraImageFactory[factoryIndex];
-            pCameraImageFactory->device->FPS = fps;
-            for (size_t i = 0; i < pCameraImageFactory->cameras.size(); i++) {
-                pCameraImageFactory->cameras[i]->FPS = fps;
+            pCameraImageFactory ptrCameraImageFactory = vCameraImageFactory[factoryIndex];
+            ptrCameraImageFactory->device->FPS = fps;
+            for (size_t i = 0; i < ptrCameraImageFactory->cameras.size(); i++) {
+                ptrCameraImageFactory->cameras[i]->FPS = fps;
             }
         }
     }

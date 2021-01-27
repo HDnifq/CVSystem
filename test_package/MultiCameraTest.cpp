@@ -83,8 +83,8 @@ TEST(MultiCamera, openMono)
         CameraManger::GetInst()->vDevice[0]->setFourcc("MJPG");
 
         //打开相机成功了
-        /*    ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
-        ASSERT_TRUE(CameraManger::GetInst()->vDevice[0]->isOpened());*/
+        //ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
+        //ASSERT_TRUE(CameraManger::GetInst()->vDevice[0]->isOpened());
 
         //输出一下
         CameraManger::GetInst()->vDevice[0]->outputProp();
@@ -155,6 +155,70 @@ TEST(MultiCamera, openStereo)
 
         //启动计算线程
         MultiCamera::GetInst()->start();
+        ASSERT_TRUE(MultiCamera::GetInst()->isRunning());
+        std::this_thread::sleep_for(std::chrono::milliseconds(4000)); //工作1000毫秒
+
+        //测一下TestProc里是不是处理了图像帧
+        TestProc* testfp = (TestProc*)MultiCamera::GetInst()->getProc(0);
+        EXPECT_TRUE(testfp->count > 0);
+        LogI("MultiCamera.openStereo():fps=%f", MultiCamera::GetInst()->fps());
+
+        ASSERT_TRUE(MultiCamera::GetInst()->frameCount() > 0);
+        MultiCamera::GetInst()->stop();
+        ASSERT_TRUE(!MultiCamera::GetInst()->isRunning());
+        MultiCamera::GetInst()->closeCamera();
+        ASSERT_TRUE(!MultiCamera::GetInst()->isCameraOpened());
+    }
+
+    MultiCamera::GetInst()->clearProc();
+    CameraManger::GetInst()->clear();
+}
+
+TEST(MultiCamera, openStereoMT)
+{
+    CameraManger::GetInst()->clear();
+    //得到第一个相机名
+    DevicesHelper::GetInst()->listDevices();
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
+        return;
+    }
+    string camName = DevicesHelper::GetInst()->devList.begin()->second;
+
+    //pCameraDevice device = pCameraDevice(new CameraDevice(camName, cv::Size(1280, 720), 0));
+    //pCamera cameraL = pCamera(new Camera(camName + "-L", cv::Size(640, 720)));
+    //pCamera cameraR = pCamera(new Camera(camName + "-R", cv::Size(640, 720)));
+    //CameraManger::GetInst()->add(device);
+    //CameraManger::GetInst()->add(cameraL);
+    //CameraManger::GetInst()->add(cameraR);
+
+    //StereoCameraImageFactory* factory = new StereoCameraImageFactory(device, {cameraL, cameraR});
+    //CameraManger::GetInst()->add(pCameraImageFactory(factory));
+
+    //使用工厂方法
+    pCameraDevice device;
+    pStereoCamera stereo;
+    CameraManger::GetInst()->CreateStereoCamera(camName, 1280, 720, device, stereo);
+
+    MultiCamera::GetInst()->addProc(new TestProc());
+
+    CameraManger::GetInst()->vDevice[0]->setProp(cv::CAP_PROP_AUTO_EXPOSURE, 0);
+    CameraManger::GetInst()->vDevice[0]->setFourcc("MJPG");
+
+    for (size_t i = 0; i < 2; i++) {          //测试两次
+        MultiCamera::GetInst()->openCamera(); //打开相机
+
+        CameraManger::GetInst()->vDevice[0]->setProp(cv::CAP_PROP_AUTO_EXPOSURE, 0);
+        CameraManger::GetInst()->vDevice[0]->setFourcc("MJPG");
+
+        //打开相机成功了
+        ASSERT_TRUE(MultiCamera::GetInst()->isCameraOpened());
+        ASSERT_TRUE(CameraManger::GetInst()->vDevice[0]->isOpened());
+
+        //输出一下
+        CameraManger::GetInst()->vDevice[0]->outputProp();
+
+        //启动计算线程
+        MultiCamera::GetInst()->startMT();
         ASSERT_TRUE(MultiCamera::GetInst()->isRunning());
         std::this_thread::sleep_for(std::chrono::milliseconds(4000)); //工作1000毫秒
 
