@@ -25,6 +25,7 @@
 
 #include "TaskGrabOneCamera.hpp"
 #include "TaskGrabManyCamera.hpp"
+#include "TaskCloseSystem.hpp"
 
 namespace dxlib {
 
@@ -63,7 +64,10 @@ class MultiCamera::Impl
     CameraImageQueue imageQueue;
 
     // 工作线程池
-    Poco::ThreadPool threadPool{4, 16};
+    Poco::ThreadPool threadPool{3, 6};
+
+    // 命令线程池
+    Poco::ThreadPool threadPoolCMD{1, 2};
 
     // 是否相机已经打开.
     std::atomic_bool _isOpened{false};
@@ -377,6 +381,12 @@ void MultiCamera::stop()
     //}
     //else {
     //}
+}
+
+void MultiCamera::invokeStopAndClose(bool isClearProc)
+{
+    TaskCloseSystem* task = new TaskCloseSystem(isClearProc);
+    _impl->threadPoolCMD.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
 }
 
 uint MultiCamera::frameCount()

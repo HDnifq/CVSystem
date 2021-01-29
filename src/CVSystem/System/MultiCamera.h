@@ -68,6 +68,16 @@ class MultiCamera
     void stop();
 
     /**
+     * 异步的执行关闭.
+     *
+     * @author daixian
+     * @date 2021/1/29
+     *
+     * @param  isClearProc (Optional) 关闭之后是否清空proc对象.
+     */
+    void invokeStopAndClose(bool isClearProc = true);
+
+    /**
      * 添加一个Proc.
      *
      * @author daixian

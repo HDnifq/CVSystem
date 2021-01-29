@@ -46,7 +46,7 @@ class TaskOpenCamera : public Poco::Runnable
      */
     virtual void run()
     {
-        LogI("MultiCamera.open():尝试打开相机 %s ...", device->devName.c_str());
+        LogI("TaskOpenCamera.run():尝试打开相机 %s ...", device->devName.c_str());
         clock_t startTime = clock();
         //打开相机
         if (device->open()) {
@@ -55,9 +55,9 @@ class TaskOpenCamera : public Poco::Runnable
             cv::Mat img;
             device->capture->read(img);
             if (!img.empty())
-                LogI("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+                LogI("TaskOpenCamera.run():成功打开一个相机%s，耗时%.2f毫秒", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
             else
-                LogE("MultiCamera.open():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
+                LogE("TaskOpenCamera.run():成功打开一个相机%s，耗时%.2f毫秒,但是尝试读取一帧图片失败!", device->devName.c_str(), costTime); //打开相机大致耗时0.2s
             isSuccess = true;
         }
         else {
