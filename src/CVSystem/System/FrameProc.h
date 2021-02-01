@@ -20,10 +20,10 @@ class FrameProc
      * @author daixian
      * @date 2019/3/19
      *
-     * @param          camImage 采集的处理图像.
-     * @param [in,out] key      这里waitkey()得到的按键key值.
+     * @param          camImageGroup 采集的处理图像.
+     * @param [in,out] key           这里waitkey()得到的按键key值.
      */
-    virtual void process(pCameraImageGroup camImage, int& key) = 0;
+    virtual void process(pCameraImageGroup camImageGroup, int& key) = 0;
 
     /**
      * 浅睡眠,此时相机没有抓图,没有采图.但是会定时300ms传出这个事件来可以执行一些函数.
