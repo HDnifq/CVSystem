@@ -183,7 +183,7 @@ class StereoCamera
      * @date 2020/5/3
      *
      * @param  path            参数文件的完整路径.
-     * @param  nameTargetSize  (Optional) Size of the name target.
+     * @param  kParamSize      (Optional) Size of the name target.
      * @param  nameCamMatrixL  (Optional) The name camera matrix l.
      * @param  nameDistCoeffsL (Optional) The name distance coeffs l.
      * @param  nameCamMatrixR  (Optional) The name camera matrix r.
@@ -198,7 +198,7 @@ class StereoCamera
      * @param  nameR2          (Optional) The second name r.
      * @param  nameP2          (Optional) The second name p.
      */
-    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+    void loadParam(const std::string& path, const std::string& kParamSize = "paramSize",
                    const std::string& nameCamMatrixL = "M1",
                    const std::string& nameDistCoeffsL = "D1",
                    const std::string& nameCamMatrixR = "M2",

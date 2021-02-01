@@ -44,7 +44,7 @@ class Camera
     // 相机的图像分辨率size.
     cv::Size size;
 
-    // 相机的参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置.
+    // 相机的当前参数对应的分辨率size,默认和相机size相同,读参数的时候注意修改设置.
     cv::Size paramSize;
 
     // 相机的内参数矩阵.
@@ -155,7 +155,8 @@ class Camera
 
 #pragma endregion
 
-    /** 这是相机的备用参数，一个相机可以记录多组参数. */
+    // TODO:后面准备废弃这些内容
+    // 这是相机的备用参数，一个相机可以记录多组参数.
     std::vector<std::pair<cv::Size, pCameraParam>> vParams;
 
     /**
@@ -189,12 +190,12 @@ class Camera
      * @date 2020/5/3
      *
      * @param  path           参数文件的完整路径.
-     * @param  nameTargetSize (Optional) 参数目标分辨率的字段名.
+     * @param  paramSize      (Optional) 参数目标分辨率的字段名.
      * @param  nameCamMatrix  (Optional) 相机内参数矩阵的字段名.
      * @param  nameDistCoeffs (Optional) 相机畸变参数的字段名.
      * @param  isApply        (Optional) 是否把这个参数信息应用到成员变量中.
      */
-    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+    void loadParam(const std::string& path, const std::string& paramSize = "paramSize",
                    const std::string& nameCamMatrix = "M",
                    const std::string& nameDistCoeffs = "D", bool isApply = true);
 

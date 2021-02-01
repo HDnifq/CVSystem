@@ -100,7 +100,7 @@ pCameraParam Camera::getParam(cv::Size size)
     return nullptr;
 }
 
-void Camera::loadParam(const std::string& path, const std::string& nameTargetSize,
+void Camera::loadParam(const std::string& path, const std::string& kParamSize,
                        const std::string& nameCamMatrix,
                        const std::string& nameDistCoeffs,
                        bool isApply)
@@ -110,8 +110,8 @@ void Camera::loadParam(const std::string& path, const std::string& nameTargetSiz
     if (fs.isOpened()) {
         Size targetSize;
         pCameraParam pParam = nullptr;
-        if (!nameTargetSize.empty()) {
-            fs[nameTargetSize] >> targetSize;
+        if (!kParamSize.empty()) {
+            fs[kParamSize] >> targetSize;
             //搜索一下是否带有这个参数
             for (size_t i = 0; i < vParams.size(); i++) {
                 if (vParams[i].first == targetSize) {

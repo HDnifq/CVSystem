@@ -45,7 +45,7 @@ void StereoCamera::setCamera(int scID, pCamera& camL, pCamera& camR)
     this->camR->stereoCamIndexR = this->camR->camIndex;
 }
 
-void StereoCamera::loadParam(const std::string& path, const std::string& nameTargetSize,
+void StereoCamera::loadParam(const std::string& path, const std::string& kParamSize,
                              const std::string& nameCamMatrixL,
                              const std::string& nameDistCoeffsL,
                              const std::string& nameCamMatrixR,
@@ -64,10 +64,10 @@ void StereoCamera::loadParam(const std::string& path, const std::string& nameTar
     using namespace cv;
     FileStorage fs(path, FileStorage::READ); //参数
     if (fs.isOpened()) {
-        if (!nameTargetSize.empty()) {
-            fs[nameTargetSize] >> paramSize;
-            fs[nameTargetSize] >> this->camL->paramSize;
-            fs[nameTargetSize] >> this->camR->paramSize;
+        if (!kParamSize.empty()) {
+            fs[kParamSize] >> paramSize;
+            fs[kParamSize] >> this->camL->paramSize;
+            fs[kParamSize] >> this->camR->paramSize;
         }
         if (!nameCamMatrixL.empty())
             fs[nameCamMatrixL] >> this->camL->camMatrix;

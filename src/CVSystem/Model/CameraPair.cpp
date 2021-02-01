@@ -3,7 +3,7 @@
 
 namespace dxlib {
 
-void CameraPair::loadParam(const std::string& path, const std::string& nameTargetSize,
+void CameraPair::loadParam(const std::string& path, const std::string& kParamSize,
                            const std::string& nameCamMatrixL,
                            const std::string& nameDistCoeffsL,
                            const std::string& nameCamMatrixR,
@@ -22,9 +22,8 @@ void CameraPair::loadParam(const std::string& path, const std::string& nameTarge
     using namespace cv;
     FileStorage fs(path, FileStorage::READ); //参数
     if (fs.isOpened()) {
-        if (!nameTargetSize.empty()) {
-            fs[nameTargetSize] >> this->camL->paramSize;
-            fs[nameTargetSize] >> this->camR->paramSize;
+        if (!kParamSize.empty()) {
+            fs[kParamSize] >> this->paramSize;
         }
         if (!nameCamMatrixL.empty())
             fs[nameCamMatrixL] >> this->camL->camMatrix;

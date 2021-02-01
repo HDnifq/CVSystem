@@ -26,6 +26,9 @@ class CameraPair
     // R相机.
     pCamera camR;
 
+    // 相机的参数对应的分辨率size.
+    cv::Size paramSize;
+
     // 参数R.
     cv::Mat R;
 
@@ -63,7 +66,7 @@ class CameraPair
      * @date 2020/5/3
      *
      * @param  path            参数文件的完整路径.
-     * @param  nameTargetSize  (Optional) Size of the name target.
+     * @param  paramSize       (Optional) Size of the name target.
      * @param  nameCamMatrixL  (Optional) The name camera matrix l.
      * @param  nameDistCoeffsL (Optional) The name distance coeffs l.
      * @param  nameCamMatrixR  (Optional) The name camera matrix r.
@@ -78,7 +81,7 @@ class CameraPair
      * @param  nameR2          (Optional) The second name r.
      * @param  nameP2          (Optional) The second name p.
      */
-    void loadParam(const std::string& path, const std::string& nameTargetSize = "targetSize",
+    void loadParam(const std::string& path, const std::string& kParamSize = "paramSize",
                    const std::string& nameCamMatrixL = "M1",
                    const std::string& nameDistCoeffsL = "D1",
                    const std::string& nameCamMatrixR = "M2",
