@@ -41,6 +41,10 @@ float CameraImageGroup::waitProcTime()
 
 float CameraImageGroup::procCostTime()
 {
+    //如果还没有标记当前的这个计时,那就使用当前时间好了
+    if (procEndTime == 0) {
+        procEndTime = clock();
+    }
     return (float)(procEndTime - procStartTime) / CLOCKS_PER_SEC * 1000;
 }
 
