@@ -193,6 +193,11 @@ class TaskGrabManyCamera : public IGrabTask
         //如果是采图过程中
         pCameraImageGroup cimg = imageQueue->GetImage();
         if (cimg != nullptr) {
+            if (discardFrameCount > 0) {
+                discardFrameCount--;
+                return true;
+            }
+
             cimg->procStartTime = clock(); //标记处理开始时间
             if (cimg->waitProcTime() > 4)
                 LogW("TaskGrabManyCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());
@@ -208,7 +213,13 @@ class TaskGrabManyCamera : public IGrabTask
             }
 
             int ckey = -1; //让proc去自己想检测keydown就keydown
-            proc->process(cimg, ckey);
+            try {
+                proc->process(cimg, ckey);
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabManyCamera.run():执行process异常 e=%s", e.what());
+            }
+
             if (ckey != -1) { //如果有按键按下那么修改最近的按键值
                 cvKey.exchange(ckey);
             }

@@ -405,4 +405,9 @@ float MultiCamera::fps()
     return 0;
 }
 
+void MultiCamera::discardFrame(int count)
+{
+    _impl->mainGrabTask->discardFrameCount = count;
+}
+
 } // namespace dxlib

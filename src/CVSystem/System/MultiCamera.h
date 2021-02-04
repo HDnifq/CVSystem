@@ -218,6 +218,16 @@ class MultiCamera
      */
     float fps();
 
+    /**
+     * 下个帧处理开始丢弃掉这些帧.
+     *
+     * @author daixian
+     * @date 2021/2/5
+     *
+     * @param  count Number of.
+     */
+    void discardFrame(int count);
+
   private:
     static MultiCamera* m_pInstance;
 

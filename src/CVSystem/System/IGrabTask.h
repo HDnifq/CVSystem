@@ -34,6 +34,9 @@ class IGrabTask : public Poco::Runnable
     // 是否执行处理
     bool isDoProc = false;
 
+    // 处理的忽略帧,会直接丢弃这一帧
+    int discardFrameCount = 0;
+
     // proc对象.
     pFrameProc proc = nullptr;
 
