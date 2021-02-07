@@ -84,6 +84,26 @@ class CameraDevice
      */
     bool isOpened();
 
+    /**
+     * 是否正在打开设备.
+     *
+     * @author daixian
+     * @date 2021/2/7
+     *
+     * @returns True if opening, false if not.
+     */
+    bool isOpening();
+
+    /**
+     * 是否硬件设备有错误.
+     *
+     * @author daixian
+     * @date 2021/2/7
+     *
+     * @returns True if error, false if not.
+     */
+    bool isError();
+
 #pragma region 相机属性
 
     /**
@@ -213,6 +233,12 @@ class CameraDevice
   private:
     class Impl;
     Impl* _impl = nullptr;
+
+    // 是否这个硬件设备已经错误
+    bool _isError = false;
+
+    // 是否正在打开设备
+    bool _isOpening = false;
 };
 // 定义这个智能指针类型.
 typedef std::shared_ptr<CameraDevice> pCameraDevice;

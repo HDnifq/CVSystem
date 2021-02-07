@@ -72,6 +72,8 @@ std::vector<CameraImage> SpecialMonoCameraImageFactory::Create()
     else {
         //在切换相机属性的时候居然会采图失败
         LogE("MonoCameraImageFactory.Create():采图失败了!!");
+        //这里很可能是硬件设备挂了
+        isDeviceError = true;
         //如果采图失败
         for (size_t i = 0; i < result.size(); i++) {
             result[i].grabEndTime = clock();

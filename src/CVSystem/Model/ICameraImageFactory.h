@@ -24,6 +24,9 @@ class ICameraImageFactory
     // 相机设备
     pCameraDevice device;
 
+    // 是否硬件设备已经错误
+    bool isDeviceError = false;
+
     // 逻辑相机
     std::vector<pCamera> cameras;
 

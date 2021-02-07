@@ -77,6 +77,10 @@ std::vector<CameraImage> StereoCameraImageFactory::Create()
     else {
         //如果采图失败
         LogE("StereoCameraImageFactory.Create():硬件采图失败!!");
+
+        //这里很可能是硬件设备挂了
+        isDeviceError = true;
+
         for (size_t i = 0; i < result.size() / 2; i++) {
             CameraImage& camImageL = result[2 * i];
             CameraImage& camImageR = result[2 * i + 1];

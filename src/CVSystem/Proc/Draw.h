@@ -140,7 +140,7 @@ class Draw
      * @param  size  画面大小.
      * @param  count (Optional) 预备的数量.
      */
-    void setImageROI(const cv::Size& size, int count = 4);
+    void setImageROI(const cv::Size& size, int count = 6);
 
     /**
      * 根据一个int去得到一个颜色.

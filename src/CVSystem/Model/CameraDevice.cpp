@@ -106,6 +106,7 @@ bool CameraDevice::open(float& costTime)
     //统计时间
     costTime = 0;
     clock_t startTime = clock();
+    _isOpening = true;
 
     //如果存在VideoCapture那么就释放
     if (capture == nullptr) {
@@ -126,6 +127,8 @@ bool CameraDevice::open(float& costTime)
     DevicesHelper::GetInst()->listDevices();
     if (DevicesHelper::GetInst()->devList.size() == 0) {
         LogE("CameraDevice.open():listDevices相机个数为0,直接返回!");
+        _isError = true;
+        _isOpening = false;
         return false;
     }
 
@@ -143,6 +146,8 @@ bool CameraDevice::open(float& costTime)
         }
 
         release(); //去把capture置为null
+        _isError = true;
+        _isOpening = false;
         return false;
     }
 
@@ -185,6 +190,9 @@ bool CameraDevice::open(float& costTime)
         if (count == 3) { //失败超过5次
             LogE("CameraDevice.open():打开摄像头失败!");
             release(); //去把capture置为null
+
+            _isError = true;
+            _isOpening = false;
             return false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(2000)); //休眠2000ms
@@ -196,6 +204,8 @@ bool CameraDevice::open(float& costTime)
     //统计时间
     costTime = (float)(clock() - startTime) / CLOCKS_PER_SEC * 1000;
 
+    _isError = false;
+    _isOpening = false;
     return true;
 }
 
@@ -207,7 +217,7 @@ bool CameraDevice::open()
 
 bool CameraDevice::isOpened()
 {
-    if (capture == nullptr) {
+    if (capture == nullptr || _isError) {
         return false;
     }
     else {
@@ -215,12 +225,28 @@ bool CameraDevice::isOpened()
     }
 }
 
+bool CameraDevice::isOpening()
+{
+    return _isOpening;
+}
+
+bool CameraDevice::isError()
+{
+    return _isError;
+}
+
 bool CameraDevice::read(cv::Mat& image)
 {
     if (!isOpened()) {
         return false;
     }
-    return capture->read(image);
+    if (capture->read(image)) {
+        return true;
+    }
+    else {
+        _isError = true;
+        return false;
+    }
 }
 
 void CameraDevice::release()

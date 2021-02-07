@@ -42,6 +42,7 @@ TEST(CameraDevice, setProp)
     //如果打开失败这里会为null
     ASSERT_TRUE(camera.capture != nullptr);
     ASSERT_TRUE(camera.capture->isOpened());
+    ASSERT_FALSE(camera.isError());
 
     camera.setPropWithString(cv::CAP_PROP_BRIGHTNESS, "-64");
     camera.applyCapProp();
@@ -55,4 +56,13 @@ TEST(CameraDevice, setProp)
         camera.applyCapProp();
     }
     camera.release();
+}
+
+TEST(CameraDevice, fail)
+{
+    CameraDevice camera("31321fasdfas", cv::Size(640, 400), 0);
+    camera.open();
+    ASSERT_TRUE(camera.isError());
+    ASSERT_TRUE(!camera.isOpened());
+    ASSERT_TRUE(!camera.isOpening());
 }

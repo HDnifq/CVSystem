@@ -104,6 +104,7 @@ void Draw::setImageROI(const cv::Size& size, int count)
     if (count > 6) {
         LogE("Draw.setImageROI():设置绘图相机的个数失败,相机个数超出了设计值!");
     }
+    //目前这个count实际上没有使用
     _impl->vImageROI.clear();
 
     _impl->vImageROI.push_back(cv::Rect(0, 1080 - 150 - size.height * 2, size.width, size.height)); //1号相机画在左上角
