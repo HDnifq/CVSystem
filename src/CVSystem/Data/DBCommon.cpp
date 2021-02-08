@@ -4,6 +4,7 @@
 #include "Poco/Format.h"
 
 #include "SQLiteCpp/SQLiteCpp.h"
+#include "Crypto/Helper/XORBitEncrypt.hpp"
 
 #include "DBHelper.h"
 #include "dlog/dlog.h"
@@ -37,7 +38,8 @@ DBCommon::DBCommon()
 {
     _impl = new Impl();
 
-    key = "xX--xuexue--Xx";
+    key = "vW=<jfqmcr54Bc"; //"xX--xuexue--Xx";
+    XORBitEncrypt::Encipher(key);
 }
 
 DBCommon::~DBCommon()

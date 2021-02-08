@@ -24,6 +24,7 @@ class CVSystemTestConan(ConanFile):
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
         self.requires("sqlitecpp/2.5.0@daixian/stable")  # 使用加密数据库的版本
         self.requires("xuexuesharp/[>=0.0.4]@daixian/stable")
+        self.requires("Crypto/[>=0.0.1]@daixian/stable")
 
     def build_requirements(self):
         self.build_requires("gtest/1.8.1@bincrafters/stable")
