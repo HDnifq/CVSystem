@@ -4,7 +4,7 @@
 
 namespace dxlib {
 
-void StereoCamera::setCamera(int scID, pCameraDevice& device, pCamera& camL, pCamera& camR)
+void StereoCamera::setCamera(int scID, const pCameraDevice& device, const pCamera& camL, const pCamera& camR)
 {
     this->scID = scID;
     this->device = device;
@@ -27,7 +27,7 @@ void StereoCamera::setCamera(int scID, pCameraDevice& device, pCamera& camL, pCa
     this->camR->stereoCamIndexR = this->camR->camIndex;
 }
 
-void StereoCamera::setCamera(int scID, pCamera& camL, pCamera& camR)
+void StereoCamera::setCamera(int scID, const pCamera& camL, const pCamera& camR)
 {
     this->scID = scID;
     this->camL = camL;
@@ -112,7 +112,7 @@ void StereoCamera::loadParam(const std::string& path, const std::string& kParamS
     fs.release();
 }
 
-bool StereoCamera::SwitchParam(cv::Size size)
+bool StereoCamera::SwitchParam(const cv::Size& size)
 {
     //搜索一下是否带有这个参数
     for (size_t i = 0; i < vParams.size(); i++) {
@@ -153,7 +153,7 @@ void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4)
     this->camL->camRotate = this->camRotate;
 }
 
-pStereoCameraParam StereoCamera::getParam(cv::Size size)
+pStereoCameraParam StereoCamera::getParam(const cv::Size& size)
 {
     for (size_t i = 0; i < vParams.size(); i++) {
         if (vParams[i].first == size) {

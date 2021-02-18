@@ -86,7 +86,7 @@ std::map<cv::VideoCaptureProperties, const char*> CameraDevice::Impl::mPropStr =
     {cv::CAP_PROP_WB_TEMPERATURE, "CAP_PROP_WB_TEMPERATURE"},
     {cv::CAP_PROP_CODEC_PIXEL_FORMAT, "CAP_PROP_CODEC_PIXEL_FORMAT"}};
 
-CameraDevice::CameraDevice(const std::string& aDevName, cv::Size aSize, int aBrightness)
+CameraDevice::CameraDevice(const std::string& aDevName, const cv::Size& aSize, int aBrightness)
     : devName(aDevName), size(aSize)
 {
     //构造成员
@@ -269,7 +269,7 @@ void CameraDevice::setProp(cv::VideoCaptureProperties CV_CAP_PROP, double value)
     _impl->_setCapProp[(int)CV_CAP_PROP] = value;
 }
 
-void CameraDevice::setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::string value)
+void CameraDevice::setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, const std::string& value)
 {
     //如果这是fourcc
     if (CV_CAP_PROP == cv::CAP_PROP_FOURCC) {

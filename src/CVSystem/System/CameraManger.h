@@ -192,7 +192,7 @@ class CameraManger
      *
      * @returns The stereo.
      */
-    pStereoCamera getStereo(pCamera camera);
+    pStereoCamera getStereo(const pCamera& camera);
 
     /**
      * 使用子相机来得到一个立体相机,找不到则返回null.
@@ -229,7 +229,7 @@ class CameraManger
      *
      * @returns 找不到返回null.
      */
-    pCameraPair getCameraPair(pCamera cameraL, pCamera cameraR);
+    pCameraPair getCameraPair(const pCamera& cameraL,const pCamera& cameraR);
 
     /**
      * 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数,找不到则返回null.

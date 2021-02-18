@@ -331,7 +331,7 @@ class Draw
      *
      * @returns 当前图片.
      */
-    cv::Mat& drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color);
+    cv::Mat& drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar& color);
 
     /**
      * 画文本.

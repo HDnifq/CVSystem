@@ -84,7 +84,7 @@ class StereoCamera
      * @param [in] camL   The camera l.
      * @param [in] camR   The camera r.
      */
-    void setCamera(int scID, pCameraDevice& device, pCamera& camL, pCamera& camR);
+    void setCamera(int scID, const pCameraDevice& device, const pCamera& camL, const pCamera& camR);
 
     /**
      * Sets a camera
@@ -96,7 +96,7 @@ class StereoCamera
      * @param [in,out] camL The camera l.
      * @param [in,out] camR The camera r.
      */
-    void setCamera(int scID, pCamera& camL, pCamera& camR);
+    void setCamera(int scID, const pCamera& camL, const pCamera& camR);
 
     /**
      * 设置投影矩阵.
@@ -116,7 +116,7 @@ class StereoCamera
     }
 
     /**
-     * 设置相机位置矩阵4x4
+     * 设置相机位置矩阵4x4,会对这个对象和camL相机中的成员同时赋值.
      *
      * @author daixian
      * @date 2020/6/11
@@ -160,7 +160,7 @@ class StereoCamera
      *
      * @returns 成功返回true.
      */
-    bool SwitchParam(cv::Size size);
+    bool SwitchParam(const cv::Size& size);
 
     /**
      * 得到一个分辨率的参数.
@@ -174,7 +174,7 @@ class StereoCamera
      *
      * ### remarks Dx, 2020/5/6.
      */
-    pStereoCameraParam getParam(cv::Size size);
+    pStereoCameraParam getParam(const cv::Size& size);
 
     /**
      * 根据一个相机文件载入尝试相机参数信息.

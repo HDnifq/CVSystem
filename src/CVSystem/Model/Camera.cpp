@@ -26,7 +26,7 @@ class Camera::Impl
     ~Impl() {}
 };
 
-Camera::Camera(const std::string& aName, cv::Size aSize)
+Camera::Camera(const std::string& aName, const cv::Size& aSize)
     : name(aName), size(aSize)
 {
     //构造成员.
@@ -54,8 +54,9 @@ void Camera::initUndistortRectifyMap()
     cv::initUndistortRectifyMap(this->camMatrix, this->distCoeffs, this->R, this->P, this->size, CV_16SC2, this->rmap1, this->rmap2);
 }
 
-cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
+cv::Point3d Camera::screenToWorld(const cv::Point2f& inScreenPoint, float z)
 {
+    cv::Point2f screenPoint = inScreenPoint;
     screenPoint.y = this->size.height - screenPoint.y; //是以左下角为起点的
     const double* pd = this->camMatrix.ptr<double>();
     double fx = pd[0];
@@ -69,7 +70,7 @@ cv::Point3d Camera::screenToWorld(cv::Point2f screenPoint, float z)
     return cv::Point3d{p.at<double>(0), p.at<double>(1), p.at<double>(2)};
 }
 
-bool Camera::SwitchParam(cv::Size size)
+bool Camera::SwitchParam(const cv::Size& size)
 {
     //搜索一下是否带有这个参数
     for (size_t i = 0; i < vParams.size(); i++) {
@@ -90,7 +91,7 @@ bool Camera::SwitchParam(cv::Size size)
     return false;
 }
 
-pCameraParam Camera::getParam(cv::Size size)
+pCameraParam Camera::getParam(const cv::Size& size)
 {
     for (size_t i = 0; i < vParams.size(); i++) {
         if (vParams[i].first == size) {

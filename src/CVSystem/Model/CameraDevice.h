@@ -12,7 +12,7 @@ namespace dxlib {
 class CameraDevice
 {
   public:
-    CameraDevice(const std::string& aDevName, cv::Size aSize, int aBrightness);
+    CameraDevice(const std::string& aDevName, const cv::Size& aSize, int aBrightness);
 
     ~CameraDevice();
 
@@ -126,7 +126,7 @@ class CameraDevice
      * @param  CV_CAP_PROP The cv capability property.
      * @param  value       一个字符串值，由这个函数进行处理.
      */
-    void setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, std::string value);
+    void setPropWithString(cv::VideoCaptureProperties CV_CAP_PROP, const std::string& value);
 
     /**
      * 设置相机的fourcc.

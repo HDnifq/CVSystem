@@ -25,7 +25,7 @@ class Camera
      * @param  aName 相机名.
      * @param  aSize (Optional) 相机大小.
      */
-    Camera(const std::string& aName, cv::Size aSize = cv::Size(640, 360));
+    Camera(const std::string& aName, const cv::Size& aSize = cv::Size(640, 360));
 
     /**
      * 析构.
@@ -108,7 +108,7 @@ class Camera
      *
      * @returns A cv::Point3d.
      */
-    cv::Point3d screenToWorld(cv::Point2f screenPoint, float z = 1);
+    cv::Point3d screenToWorld(const cv::Point2f& screenPoint, float z = 1);
 
 #pragma endregion
 
@@ -169,7 +169,7 @@ class Camera
      *
      * @returns 成功返回true.
      */
-    bool SwitchParam(cv::Size size);
+    bool SwitchParam(const cv::Size& size);
 
     /**
      * 得到一个分辨率的参数.
@@ -181,7 +181,7 @@ class Camera
      *
      * @returns 相机参数.
      */
-    pCameraParam getParam(cv::Size size);
+    pCameraParam getParam(const cv::Size& size);
 
     /**
      * 根据一个相机文件载入尝试相机参数信息,会记录到上面的vParams里.

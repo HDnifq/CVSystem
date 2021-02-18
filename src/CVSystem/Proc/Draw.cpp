@@ -274,7 +274,7 @@ cv::Mat& Draw::drawLineROI(int index, const cv::Point2f& point1, const cv::Point
     return _impl->diagram;
 }
 
-cv::Mat& Draw::drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar color)
+cv::Mat& Draw::drawPolygonROI(int index, const std::vector<cv::Point>& polygon, const cv::Scalar& color)
 {
     if (!isEnableDraw) {
         return _impl->diagram;

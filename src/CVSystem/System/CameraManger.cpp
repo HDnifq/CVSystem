@@ -176,7 +176,7 @@ pStereoCamera CameraManger::getStereo(const std::string& name)
     return nullptr;
 }
 
-pStereoCamera CameraManger::getStereo(pCamera camera)
+pStereoCamera CameraManger::getStereo(const pCamera& camera)
 {
     for (size_t i = 0; i < vStereo.size(); i++) {
         if (vStereo[i]->camL == camera) {
@@ -212,7 +212,7 @@ pCameraPair CameraManger::getCameraPair(const std::string& name)
     return nullptr;
 }
 
-pCameraPair CameraManger::getCameraPair(pCamera cameraL, pCamera cameraR)
+pCameraPair CameraManger::getCameraPair(const pCamera& cameraL, const pCamera& cameraR)
 {
     for (size_t i = 0; i < vCameraPair.size(); i++) {
         if (vCameraPair[i]->camL == cameraL &&
