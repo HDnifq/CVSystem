@@ -84,6 +84,7 @@ class TaskGrabOneCamera : public IGrabTask
                 else {
                     LogE("TaskGrabOneCamera.runTask():打开相机失败无法采图...");
                     isRun = false;
+                    pCameraImageFactory->isDeviceError = true;
                     return;
                 }
             }
