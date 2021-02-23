@@ -101,6 +101,28 @@ CameraDevice::~CameraDevice()
     delete _impl;
 }
 
+bool CameraDevice::exist()
+{
+    DevicesHelper::GetInst()->listDevices();
+    if (DevicesHelper::GetInst()->devList.size() == 0) {
+        _isError = true;
+        return false;
+    }
+#if __linux
+    devID = DevicesHelper::GetInst()->getIndexWithName(devName, true); //记录devID,使用正则寻找
+#else
+    devID = DevicesHelper::GetInst()->getIndexWithName(devName); //记录devID
+#endif
+    //如果获取ID失败会返回-1
+    if (devID == -1) {
+        LogE("CameraDevice.exist():未找到该名称的相机%s!", this->devName.c_str());
+        _isError = true;
+        return false;
+    }
+    _isError = false;
+    return true;
+}
+
 bool CameraDevice::open(float& costTime)
 {
     //统计时间

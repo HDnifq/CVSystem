@@ -35,6 +35,16 @@ class CameraDevice
     float FPS = 0;
 
     /**
+     * 系统是否存在这个设备.
+     *
+     * @author daixian
+     * @date 2021/2/23
+     *
+     * @returns 如果存在这个设备返回true.
+     */
+    bool exist();
+
+    /**
      * 打开这个相机.
      *
      * @author daixian
