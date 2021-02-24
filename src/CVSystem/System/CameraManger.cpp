@@ -164,6 +164,7 @@ void CameraManger::clear()
     this->vDevice.clear();
     this->vCameraImageFactory.clear();
     this->vStereo.clear();
+    this->vCameraPair.clear();
 }
 
 pStereoCamera CameraManger::getStereo(const std::string& name)
