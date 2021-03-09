@@ -8,7 +8,7 @@
 
 //用来测试s2ws_ws2s
 #pragma execution_character_set("utf-8")
-#include "xuexuejson/Serialize.hpp"
+#include "xuexuejson/JsonMapper.hpp"
 
 #include "CVSystem/Common/base64.h"
 #include "Poco/File.h"

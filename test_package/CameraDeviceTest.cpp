@@ -5,7 +5,7 @@
 #include "time.h"
 
 //用来测试s2ws_ws2s
-#include "xuexuejson/Serialize.hpp"
+#include "xuexuejson/JsonMapper.hpp"
 
 using namespace dxlib;
 using namespace std;

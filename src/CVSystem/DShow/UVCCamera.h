@@ -8,7 +8,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 
 // 用于json
-#    include "xuexuejson/Serialize.hpp"
+#    include "xuexuejson/JsonMapper.hpp"
 
 #    include <windows.h>
 #    include <vidcap.h>

@@ -3,7 +3,7 @@
 #include "dlog/dlog.h"
 #include <thread>
 
-#include "xuexuejson/Serialize.hpp"
+#include "xuexuejson/JsonMapper.hpp"
 #include "xuexue/csharp/csharp.h"
 
 using namespace dxlib;
