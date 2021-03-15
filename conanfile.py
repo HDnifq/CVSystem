@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.3.29"
+    version = "3.3.30"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -34,7 +34,7 @@ class CVSystemConan(ConanFile):
         self.requires("eigen/3.3.7")
         self.requires("opencv/4.3.0@daixian/stable")
         self.requires("dlog/[>=2.5.2]@daixian/stable")
-        self.requires("xuexuejson/[>1.1.0]@daixian/stable")
+        self.requires("xuexuejson/[>=1.3.0]@daixian/stable")
         self.requires("xuexuemath/[>=0.0.5]@daixian/stable")
         self.requires("sqlitecpp/2.5.0@daixian/stable")  # 使用加密数据库的版本
         self.requires("xuexuesharp/[>=0.0.4]@daixian/stable")

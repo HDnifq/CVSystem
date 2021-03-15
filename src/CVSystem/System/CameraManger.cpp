@@ -203,6 +203,28 @@ pStereoCamera CameraManger::getStereo(int camIndex)
     return nullptr;
 }
 
+pStereoCamera CameraManger::getStereo(const pCamera& cameraL, const pCamera& cameraR)
+{
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->camL == cameraL &&
+            vStereo[i]->camR == cameraR) {
+            return vStereo[i];
+        }
+    }
+    return nullptr;
+}
+
+pStereoCamera CameraManger::getStereo(int camIndexL, int camIndexR)
+{
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->camL->camIndex == camIndexL &&
+            vStereo[i]->camR->camIndex == camIndexR) {
+            return vStereo[i];
+        }
+    }
+    return nullptr;
+}
+
 pCameraPair CameraManger::getCameraPair(const std::string& name)
 {
     for (size_t i = 0; i < vCameraPair.size(); i++) {
@@ -224,12 +246,46 @@ pCameraPair CameraManger::getCameraPair(const pCamera& cameraL, const pCamera& c
     return nullptr;
 }
 
-pCameraPair CameraManger::getCameraPair(int cameraL, int cameraR)
+pCameraPair CameraManger::getCameraPair(int camIndexL, int camIndexR)
 {
     for (size_t i = 0; i < vCameraPair.size(); i++) {
-        if (vCameraPair[i]->camL->camIndex == cameraL &&
-            vCameraPair[i]->camR->camIndex == cameraR) {
+        if (vCameraPair[i]->camL->camIndex == camIndexL &&
+            vCameraPair[i]->camR->camIndex == camIndexR) {
             return vCameraPair[i];
+        }
+    }
+    return nullptr;
+}
+
+IStereo* CameraManger::getIStereo(const pCamera& cameraL, const pCamera& cameraR)
+{
+    for (size_t i = 0; i < vCameraPair.size(); i++) {
+        if (vCameraPair[i]->camL == cameraL &&
+            vCameraPair[i]->camR == cameraR) {
+            return vCameraPair[i].get();
+        }
+    }
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->camL == cameraL &&
+            vStereo[i]->camR == cameraR) {
+            return vStereo[i].get();
+        }
+    }
+    return nullptr;
+}
+
+IStereo* CameraManger::getIStereo(int camIndexL, int camIndexR)
+{
+    for (size_t i = 0; i < vCameraPair.size(); i++) {
+        if (vCameraPair[i]->camL->camIndex == camIndexL &&
+            vCameraPair[i]->camR->camIndex == camIndexR) {
+            return vCameraPair[i].get();
+        }
+    }
+    for (size_t i = 0; i < vStereo.size(); i++) {
+        if (vStereo[i]->camL->camIndex == camIndexL &&
+            vStereo[i]->camR->camIndex == camIndexR) {
+            return vStereo[i].get();
         }
     }
     return nullptr;

@@ -195,6 +195,32 @@ class CameraManger
     pStereoCamera getStereo(const pCamera& camera);
 
     /**
+     * 使用两个相机来得到一个立体相机,找不到则返回null.
+     *
+     * @author daixian
+     * @date 2021/3/15
+     *
+     * @param  cameraL The camera l.
+     * @param  cameraR The camera r.
+     *
+     * @returns 找不到返回null.
+     */
+    pStereoCamera getStereo(const pCamera& cameraL, const pCamera& cameraR);
+
+    /**
+     * 使用两个相机来得到一个立体相机,找不到则返回null.
+     *
+     * @author daixian
+     * @date 2021/3/15
+     *
+     * @param  camIndexL The camera l.
+     * @param  camIndexR The camera r.
+     *
+     * @returns 找不到返回null.
+     */
+    pStereoCamera getStereo(int camIndexL, int camIndexR);
+
+    /**
      * 使用子相机来得到一个立体相机,找不到则返回null.
      *
      * @author daixian
@@ -229,7 +255,7 @@ class CameraManger
      *
      * @returns 找不到返回null.
      */
-    pCameraPair getCameraPair(const pCamera& cameraL,const pCamera& cameraR);
+    pCameraPair getCameraPair(const pCamera& cameraL, const pCamera& cameraR);
 
     /**
      * 得到一个相机对,因为这个相机对可能有随意组合的情况,所以需要两个参数,找不到则返回null.
@@ -243,6 +269,32 @@ class CameraManger
      * @returns 找不到返回null.
      */
     pCameraPair getCameraPair(int camIndexL, int camIndexR);
+
+    /**
+     * 使用两个相机来得到一个立体相机,找不到则返回null.
+     *
+     * @author daixian
+     * @date 2021/3/15
+     *
+     * @param  cameraL The camera l.
+     * @param  cameraR The camera r.
+     *
+     * @returns 找不到返回null.
+     */
+    IStereo* getIStereo(const pCamera& cameraL, const pCamera& cameraR);
+
+    /**
+     * 使用两个相机来得到一个立体相机,找不到则返回null.
+     *
+     * @author daixian
+     * @date 2021/3/15
+     *
+     * @param  camIndexL The camera l.
+     * @param  camIndexR The camera r.
+     *
+     * @returns 找不到返回null.
+     */
+    IStereo* getIStereo(int camIndexL, int camIndexR);
 
     /**
      * 设置某一个相机的属性.

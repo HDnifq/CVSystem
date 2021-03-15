@@ -33,7 +33,7 @@ class Camera
      * @author daixian
      * @date 2020/5/21
      */
-    ~Camera();
+    virtual ~Camera();
 
     // 相机的逻辑编号0-3，它代表一个编程逻辑上的编号，不是相机的设备index.
     int camIndex = -1;
@@ -89,6 +89,25 @@ class Camera
 #pragma region 简单函数
 
     /**
+     * 把一个点统一大小成参数分辨率大小
+     *
+     * @author daixian
+     * @date 2021/3/15
+     *
+     * @param  imagePoint 图片上的一点坐标.
+     * @param  imageSize  图片大小.
+     *
+     * @returns A cv::Point2f.
+     */
+    cv::Point2f uniformImageSize(const cv::Point2f imagePoint, const cv::Size& imageSize)
+    {
+        float kx = paramSize.width / (float)imageSize.width; //如果target比原图小一半那么就是1/2
+        float ky = paramSize.height / (float)imageSize.height;
+
+        return cv::Point2f(imagePoint.x * kx, imagePoint.y * kx);
+    }
+
+    /**
      * 根据现有参数初始化rmap1和rmap2.
      *
      * @author daixian
@@ -126,8 +145,8 @@ class Camera
     // 双目相机里的另一对相机.(这个应该作为一个函数在StereoCamera中调用)
     std::shared_ptr<Camera> stereoOther = nullptr;
 
-    // 是否是立体相机
-    bool isStereo()
+    // 是否是立体相机里的一个
+    bool isStereo() const
     {
         if (scID >= 0) {
             return true;
@@ -136,7 +155,7 @@ class Camera
     }
 
     // 是否是立体相机的左相机
-    bool isStereoL()
+    bool isStereoL() const
     {
         if (stereoCamIndexL == camIndex) {
             return true;
@@ -145,7 +164,7 @@ class Camera
     }
 
     // 是否是立体相机的右相机
-    bool isStereoR()
+    bool isStereoR() const
     {
         if (stereoCamIndexR == camIndex) {
             return true;
