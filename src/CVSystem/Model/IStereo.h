@@ -5,6 +5,7 @@
 #include "CameraDevice.h"
 #include "StereoCameraParam.h"
 #include "dlog/dlog.h"
+#include "xuexue/math/math.h"
 
 namespace dxlib {
 
@@ -73,6 +74,33 @@ class IStereo
     {
         std::array<pCamera, 2> arr = {camL, camR};
         return arr;
+    }
+
+    /**
+     * 立体计算.
+     *
+     * @author daixian
+     * @date 2021/3/17
+     *
+     * @param  oriPointL The ori point l.
+     * @param  oriPointR The ori point r.
+     */
+    void StereoCalc(const std::vector<cv::Point2f>& oriPointL, const std::vector<cv::Point2f>& oriPointR,
+                    std::vector<cv::Vec3f>& vPoint3d)
+    {
+        using namespace xuexue;
+        vPoint3d.clear();
+
+        //校正过畸变的点
+        std::vector<cv::Point2f> unPL;
+        std::vector<cv::Point2f> unPR;
+        cv::undistortPoints(oriPointL, unPL, camL->camMatrix, camL->distCoeffs, cv::Mat(), camL->camMatrix);
+        cv::undistortPoints(oriPointR, unPR, camR->camMatrix, camR->distCoeffs, cv::Mat(), camR->camMatrix);
+
+        std::vector<cv::Vec3f> vPoint3dCam = Math::stereoPos(LP, RP, unPL, unPR); //相机空间的
+        for (size_t i = 0; i < vPoint3dCam.size(); i++) {
+            vPoint3d.push_back(Math::CL2W(camTR4x4, vPoint3dCam[i])); //变换到世界空间
+        }
     }
 
     /**
