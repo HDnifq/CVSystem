@@ -10,7 +10,7 @@ TEST(CameraManger, Create)
 
     pCameraDevice device;
     pStereoCamera stereo;
-    CameraManger::GetInst()->CreateStereoCamera("F3DSC01", 1280, 400, device, stereo);
+    CameraManger::GetInst()->CreateStereoCamera("weidoo01", 1280, 400, device, stereo);
 
     ASSERT_TRUE(device != nullptr);
     ASSERT_TRUE(stereo != nullptr);

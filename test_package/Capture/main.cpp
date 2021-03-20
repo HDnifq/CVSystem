@@ -21,7 +21,7 @@ class CamCaptureConfig : XUEXUE_JSON_OBJECT
     int exposure = 0;
 
     // 要打的相机名
-    vector<string> names = {"F3DSC01"};
+    vector<string> names = {"weidoo01"};
 
     // 是否打印debug日志
     bool islogDebug = false;
