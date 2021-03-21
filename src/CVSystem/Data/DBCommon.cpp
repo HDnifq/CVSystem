@@ -63,10 +63,10 @@ void* DBCommon::getPtr()
 bool DBCommon::open(const std::string& path, bool isKey)
 {
     using namespace xuexue::csharp;
+    //如果已经打开了那么关闭
+    if (isOpened())
+        close();
 
-    if (_impl->db != nullptr) {
-        delete _impl->db;
-    }
     //如果文件存在
     if (File::Exists(path)) {
         _impl->db = new SQLite::Database(path, SQLite::OPEN_READONLY);
@@ -94,9 +94,10 @@ bool DBCommon::open(const std::string& path, bool isKey)
 bool DBCommon::openRW(const std::string& path, bool isKey)
 {
     using namespace xuexue::csharp;
-    if (_impl->db != nullptr) {
-        delete _impl->db;
-    }
+    //如果已经打开了那么关闭
+    if (isOpened())
+        close();
+
     //如果文件存在
     if (File::Exists(path)) {
         _impl->db = new SQLite::Database(path, SQLite::OPEN_READWRITE);
@@ -124,9 +125,6 @@ bool DBCommon::openRW(const std::string& path, bool isKey)
 bool DBCommon::openRWOrCreate(const std::string& path, bool isKey)
 {
     using namespace xuexue::csharp;
-    //打开数据库
-    if (isOpened())
-        close();
 
     if (File::Exists(path)) {
         openRW(path, isKey);
@@ -165,12 +163,12 @@ bool DBCommon::isOpened()
     return false;
 }
 
-int DBCommon::createNew(const std::string& path, bool isKey)
+bool DBCommon::createNew(const std::string& path, bool isKey)
 {
     using namespace xuexue::csharp;
     if (File::Exists(path)) { //如果文件存在
         LogE("DBCommon.createNew():数据库文件已经存在了,先确认手动删除之后再操作!");
-        return -1;
+        return false;
     }
     _impl->db = new SQLite::Database(path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
@@ -187,7 +185,7 @@ int DBCommon::createNew(const std::string& path, bool isKey)
     //创建一下表
     createTable();
 
-    return 0;
+    return true;
 }
 
 void DBCommon::createTable()

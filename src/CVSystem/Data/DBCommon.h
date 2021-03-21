@@ -68,9 +68,9 @@ class DBCommon
      * @param  path  数据库路径(内存中 :memory: ).
      * @param  isKey (Optional) 是否加密.
      *
-     * @returns 成功返回0,不成功返回-1.
+     * @returns 成功返回true,不成功返回false.
      */
-    int createNew(const std::string& path, bool isKey = true);
+    bool createNew(const std::string& path, bool isKey = true);
 
     /**
      * 打开一个数据库(只读).
@@ -81,7 +81,7 @@ class DBCommon
      * @param  path  数据库路径.
      * @param  isKey (Optional) 是否加密.
      *
-     * @returns 成功返回0,不成功返回-1.
+     * @returns 成功返回true,不成功返回false.
      */
     bool open(const std::string& path, bool isKey = true);
 
@@ -94,17 +94,20 @@ class DBCommon
      * @param  path  数据库路径.
      * @param  isKey (Optional) 是否加密.
      *
-     * @returns 成功返回0,不成功返回-1.
+     * @returns 成功返回true,不成功返回false.
      */
     bool openRW(const std::string& path, bool isKey = true);
 
-        /**
+    /**
      * 打开一个数据库读写如果不存在数据库那么就创建.
      *
      * @author daixian
      * @date 2020/12/14
      *
-     * @returns True if it succeeds, false if it fails.
+     * @param  path  数据库路径.
+     * @param  isKey (Optional) 是否加密.
+     *
+     * @returns 成功返回true,不成功返回false.
      */
     bool openRWOrCreate(const std::string& path, bool isKey = true);
 
