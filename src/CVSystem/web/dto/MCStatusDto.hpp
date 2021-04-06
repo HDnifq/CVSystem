@@ -5,6 +5,7 @@
 #include "../../System/CameraManger.h"
 
 namespace dxlib {
+namespace cvsystem {
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary>
@@ -68,4 +69,5 @@ class MCStatusDto : XUEXUE_JSON_OBJECT
   private:
 };
 
+} // namespace cvsystem
 } // namespace dxlib

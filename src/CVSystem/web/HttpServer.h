@@ -77,19 +77,19 @@ class CVSystemRequestHandlerFactory : public HTTPRequestHandlerFactory
         Poco::URI uri(decodeText);
         std::string path(uri.getPath());
 
-        auto handler = CameraRequestHandler::creat(uri, path);
+        auto handler = cvsystem::CameraRequestHandler::creat(uri, path);
         if (handler != nullptr) {
             return handler;
         }
 
-        handler = MultiCameraRequestHandler::creat(uri, path);
+        handler = cvsystem::MultiCameraRequestHandler::creat(uri, path);
         if (handler != nullptr) {
             return handler;
         }
 
         if (isUseFileServer) {
             using namespace xuexue::csharp;
-            return new FileHandler(Path::Combine(Path::ModuleDir(), "static"));
+            return new cvsystem::FileHandler(Path::Combine(Path::ModuleDir(), "static"));
         }
         else {
             // 按照Poco的API这里可能不能空

@@ -23,6 +23,7 @@ using Poco::Net::HTTPServerResponse;
 using Poco::Net::ServerSocket;
 
 namespace dxlib {
+namespace cvsystem {
 
 /**
  * 处理多相机的http消息.
@@ -158,4 +159,6 @@ class MultiCameraRequestHandler : public HTTPRequestHandler
     class Impl;
     Impl* _impl;
 };
+
+} // namespace cvsystem
 } // namespace dxlib

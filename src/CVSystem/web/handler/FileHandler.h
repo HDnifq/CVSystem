@@ -28,6 +28,7 @@ using Poco::Net::HTTPServerResponse;
 using Poco::Net::ServerSocket;
 
 namespace dxlib {
+namespace cvsystem {
 
 /**
  * 一个小的支持Range的文件服务器.
@@ -104,4 +105,6 @@ class FileHandler : public HTTPRequestHandler
     class Impl;
     Impl* _impl;
 };
+
+} // namespace cvsystem
 } // namespace dxlib

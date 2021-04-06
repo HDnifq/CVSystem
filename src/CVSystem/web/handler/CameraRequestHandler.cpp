@@ -18,6 +18,7 @@ using namespace Poco::Net;
 using namespace Poco;
 
 namespace dxlib {
+namespace cvsystem {
 
 class CameraRequestHandler::Impl
 {
@@ -151,4 +152,5 @@ void CameraRequestHandler::handleRequestSetCapProp(HTTPServerRequest& request, H
     }
 }
 
+} // namespace cvsystem
 } // namespace dxlib

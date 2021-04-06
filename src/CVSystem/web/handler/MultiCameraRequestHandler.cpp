@@ -16,6 +16,7 @@ using namespace Poco::Net;
 using namespace Poco;
 
 namespace dxlib {
+namespace cvsystem {
 
 class MultiCameraRequestHandler::Impl
 {
@@ -131,4 +132,5 @@ void MultiCameraRequestHandler::handleRequestStatus(HTTPServerRequest& request, 
     out << JsonMapper::toJson(dto, true);
 }
 
+} // namespace cvsystem
 } // namespace dxlib

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 namespace dxlib {
+namespace cvsystem {
 
 class FileHandler::Impl
 {
@@ -422,4 +423,5 @@ void FileHandler::sendFileRangeMultipart(Poco::Net::HTTPServerResponse& response
     ostr << "\r\n--string_separator--\r\n";
 }
 
+} // namespace cvsystem
 } // namespace dxlib

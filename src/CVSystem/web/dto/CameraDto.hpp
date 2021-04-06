@@ -7,6 +7,7 @@
 #include "../../Model/Camera.h"
 
 namespace dxlib {
+namespace cvsystem {
 
 ///-------------------------------------------------------------------------------------------------
 /// <summary>
@@ -92,4 +93,5 @@ class CameraDto : XUEXUE_JSON_OBJECT
   private:
 };
 
+} // namespace cvsystem
 } // namespace dxlib

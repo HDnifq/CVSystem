@@ -10,6 +10,7 @@ using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPServerResponse;
 
 namespace dxlib {
+namespace cvsystem {
 
 /**
  * 解析一个URI里面的Query参数，原本是一个Vector<pair>的.
@@ -96,4 +97,5 @@ class ParserQueryParameters
   private:
 };
 
+} // namespace cvsystem
 } // namespace dxlib
