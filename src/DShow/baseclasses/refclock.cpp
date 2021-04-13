@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: RefClock.cpp
 //
 // Desc: DirectShow base classes - implements the IReferenceClock interface.
@@ -379,7 +379,7 @@ HRESULT CBaseReferenceClock::SetDefaultTimerResolution(
         DWORD dwMinResolution = (TIMERR_NOERROR == timeGetDevCaps(&tc, sizeof(tc)))
                             ? tc.wPeriodMin
                             : 1;
-        DWORD dwResolution = max( dwMinResolution, DWORD(timerResolution / 10000) );
+        DWORD dwResolution = __max( dwMinResolution, DWORD(timerResolution / 10000) );
         if( dwResolution != m_TimerResolution ) {
             timeEndPeriod(m_TimerResolution);
             m_TimerResolution = dwResolution;

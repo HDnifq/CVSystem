@@ -13,7 +13,7 @@ os.system("chcp 65001")
 
 class CVSystemConan(ConanFile):
     name = "cvsystem"
-    version = "3.3.33"
+    version = "3.3.34"
     license = "私有库"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/CVSystem"
@@ -50,7 +50,6 @@ class CVSystemConan(ConanFile):
         return cmake
 
     def build(self):
-        print("进入了build...")
         cmake = self._configure_cmake()
         cmake.configure(source_folder="src")
         cmake.build()

@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: CProp.cpp
 //
 // Desc: DirectShow base classes - implements CBasePropertyPage class.
@@ -54,7 +54,7 @@ STDMETHODIMP_(ULONG) CBasePropertyPage::NonDelegatingAddRef()
 {
     LONG lRef = InterlockedIncrement(&m_cRef);
     ASSERT(lRef > 0);
-    return max(ULONG(m_cRef),1ul);
+    return __max(ULONG(m_cRef),1ul);
 }
 
 
@@ -73,7 +73,7 @@ STDMETHODIMP_(ULONG) CBasePropertyPage::NonDelegatingRelease()
         return ULONG(0);
     } else {
         //  Don't touch m_cRef again here!
-        return max(ULONG(lRef),1ul);
+        return __max(ULONG(lRef),1ul);
     }
 }
 

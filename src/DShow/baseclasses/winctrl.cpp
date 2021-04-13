@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: WinCtrl.cpp
 //
 // Desc: DirectShow base classes - implements video control interface class.
@@ -1237,7 +1237,7 @@ STDMETHODIMP CBaseControlVideo::GetVideoPaletteEntries(long StartIndex,
     // Correct the number we can retrieve
 
     LONG Available = (LONG) pHeader->biClrUsed - StartIndex;
-    *pRetrieved = max(0,min(Available,Entries));
+    *pRetrieved = __max(0,__min(Available,Entries));
     if (*pRetrieved == 0) {
         return S_FALSE;
     }

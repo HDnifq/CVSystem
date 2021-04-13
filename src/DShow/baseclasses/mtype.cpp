@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: MType.cpp
 //
 // Desc: DirectShow base classes - implements a class that holds and 
@@ -280,7 +280,7 @@ CMediaType::ReallocFormatBuffer(ULONG length)
 
     if (cbFormat != 0) {
         ASSERT(pbFormat);
-        memcpy(pNewFormat,pbFormat,min(length,cbFormat));
+        memcpy(pNewFormat,pbFormat,__min(length,cbFormat));
         CoTaskMemFree((PVOID)pbFormat);
     }
 

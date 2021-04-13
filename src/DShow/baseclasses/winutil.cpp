@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: WinUtil.cpp
 //
 // Desc: DirectShow base classes - implements generic window handler class.
@@ -2134,7 +2134,7 @@ HRESULT CImagePalette::MakeIdentityPalette(__inout_ecount_full(iColours) PALETTE
 
     // Set the non VGA entries so that GDI doesn't map them
 
-    for (UINT Count = PalLoCount;INT(Count) < min(PalHiStart,iColours);Count++) {
+    for (UINT Count = PalLoCount;INT(Count) < __min(PalHiStart,iColours);Count++) {
         pEntry[Count].peFlags = PC_NOCOLLAPSE;
     }
     return NOERROR;

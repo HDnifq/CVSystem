@@ -9,7 +9,7 @@ from conans import ConanFile, CMake, tools
 class CVSystemTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
-    default_options = {"dlog:shared": False,
+    default_options = {"dlog:shared": True,
                        "opencv:shared": True,
                        "boost:without_test": True,
                        "poco:enable_data_sqlite": False}
