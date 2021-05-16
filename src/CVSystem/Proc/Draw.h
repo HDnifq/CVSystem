@@ -269,7 +269,7 @@ class Draw
      * @author daixian
      * @date 2017/8/17
      *
-     * @param [in] src     源图片.
+     * @param [in] src     源图片(如果是单通道图像那么会自动转换成3通道).
      * @param      roi_src The roi.
      * @param      roi_dst The roi.
      *
@@ -283,7 +283,7 @@ class Draw
      * @author daixian
      * @date 2018/11/27
      *
-     * @param [in] src   源图片.
+     * @param [in] src   源图片(如果是单通道图像那么会自动转换成3通道).
      * @param      index 目标区域的index.
      *
      * @returns 当前图片.

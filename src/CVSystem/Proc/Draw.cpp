@@ -240,7 +240,20 @@ cv::Mat& Draw::drawMat(const cv::Mat& src, const cv::Rect& roi_src, const cv::Re
         return _impl->diagram;
     }
 
-    src(roi_src).copyTo(_impl->diagram(roi_dst));
+    if (src.channels() == 1) {
+        //如果是单通道那么转成3通道
+        cv::Mat three_channel = cv::Mat::zeros(src.rows, src.cols, CV_8UC3);
+        std::vector<cv::Mat> channels;
+        for (int i = 0; i < 3; i++) {
+            channels.push_back(src);
+        }
+        cv::merge(channels, three_channel);
+        three_channel(roi_src).copyTo(_impl->diagram(roi_dst));
+    }
+    else {
+        src(roi_src).copyTo(_impl->diagram(roi_dst));
+    }
+
     return _impl->diagram;
 }
 
@@ -250,7 +263,20 @@ cv::Mat& Draw::drawMat(const cv::Mat& src, int index)
         return _impl->diagram;
     }
 
-    src.copyTo(_impl->diagram(_impl->vImageROI[index]));
+    if (src.channels() == 1) {
+        //如果是单通道那么转成3通道
+        cv::Mat three_channel = cv::Mat::zeros(src.rows, src.cols, CV_8UC3);
+        std::vector<cv::Mat> channels;
+        for (int i = 0; i < 3; i++) {
+            channels.push_back(src);
+        }
+        cv::merge(channels, three_channel);
+        three_channel.copyTo(_impl->diagram(_impl->vImageROI[index]));
+    }
+    else {
+        src.copyTo(_impl->diagram(_impl->vImageROI[index]));
+    }
+
     return _impl->diagram;
 }
 
