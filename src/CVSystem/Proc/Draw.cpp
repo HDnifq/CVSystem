@@ -257,24 +257,30 @@ cv::Mat& Draw::drawMat(const cv::Mat& src, const cv::Rect& roi_src, const cv::Re
     return _impl->diagram;
 }
 
-cv::Mat& Draw::drawMat(const cv::Mat& src, int index)
+cv::Mat& Draw::drawMat(const cv::Mat& src, int index, bool isBinaryzation)
 {
     if (!isEnableDraw) {
         return _impl->diagram;
     }
+    cv::Mat drawToDraw = src;
 
-    if (src.channels() == 1) {
+    if (isBinaryzation) {
+        cv::Mat binary;
+        cv::threshold(src, binary, 1, 255, cv::THRESH_BINARY);
+        drawToDraw = binary;
+    }
+    if (drawToDraw.channels() == 1) {
         //如果是单通道那么转成3通道
-        cv::Mat three_channel = cv::Mat::zeros(src.rows, src.cols, CV_8UC3);
+        cv::Mat three_channel = cv::Mat::zeros(drawToDraw.rows, drawToDraw.cols, CV_8UC3);
         std::vector<cv::Mat> channels;
         for (int i = 0; i < 3; i++) {
-            channels.push_back(src);
+            channels.push_back(drawToDraw);
         }
         cv::merge(channels, three_channel);
         three_channel.copyTo(_impl->diagram(_impl->vImageROI[index]));
     }
     else {
-        src.copyTo(_impl->diagram(_impl->vImageROI[index]));
+        drawToDraw.copyTo(_impl->diagram(_impl->vImageROI[index]));
     }
 
     return _impl->diagram;

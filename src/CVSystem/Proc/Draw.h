@@ -283,12 +283,13 @@ class Draw
      * @author daixian
      * @date 2018/11/27
      *
-     * @param [in] src   源图片(如果是单通道图像那么会自动转换成3通道).
-     * @param      index 目标区域的index.
+     * @param [in] src            源图片(如果是单通道图像那么会自动转换成3通道).
+     * @param      index          目标区域的index.
+     * @param      isBinaryzation (Optional) 是否二值化显示.
      *
      * @returns 当前图片.
      */
-    cv::Mat& drawMat(const cv::Mat& src, int index);
+    cv::Mat& drawMat(const cv::Mat& src, int index, bool isBinaryzation = false);
 
     /**
      * 对相机图像上画一个矩形.
