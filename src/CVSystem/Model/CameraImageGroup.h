@@ -136,6 +136,25 @@ class CameraImageGroup
         //}
         return false;
     }
+
+    /**
+     * 是否包含这个帧flag.
+     *
+     * @author daixian
+     * @date 2021/7/22
+     *
+     * @param  flag 要比较的帧标记字符串.
+     *
+     * @returns 如果包含则返回true.
+     */
+    bool hasFrameFlag(const std::string& flag)
+    {
+        for (size_t i = 0; i < frameFlag.size(); i++) {
+            if (frameFlag[i] == flag) {
+                return true;
+            }
+        }
+    }
 };
 
 // 定义这个智能指针类型.
