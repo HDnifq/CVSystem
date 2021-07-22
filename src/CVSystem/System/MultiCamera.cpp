@@ -410,4 +410,9 @@ void MultiCamera::discardFrame(int count)
     _impl->mainGrabTask->discardFrameCount = count;
 }
 
+void MultiCamera::setFrameFlag(const std::string& flag, int count)
+{
+    _impl->mainGrabTask->setFrameFlag(flag, count);
+}
+
 } // namespace dxlib

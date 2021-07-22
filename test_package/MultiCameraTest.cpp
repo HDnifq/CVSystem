@@ -220,6 +220,8 @@ TEST(MultiCamera, openStereoMT)
         //启动计算线程
         MultiCamera::GetInst()->startMT();
         ASSERT_TRUE(MultiCamera::GetInst()->isRunning());
+
+        MultiCamera::GetInst()->setFrameFlag("测试标记", 3);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //工作1000毫秒
 
         //测一下TestProc里是不是处理了图像帧
@@ -298,7 +300,7 @@ TEST(MultiCamera, invokeStopAndClose)
         LogI("MultiCamera.invokeStopAndClose():fps=%f", MultiCamera::GetInst()->fps());
         ASSERT_TRUE(MultiCamera::GetInst()->frameCount() > 0);
 
-        MultiCamera::GetInst()->invokeStopAndClose(false);//注意这里不清空proc
+        MultiCamera::GetInst()->invokeStopAndClose(false); //注意这里不清空proc
         for (size_t i = 0; i < 5; i++) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //工作1000毫秒
             if (!MultiCamera::GetInst()->isCameraOpened()) {

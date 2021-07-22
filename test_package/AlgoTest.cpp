@@ -10,6 +10,8 @@ using namespace std;
 //指针使用测试
 TEST(ALGO, findIndex)
 {
+    dlog_set_is_chcp65001(true);
+
     vector<int> vec = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     EXPECT_TRUE(ALGO::findIndex(vec, 3) == 2);
 

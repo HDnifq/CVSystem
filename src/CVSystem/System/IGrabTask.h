@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <memory>
+#include <string>
 
 #include "Poco/ThreadPool.h"
 #include "Poco/TaskManager.h"
@@ -34,8 +35,14 @@ class IGrabTask : public Poco::Runnable
     // 是否执行处理
     bool isDoProc = false;
 
-    // 处理的忽略帧,会直接丢弃这一帧
+    // 处理的忽略帧,会直接丢弃这一帧,同时递减这个Count.
     int discardFrameCount = 0;
+
+    // 帧标记信息(相当于忽略帧的细分功能)
+    std::vector<std::string> frameFlag;
+
+    // 帧标记信息的计数.
+    std::vector<int> frameFlagCount;
 
     // proc对象.
     pFrameProc proc = nullptr;
@@ -43,7 +50,38 @@ class IGrabTask : public Poco::Runnable
     // Runnable
     virtual void run() = 0;
 
+    /**
+     * 设置一个帧标记.
+     *
+     * @author daixian
+     * @date 2021/7/22
+     *
+     * @param  flag  帧标记信息.
+     * @param  count 持续的帧数.
+     */
+    void setFrameFlag(const std::string& flag, int count)
+    {
+        frameFlag.push_back(flag);
+        frameFlagCount.push_back(count);
+    }
+
+    /**
+     * 检察并清空帧Flag,如果frameFlagCount已经到零了就清空这一组.
+     *
+     * @author daixian
+     * @date 2021/7/22
+     */
+    void clearFrameFlag()
+    {
+        for (size_t i = 0; i < frameFlagCount.size(); i++) {
+            if (frameFlagCount[i] <= 0) {
+                frameFlagCount.erase(frameFlagCount.begin() + i);
+                frameFlag.erase(frameFlag.begin() + i);
+                i--;
+            }
+        }
+    }
+
   private:
 };
-
 } // namespace dxlib

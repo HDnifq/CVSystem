@@ -192,6 +192,15 @@ class TaskGrabOneCamera : public IGrabTask
                 return true;
             }
 
+            //记录帧的flag文本
+            for (size_t i = 0; i < frameFlag.size(); i++) {
+                if (this->frameFlagCount[i] > 0) {
+                    this->frameFlagCount[i]--;
+                    cimg->frameFlag.push_back(frameFlag[i]);
+                }
+            }
+            this->clearFrameFlag();
+
             cimg->procStartTime = clock(); //标记处理开始时间
             if (cimg->waitProcTime() > 4)
                 LogW("TaskGrabOneCamera.run():执行proc!,从采图结束到现在等待了%f ms", cimg->waitProcTime());

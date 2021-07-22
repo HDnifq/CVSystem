@@ -228,6 +228,17 @@ class MultiCamera
      */
     void discardFrame(int count);
 
+    /**
+     * 设置一个帧标记.
+     *
+     * @author daixian
+     * @date 2021/7/22
+     *
+     * @param  flag  帧标记信息.
+     * @param  count 持续的帧数.
+     */
+    void setFrameFlag(const std::string& flag, int count);
+
   private:
     static MultiCamera* m_pInstance;
 

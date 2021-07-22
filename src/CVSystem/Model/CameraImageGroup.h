@@ -46,6 +46,9 @@ class CameraImageGroup
     // 这一帧的结束处理的时间戳.
     clock_t procEndTime = 0;
 
+    // 帧标记信息(相当于忽略帧的细分功能)
+    std::vector<std::string> frameFlag;
+
     /**
      * 向数据结构中添加一项相机图片的记录.
      *
