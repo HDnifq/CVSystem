@@ -78,7 +78,7 @@ class StereoCamera : public IStereo
     }
 
     /**
-     * 设置相机位置矩阵4x4,会对这个对象和camL相机中的成员同时赋值.
+     * 设置这个立体相机组中的L相机位置矩阵4x4,会对这个对象和camL相机中的成员同时赋值.
      *
      * @author daixian
      * @date 2020/6/11

@@ -62,6 +62,11 @@ void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4)
     this->camL->camTR4x4 = TRMat4x4;
     this->camL->camPos = this->camPos;
     this->camL->camRotate = this->camRotate;
+
+    //计算这个组里R相机的位置
+    cv::Mat m4x4_lr = Math::OpenCVtoU3D_RTtoMat44(R, T);
+    this->camR->camTR4x4 = (this->camL->camTR4x4 * m4x4_lr);
+    Math::toPosRot(this->camR->camTR4x4, this->camR->camPos, this->camR->camRotate);
 }
 
 } // namespace dxlib
