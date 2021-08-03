@@ -10,6 +10,41 @@
 using namespace dxlib;
 using namespace std;
 
+TEST(Video, MKVTest)
+{
+    cv::VideoCapture capture(""); //C:\\Users\\dx\\Desktop\\12-30-55_2a.mkv
+    // check if video successfully opened 检测视频是否成功打开
+    if (!capture.isOpened())
+        return;
+
+    // Get the frame rate 获取帧率
+    double rate = capture.get(cv::CAP_PROP_FPS);
+
+    cv::Mat frame; // current video frame 当前视频帧的图像
+    cv::namedWindow("Extracted Frame");
+
+    bool stop = false;
+    // Delay between each frame 每一帧之间的延迟
+    // corresponds to video frame rate 与视频的帧率相对应
+    int delay = 1000 / rate;
+
+    // for all frames in video 遍历每一帧
+    while (!stop) {
+
+        // read next frame if any 尝试读取下一帧
+        if (!capture.read(frame)) break;
+        cv::imshow("Extracted Frame", frame);
+
+        // introduce a delay 引入延迟（使用waitKey()函数参数）
+        // or press key to stop 也可通过按键停止
+        if (cv::waitKey(delay) >= 0)
+            stop = true;
+    }
+
+    // Close the video file
+    capture.release();
+}
+
 TEST(CameraDevice, propMap)
 {
     auto map = CameraDevice::propStringMap();
