@@ -47,6 +47,21 @@ class StereoTestProc : public FrameProc
 };
 
 int StereoTestProc::count = 0;
+
+TEST(Stereo, setMatRT)
+{
+    pCamera camL = CameraManger::GetInst()->add(std::make_shared<Camera>("camL"));
+    pCamera camR = CameraManger::GetInst()->add(std::make_shared<Camera>("camR"));
+
+    pStereoCamera sc1 = pStereoCamera(new StereoCamera());
+    sc1->camL = camL; //暂时倒过来设置
+    sc1->camR = camR;
+    sc1->camL->stereoOther = sc1->camR;
+    sc1->camR->stereoOther = sc1->camL;
+
+    sc1->setTRMat4x4(cv::Mat::eye(4, 4, CV_64F));
+}
+
 /*
 //测试MultiCamera的open是否正常
 TEST(Stereo, grab)
