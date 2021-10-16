@@ -16,6 +16,20 @@ CameraManger::~CameraManger()
 {
 }
 
+void CameraManger::CreateCamera(const std::string devName, int w, int h, pCameraDevice& device, pCamera& camera)
+{
+    device = pCameraDevice(new CameraDevice(devName, cv::Size(w, h), 0));
+    CameraManger::GetInst()->add(device);
+
+    camera = pCamera(new Camera(devName, cv::Size(w, h)));
+    CameraManger::GetInst()->add(camera);
+
+    pCameraImageFactory factory = pCameraImageFactory(new MonoCameraImageFactory(device, camera));
+    CameraManger::GetInst()->add(factory);
+
+    LogI("CameraManger.CreateStereoCamera():工厂方法创建一个立体相机,camIndex=%d", camera->camIndex);
+}
+
 void CameraManger::CreateStereoCamera(const std::string devName, int w, int h, pCameraDevice& device, pStereoCamera& stereo)
 {
     device = pCameraDevice(new CameraDevice(devName, cv::Size(w, h), 0));

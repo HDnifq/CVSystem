@@ -51,6 +51,20 @@ class CameraManger
     void clear();
 
     /**
+     * 使用工厂方法创建一个Mono相机,能自动分配id.(应该优先使用这样的工厂方法)
+     *
+     * @author daixian
+     * @date 2021/10/16
+     *
+     * @param       devName 设备名字.
+     * @param       w       图像width.
+     * @param       h       图像height.
+     * @param [out] device  工厂创建的设备对象.
+     * @param [out] camera  工厂创建的camera对象.
+     */
+    void CreateCamera(const std::string devName, int w, int h, pCameraDevice& device, pCamera& camera);
+
+    /**
      * 使用工厂方法创建一个立体相机,能自动分配id.(应该优先使用这样的工厂方法)
      *
      * @author daixian
