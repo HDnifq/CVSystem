@@ -15,16 +15,6 @@ namespace dxlib {
 class CameraImageGroup
 {
   public:
-    //CameraImageGroup(std::vector<pCamera>& vCameras)
-    //{
-    //    vImage.resize(vCameras.size()); //先直接创建算了
-    //    //记录所有的camera
-    //    for (size_t i = 0; i < vCameras.size(); i++) {
-    //        vImage[i].camera = vCameras[i].get();
-    //    }
-    //}
-    CameraImageGroup() {}
-
     // 相机帧序号.
     unsigned int fnum = 0;
 
@@ -120,24 +110,6 @@ class CameraImageGroup
     }
 
     /**
-     * 是否所有的相机都关闭了.用户在proc处理里进行判断,如果所有相机都关闭了那么可以自行睡眠.
-     *
-     * @author daixian
-     * @date 2020/7/4
-     *
-     * @returns 如果所有的相机都关闭了就返回true.
-     */
-    bool isAllCameraClosed()
-    {
-        //for (int i = 0; i < vImage.size(); i++) {
-        //    if (vImage[i].camera->isOpened()) {
-        //        return false;
-        //    }
-        //}
-        return false;
-    }
-
-    /**
      * 是否包含这个帧flag.
      *
      * @author daixian
@@ -154,6 +126,7 @@ class CameraImageGroup
                 return true;
             }
         }
+        return false;
     }
 };
 
