@@ -21,6 +21,9 @@ class CameraManger
 
     static CameraManger* GetInst()
     {
+        if (m_pInstance == nullptr) {
+            m_pInstance = new CameraManger();
+        }
         return m_pInstance;
     }
 

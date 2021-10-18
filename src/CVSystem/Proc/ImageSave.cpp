@@ -14,7 +14,7 @@ ImageSave::~ImageSave()
 {
 }
 
-ImageSave* ImageSave::m_pInstance = new ImageSave();
+ImageSave* ImageSave::m_pInstance = nullptr;
 
 //保存图片的名字的计数
 int nameCount = 0;

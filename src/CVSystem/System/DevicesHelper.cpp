@@ -50,7 +50,7 @@ using namespace dxlib::cvsystem;
 
 namespace dxlib {
 
-DevicesHelper* DevicesHelper::m_pInstance = NULL;
+DevicesHelper* DevicesHelper::m_pInstance = nullptr;
 
 DevicesHelper::DevicesHelper()
 {

@@ -18,6 +18,9 @@ class MultiCamera
 
     static MultiCamera* GetInst()
     {
+        if (m_pInstance == nullptr) {
+            m_pInstance = new MultiCamera();
+        }
         return m_pInstance;
     }
 

@@ -94,7 +94,7 @@ MultiCamera::~MultiCamera()
     delete _impl;
 }
 
-MultiCamera* MultiCamera::m_pInstance = new MultiCamera();
+MultiCamera* MultiCamera::m_pInstance = nullptr;
 
 uint MultiCamera::activeProcIndex()
 {

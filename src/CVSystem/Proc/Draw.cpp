@@ -65,7 +65,7 @@ cv::Rect Draw::imageROI(int index)
 
 #pragma endregion
 
-Draw* Draw::m_pInstance = NULL;
+Draw* Draw::m_pInstance = nullptr;
 
 Draw::Draw(int width, int height, float k)
 {

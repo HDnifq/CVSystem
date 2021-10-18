@@ -6,7 +6,7 @@
 
 namespace dxlib {
 
-CameraManger* CameraManger::m_pInstance = new CameraManger();
+CameraManger* CameraManger::m_pInstance = nullptr;
 
 CameraManger::CameraManger()
 {

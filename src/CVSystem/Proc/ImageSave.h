@@ -17,6 +17,9 @@ class ImageSave
     /// <summary> 单例. </summary>
     static ImageSave* GetInst()
     {
+        if (m_pInstance == nullptr) {
+            m_pInstance = new ImageSave();
+        }
         return m_pInstance;
     }
 

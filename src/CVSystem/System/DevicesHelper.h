@@ -45,7 +45,7 @@ class DevicesHelper
      */
     static DevicesHelper* GetInst()
     {
-        if (m_pInstance == NULL) //判断是否第一次调用
+        if (m_pInstance == nullptr) //判断是否第一次调用
             m_pInstance = new DevicesHelper();
         return m_pInstance;
     }
