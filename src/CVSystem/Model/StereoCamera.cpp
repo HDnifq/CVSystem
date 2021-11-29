@@ -53,7 +53,7 @@ void StereoCamera::createProjectMat()
     setProjection(LP, RP);
 }
 
-void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4)
+void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4, bool isSetCamR)
 {
     CV_Assert(TRMat4x4.size() == cv::Size(4, 4));
     using namespace xuexue;
@@ -63,14 +63,16 @@ void StereoCamera::setTRMat4x4(const cv::Mat& TRMat4x4)
     this->camL->camPos = this->camPos;
     this->camL->camRotate = this->camRotate;
 
-    //计算这个组里R相机的位置,需要R和T都存在数据才行
-    if (!R.empty() && !T.empty()) {
-        cv::Mat m4x4_lr = Math::OpenCVtoU3D_RTtoMat44(R, T);
-        this->camR->camTR4x4 = (this->camL->camTR4x4 * m4x4_lr);
-        Math::toPosRot(this->camR->camTR4x4, this->camR->camPos, this->camR->camRotate);
-    }
-    else {
-        LogW("StereoCamera.setTRMat4x4():注意此时立体相机组%s还没有R,T的值!", this->name);
+    if (isSetCamR) {
+        //计算这个组里R相机的位置,需要R和T都存在数据才行
+        if (!R.empty() && !T.empty()) {
+            cv::Mat m4x4_lr = Math::OpenCVtoU3D_RTtoMat44(R, T);
+            this->camR->camTR4x4 = (this->camL->camTR4x4 * m4x4_lr);
+            Math::toPosRot(this->camR->camTR4x4, this->camR->camPos, this->camR->camRotate);
+        }
+        else {
+            LogW("StereoCamera.setTRMat4x4():注意此时立体相机组%s还没有R,T的值!", this->name);
+        }
     }
 }
 

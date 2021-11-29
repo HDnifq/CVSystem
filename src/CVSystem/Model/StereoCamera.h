@@ -84,8 +84,9 @@ class StereoCamera : public IStereo
      * @date 2020/6/11
      *
      * @param  TRMat4x4 4x4的TR矩阵.
+     * @param  isSetCamR 是否设置camR的值.
      */
-    void setTRMat4x4(const cv::Mat& TRMat4x4);
+    void setTRMat4x4(const cv::Mat& TRMat4x4, bool isSetCamR = false);
 
     /**
      * 根据当前的RT矩阵创建投影矩阵.

@@ -347,8 +347,9 @@ bool CameraManger::checkInputData()
             LogE("CameraManger.checkDataInput():CameraManger中立体相机的scID=%lu录入有问题,和vStereo的index不一致.", scID);
             isRight = false;
         }
-        if ((psc->camL->camTR4x4.empty() || psc->camR->camTR4x4.empty()) && !psc->camTR4x4.empty()) {
-            LogE("CameraManger.checkDataInput():CameraManger设置了立体相机%s,但是没有设置camL的camTR4x4.", psc->name.c_str());
+        if (psc->camL->camTR4x4.empty() && !psc->camTR4x4.empty()) {
+            //只检察L相机,不再检察R相机
+            LogW("CameraManger.checkDataInput():CameraManger设置了立体相机%s,但是没有设置camL的camTR4x4.", psc->name.c_str());
             isRight = false;
         }
     }
