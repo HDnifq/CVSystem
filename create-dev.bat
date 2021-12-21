@@ -8,3 +8,7 @@ cd build
 REM 现在这个命令只是为了装依赖库,而依赖库最全的是test_package工程
 conan install ../test_package -s compiler.runtime=MD -s arch=x86_64 -s build_type=Release --build missing
 REM cmake ../src -G "Visual Studio 15 Win64" -DCVSYSTEM_BUILD_SHARED:BOOL="0" -DCVSYSTEM_BUILD_TESTS:BOOL="1" -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release;RelWithDebInfo"
+
+REM 返回上级
+cd ..
+cmake.exe --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -H./ -B./build -G "Visual Studio 16 2019"
