@@ -78,15 +78,15 @@ class StereoCamera : public IStereo
     }
 
     /**
-     * 设置这个立体相机组中的L相机位置矩阵4x4,会对这个对象和camL相机中的成员同时赋值.
+     * 设置这个立体相机组中的L相机位置矩阵4x4,会对这个对象的成员camTR4x4和camL相机中的camTR4x4成员同时赋值.
      *
      * @author daixian
      * @date 2020/6/11
      *
      * @param  TRMat4x4 4x4的TR矩阵.
-     * @param  isSetCamR 是否设置camR的值.
+     * @param  isSetCamR 是否同时设置camR的值.
      */
-    void setTRMat4x4(const cv::Mat& TRMat4x4, bool isSetCamR = false);
+    void setTRMat4x4(const cv::Mat& TRMat4x4, bool isSetCamR = true);
 
     /**
      * 根据当前的RT矩阵创建投影矩阵.
