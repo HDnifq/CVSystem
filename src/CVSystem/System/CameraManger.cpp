@@ -18,6 +18,7 @@ CameraManger::~CameraManger()
 
 void CameraManger::CreateCamera(const std::string devName, int w, int h, pCameraDevice& device, pCamera& camera)
 {
+    LogI("CameraManger.CreateCamera():尝试工厂方法创建一个Mono相机...");
     device = pCameraDevice(new CameraDevice(devName, cv::Size(w, h), 0));
     CameraManger::GetInst()->add(device);
 
@@ -26,12 +27,12 @@ void CameraManger::CreateCamera(const std::string devName, int w, int h, pCamera
 
     pCameraImageFactory factory = pCameraImageFactory(new MonoCameraImageFactory(device, camera));
     CameraManger::GetInst()->add(factory);
-
-    LogI("CameraManger.CreateStereoCamera():工厂方法创建一个立体相机,camIndex=%d", camera->camIndex);
+    LogI("CameraManger.CreateCamera():创建一个Mono相机结束,camIndex=%d", camera->camIndex);
 }
 
 void CameraManger::CreateStereoCamera(const std::string devName, int w, int h, pCameraDevice& device, pStereoCamera& stereo)
 {
+    LogI("CameraManger.CreateStereoCamera():尝试工厂方法创建一个立体相机...");
     device = pCameraDevice(new CameraDevice(devName, cv::Size(w, h), 0));
     CameraManger::GetInst()->add(device);
 
@@ -48,7 +49,7 @@ void CameraManger::CreateStereoCamera(const std::string devName, int w, int h, p
     ICameraImageFactory* pfactory = new StereoCameraImageFactory(device, {cameraL, cameraR});
     pCameraImageFactory factory = pCameraImageFactory(pfactory);
     CameraManger::GetInst()->add(factory);
-    LogI("CameraManger.CreateStereoCamera():工厂方法创建一个立体相机,scID=%d", stereo->scID);
+    LogI("CameraManger.CreateStereoCamera():创建一个立体相机结束,scID=%d", stereo->scID);
 }
 
 pCameraDevice CameraManger::add(const pCameraDevice& device)
