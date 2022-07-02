@@ -50,7 +50,7 @@ class MultiCamera
      *
      * @param  activeProcindex (Optional) 活动的proc的index.
      */
-    void start(uint activeProcindex = 0);
+    void start(int activeProcindex = -1);
 
     /**
      * 启动采图计算线程(多线程模式).
@@ -60,7 +60,7 @@ class MultiCamera
      *
      * @param  activeProcindex (Optional) 活动的proc的index.
      */
-    void startMT(uint activeProcindex = 0);
+    void startMT(int activeProcindex = -1);
 
     /**
      * 停止计算线程.
@@ -141,6 +141,13 @@ class MultiCamera
      * @returns 当前激活的Proc的指针,为空表示没有proc.
      */
     FrameProc* activeProc();
+
+    /**
+     * @brief 设置活动的proc.
+     * @param index 
+     * @return 
+    */
+    void setActiveProc(uint index);
 
     /**
      * 清空所有Proc

@@ -47,8 +47,23 @@ class IGrabTask : public Poco::Runnable
     // proc对象.
     pFrameProc proc = nullptr;
 
+    // 新的要执行的,它保持为null.在切换到了新的proc之后会把它设置会null.
+    pFrameProc _nextProc = nullptr;
+
     // Runnable
     virtual void run() = 0;
+
+    /**
+     * @brief 设置新的帧处理.
+     * @param newProc
+     */
+    void setNewFrameProc(pFrameProc newProc)
+    {
+        if (_nextProc != nullptr) {
+            LogE("IGrabTask.setNewFrameProc():任务还没有来得及响应切换,设置的太快了!");
+        }
+        _nextProc = newProc;
+    }
 
     /**
      * 设置一个帧标记.

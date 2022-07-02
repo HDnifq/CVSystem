@@ -93,19 +93,21 @@ class TaskGrabManyCamera : public IGrabTask
             }
         }
 
-        if (isMainTask && isDoProc && proc != nullptr) {
-            //imageQueue->lockGetImage.lock();
-            try {
-                proc->onEnable();
-            }
-            catch (const std::exception& e) {
-                LogE("TaskGrabManyCamera.run():执行onEnable异常 e=%s", e.what());
-            }
-            //imageQueue->lockGetImage.unlock();
-        }
+        tryOnEnable();
 
         while (isRun.load()) {
             try {
+
+                //检察是否有切换新的proc.
+                if (isMainTask && isDoProc && proc != nullptr && _nextProc != nullptr) {
+                    tryOnDisable();
+                    LogI("TaskGrabManyCamera.run():切换proc, %s -> %s", proc->name(), _nextProc->name());
+                    //切换新的proc
+                    proc = _nextProc;
+                    _nextProc = nullptr;
+                    tryOnEnable();
+                }
+
                 //使用imageQueue中的提取计数去计算一下处理的fps
                 fps = _fpsCalc.update(imageQueue->frameCount);
 
@@ -138,7 +140,7 @@ class TaskGrabManyCamera : public IGrabTask
             try {
                 // 如果这个采图完了它就去检察是否能够执行proc处理,如果没有人正在进行帧处理,那么就会持有一个锁
                 if (isDoProc && proc != nullptr) {
-                    //imageQueue->lockGetImage.try_lock()
+                    // imageQueue->lockGetImage.try_lock()
 
                     if (isGrab.load()) {
                         //因为这个主相机有可能采图超前一帧,所以这里执行两次处理
@@ -160,24 +162,49 @@ class TaskGrabManyCamera : public IGrabTask
                     //干脆用这个线程来驱动检查事件
                     Event::GetInst()->checkMemEvent();
 
-                    //imageQueue->lockGetImage.unlock(); //解锁
+                    // imageQueue->lockGetImage.unlock(); //解锁
                 }
             }
             catch (const std::exception& e) {
                 LogE("TaskGrabManyCamera.run():执行proc异常 e=%s", e.what());
-                //imageQueue->lockGetImage.unlock(); //异常了也解锁
+                // imageQueue->lockGetImage.unlock(); //异常了也解锁
             }
         }
 
+        tryOnDisable();
+    }
+
+    /**
+     * @brief 尝试执行Enable.
+     */
+    void tryOnEnable()
+    {
         if (isMainTask && isDoProc && proc != nullptr) {
-            //imageQueue->lockGetImage.lock();
+            // imageQueue->lockGetImage.lock();
+            try {
+                proc->onEnable();
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabManyCamera.run():执行onEnable异常 e=%s", e.what());
+            }
+            // imageQueue->lockGetImage.unlock();
+        }
+    }
+
+    /**
+     * @brief 尝试执行OnDisable.
+     */
+    void tryOnDisable()
+    {
+        if (isMainTask && isDoProc && proc != nullptr) {
+            // imageQueue->lockGetImage.lock();
             try {
                 proc->onDisable();
             }
             catch (const std::exception& e) {
                 LogE("TaskGrabManyCamera.run():执行onDisable异常 e=%s", e.what());
             }
-            //imageQueue->lockGetImage.unlock();
+            // imageQueue->lockGetImage.unlock();
         }
     }
 

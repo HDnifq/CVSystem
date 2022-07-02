@@ -42,7 +42,7 @@ class MultiCamera::Impl
     // 一次只使能一个处理.
     std::vector<pFrameProc> vProc;
 
-    // 当前激活的处理Index.
+    // 当前激活的处理Index,默认是0.
     uint _activeProcIndex = 0;
 
     // 相机(其中camIndex就等于这个vector的index).
@@ -126,6 +126,25 @@ FrameProc* MultiCamera::getProc(uint index)
     }
     else {
         return nullptr;
+    }
+}
+
+void MultiCamera::setActiveProc(uint index)
+{
+
+    if (index < _impl->vProc.size()) {
+        _impl->_activeProcIndex = index;
+    }
+    else {
+        return;
+    }
+    LogI("MultiCamera.setActiveProc():设置新的活动帧处理%s", _impl->vProc[_impl->_activeProcIndex]->name());
+    //此时已经有采图任务在执行了
+    if (_impl->vGrabTasks.size() > 0) {
+        for (size_t i = 0; i < _impl->vGrabTasks.size(); i++) {
+            //设置新的激活的帧处理
+            _impl->vGrabTasks[i]->setNewFrameProc(_impl->vProc[_impl->_activeProcIndex]);
+        }
     }
 }
 
@@ -267,8 +286,18 @@ void MultiCamera::closeCamera()
     LogI("MultiCamera.closeCamera():终于执行完了,close()返回...");
 }
 
-void MultiCamera::startMT(uint activeProcindex)
+void MultiCamera::startMT(int activeProcindex)
 {
+    if (activeProcindex >= 0 && activeProcindex < _impl->vProc.size()) {
+        //默认是输入-1,-1就不执行任何操作
+        _impl->_activeProcIndex = activeProcindex; //记录一下
+    }
+
+    if (activeProcindex >= 0 && activeProcindex >= _impl->vProc.size()) {
+        LogW("MultiCamera.startMT():输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
+        return;
+    }
+
     if (this->isRunning()) {
         LogW("MultiCamera.startMT():当前计算线程正在执行,可能导致泄漏!");
     }
@@ -277,11 +306,7 @@ void MultiCamera::startMT(uint activeProcindex)
         LogE("MultiCamera.startMT():启动失败，输vProc为空,需要先添加proc对象");
         return;
     }
-    if (activeProcindex >= _impl->vProc.size()) {
-        LogE("MultiCamera.startMT():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
-        return;
-    }
-    _impl->_activeProcIndex = activeProcindex; //记录一下
+
     _impl->vGrabTasks.clear();
 
     LogI("MultiCamera.startMT():启动各个采图Task...有%d个Task", _impl->vCameraImageFactory.size());
@@ -301,7 +326,7 @@ void MultiCamera::startMT(uint activeProcindex)
             }
 
             task->isDoProc = true;
-            task->proc = _impl->vProc[activeProcindex];
+            task->proc = _impl->vProc[_impl->_activeProcIndex];
 
             _impl->vGrabTasks.push_back(task);
             _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
@@ -312,8 +337,18 @@ void MultiCamera::startMT(uint activeProcindex)
     }
 }
 
-void MultiCamera::start(uint activeProcindex)
+void MultiCamera::start(int activeProcindex)
 {
+    if (activeProcindex >= 0 && activeProcindex < _impl->vProc.size()) {
+        //默认是输入activeProcindex=-1,-1就不执行任何操作
+        _impl->_activeProcIndex = activeProcindex; //记录一下
+    }
+
+    if (activeProcindex >= 0 && activeProcindex > _impl->vProc.size()) {
+        LogW("MultiCamera.start():输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
+        return;
+    }
+
     if (this->isRunning()) {
         LogW("MultiCamera.start():当前计算线程正在执行,可能导致泄漏!");
     }
@@ -322,11 +357,7 @@ void MultiCamera::start(uint activeProcindex)
         LogE("MultiCamera.start():启动失败，输vProc为空,需要先添加proc对象");
         return;
     }
-    if (activeProcindex >= _impl->vProc.size()) {
-        LogE("MultiCamera.start():启动失败，输入activeProcindex=%u过大,当前vProc的size为%zu!", activeProcindex, _impl->vProc.size());
-        return;
-    }
-    _impl->_activeProcIndex = activeProcindex; //记录一下
+
     _impl->vGrabTasks.clear();
 
     LogI("MultiCamera.start():启动采图Task...有%d个CameraImageFactory", _impl->vCameraImageFactory.size());
@@ -340,7 +371,7 @@ void MultiCamera::start(uint activeProcindex)
         task->isMainTask = true;
         _impl->mainGrabTask = task;
         task->isDoProc = true;
-        task->proc = _impl->vProc[activeProcindex];
+        task->proc = _impl->vProc[_impl->_activeProcIndex];
         _impl->vGrabTasks.push_back(task);
         _impl->threadPool.startWithPriority(Poco::Thread::Priority::PRIO_HIGHEST, *task);
     }
@@ -355,7 +386,7 @@ void MultiCamera::stop()
         _impl->vGrabTasks[i]->isRun = false;
     }
     LogI("MultiCamera.stop():等待所有采图任务退出...");
-    //TODO:这里可能要考虑自己关闭自己的问题.
+    // TODO:这里可能要考虑自己关闭自己的问题.
     _impl->threadPool.joinAll();
     //删除这些线程
     for (size_t i = 0; i < _impl->vGrabTasks.size(); i++) {
@@ -366,21 +397,21 @@ void MultiCamera::stop()
     _impl->mainGrabTask = nullptr;
 
     ////开始等待线程结束，这里总是会遇到一个自己调用close的问题
-    //if (_impl->pThread != nullptr) {
-    //    //如果不是自己关自己（Poco::Thread::current()这个函数会返回null，如果不是Poco的线程的话）
-    //    if (Poco::Thread::current() == nullptr || Poco::Thread::current()->id() != _impl->pThread->id()) {
-    //        _impl->pThread->join(); //等待它结束
-    //        delete _impl->pThread;
-    //        delete _impl->curRunnable;
-    //        _impl->pThread = nullptr;
-    //        _impl->curRunnable = nullptr;
-    //    }
-    //    else {
-    //        LogW("MultiCamera.stop():是线程自己关闭自己！");
-    //    }
-    //}
-    //else {
-    //}
+    // if (_impl->pThread != nullptr) {
+    //     //如果不是自己关自己（Poco::Thread::current()这个函数会返回null，如果不是Poco的线程的话）
+    //     if (Poco::Thread::current() == nullptr || Poco::Thread::current()->id() != _impl->pThread->id()) {
+    //         _impl->pThread->join(); //等待它结束
+    //         delete _impl->pThread;
+    //         delete _impl->curRunnable;
+    //         _impl->pThread = nullptr;
+    //         _impl->curRunnable = nullptr;
+    //     }
+    //     else {
+    //         LogW("MultiCamera.stop():是线程自己关闭自己！");
+    //     }
+    // }
+    // else {
+    // }
 }
 
 void MultiCamera::invokeStopAndClose(bool isClearProc)

@@ -90,19 +90,20 @@ class TaskGrabOneCamera : public IGrabTask
             }
         }
 
-        if (isMainTask && isDoProc && proc != nullptr) {
-            imageQueue->lockGetImage.lock();
-            try {
-                proc->onEnable();
-            }
-            catch (const std::exception& e) {
-                LogE("TaskGrabOneCamera.run():执行onEnable异常 e=%s", e.what());
-            }
-            imageQueue->lockGetImage.unlock();
-        }
+        tryOnEnable();
 
         while (isRun.load()) {
             try {
+                //检察是否有切换新的proc.
+                if (isMainTask && isDoProc && proc != nullptr && _nextProc != nullptr) {
+                    tryOnDisable();
+                    LogI("TaskGrabOneCamera.run():切换proc, %s -> %s", proc->name(), _nextProc->name());
+                    //切换新的proc
+                    proc = _nextProc;
+                    _nextProc = nullptr;
+                    tryOnEnable();
+                }
+
                 //使用imageQueue中的提取计数去计算一下处理的fps
                 fps = _fpsCalc.update(imageQueue->frameCount);
 
@@ -162,6 +163,31 @@ class TaskGrabOneCamera : public IGrabTask
             }
         }
 
+        tryOnDisable();
+    }
+
+    /**
+     * @brief 尝试执行Enable.
+     */
+    void tryOnEnable()
+    {
+        if (isMainTask && isDoProc && proc != nullptr) {
+            imageQueue->lockGetImage.lock();
+            try {
+                proc->onEnable();
+            }
+            catch (const std::exception& e) {
+                LogE("TaskGrabOneCamera.run():执行onEnable异常 e=%s", e.what());
+            }
+            imageQueue->lockGetImage.unlock();
+        }
+    }
+
+    /**
+     * @brief 尝试执行OnDisable.
+     */
+    void tryOnDisable()
+    {
         if (isMainTask && isDoProc && proc != nullptr) {
             imageQueue->lockGetImage.lock();
             try {
